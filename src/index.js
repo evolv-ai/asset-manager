@@ -20,14 +20,39 @@ function EvolvAssetManager(options) {
 		context
 	);
 
+	const maxTimeoutAttempts = 3
+	const maxTimeout = 1000
+
+	let timeoutAttempts = 0
 	let appliedClasses = [];
 	let unappliedFunctions = new Set();
 	let appliedFunctions = new Set();
 
+	function retrieveEvolvJsAsset() {
+		let jsAsset;
+	
+		const scripts = document.getElementsByTagName('script');
+	
+		for (let i = 0; i < scripts.length; i++) {
+			const script = scripts[i];
+			if (script.src && script.src.indexOf('evolv.ai') >= 0 && script.src.indexOf('assets.js') >= 0) {
+				jsAsset = script;
+				break;
+			}
+		}
+	
+		return jsAsset;
+	}
+
 	const invokeFunctions = function () {
 		const evolv = window._evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
-			this.timer = setTimeout(this);
+			if (timeoutAttempts < maxTimeoutAttempts) {
+				this.timer = setTimeout(this, maxTimeout);
+				timeoutAttempts++
+			} else {
+				client.contaminate();
+			}
 			return;
 		}
 
@@ -40,16 +65,20 @@ function EvolvAssetManager(options) {
 		});
 
 		Promise.all(promises)
+			.then(function () {
+				client.confirm()
+			})
 			.catch(function (err) {
-				evolv.contaminate();
+				client.contaminate();
 			});
 	};
 
+	const jsAsset = retrieveEvolvJsAsset();
+
 	client.getActiveKeys('web').listen(function (keys) {
-		const classes = keys.map(function (key) {
+		const liveContexts = keys.map(function (key) {
 			return 'evolv_'.concat(key.replace(/\./g, '_'));
 		});
-		console.log(classes)	
 
 		if (appliedClasses.length) {
 			appliedClasses.forEach(function (c) {
@@ -57,20 +86,21 @@ function EvolvAssetManager(options) {
 			});
 		}
 
-		classes.forEach(function (c) {
+		liveContexts.forEach(function (c) {
 			document.documentElement.classList.add(c);
 		});
-		appliedClasses = classes.slice();
+		appliedClasses = liveContexts.slice();
 
-		classes.forEach(function (key) {
-			if (!appliedFunctions.has(key)) {
-				unappliedFunctions.add(key);
-			}
-		});
-
-		invokeFunctions.call(invokeFunctions);
-
-		client.confirm();
+		if (jsAsset) {
+			liveContexts.forEach(function (key) {
+				if (!appliedFunctions.has(key)) {
+					unappliedFunctions.add(key);
+				}
+			});
+			invokeFunctions.call(invokeFunctions);
+		} else {
+			client.confirm();
+		}
 	});
 }
 
