@@ -28,6 +28,22 @@ function EvolvAssetManager(options) {
 	let unappliedFunctions = new Set();
 	let appliedFunctions = new Set();
 
+	function retrieveEvolvCssAsset() {
+		let cssAsset;
+	
+		const links = document.getElementsByTagName('link');
+
+		for (let i = 0; i < links.length; i++) {
+			const link = links[i];
+			if (link.rel === 'stylesheet' && link.href && link.href.indexOf('evolv.ai') >= 0 && link.href.indexOf('assets.css') >= 0) {
+				cssAsset = link;
+				break;
+			}
+		}
+
+		return cssAsset
+	}
+
 	function retrieveEvolvJsAsset() {
 		let jsAsset;
 	
@@ -73,6 +89,7 @@ function EvolvAssetManager(options) {
 			});
 	};
 
+	const cssAsset = retrieveEvolvCssAsset();
 	const jsAsset = retrieveEvolvJsAsset();
 
 	client.getActiveKeys('web').listen(function (keys) {
@@ -98,7 +115,7 @@ function EvolvAssetManager(options) {
 				}
 			});
 			invokeFunctions.call(invokeFunctions);
-		} else {
+		} else if (cssAsset) {
 			client.confirm();
 		}
 	});

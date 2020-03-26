@@ -1614,11 +1614,6 @@ var EvolvAssetManager = (function () {
 	  this.flush = transmit;
 	}
 
-	const INITIALIZED = 'initialized';
-	const CONFIRMED = 'confirmed';
-	const CONTAMINATED = 'contaminated';
-	const EVENT_EMITTED = 'event.emitted';
-
 	/**
 	 * @typedef {Promise} SubscribablePromise
 	 * @property {function(function):undefined} then Then
@@ -1757,7 +1752,7 @@ var EvolvAssetManager = (function () {
 	      sid: context.sid,
 	      score: score
 	    }, context.remoteContext), flush);
-	    emit(context, EVENT_EMITTED, type, score);
+	    emit(context, EvolvClient.EVENT_EMITTED, type, score);
 	  };
 
 	  /**
@@ -1782,7 +1777,7 @@ var EvolvAssetManager = (function () {
 	      }, context.remoteContext));
 	    });
 	    eventBeacon.flush();
-	    emit(context, CONFIRMED);
+	    emit(context, EvolvClient.CONFIRMED);
 	  };
 
 	  /**
@@ -1807,7 +1802,7 @@ var EvolvAssetManager = (function () {
 	      }, context.remoteContext));
 	    });
 	    eventBeacon.flush();
-	    emit(context, CONTAMINATED);
+	    emit(context, EvolvClient.CONTAMINATED);
 	  };
 
 	  /**
@@ -1865,7 +1860,7 @@ var EvolvAssetManager = (function () {
 	    }
 
 	    initialized = true;
-	    emit(context, INITIALIZED, options);
+	    emit(context, EvolvClient.INITIALIZED, options);
 	  };
 
 	  /**
@@ -1887,6 +1882,11 @@ var EvolvAssetManager = (function () {
 	  };
 	}
 
+	EvolvClient.INITIALIZED = 'initialized';
+	EvolvClient.CONFIRMED = 'confirmed';
+	EvolvClient.CONTAMINATED = 'contaminated';
+	EvolvClient.EVENT_EMITTED = 'event.emitted';
+
 	function EvolvAssetManager(options) {
 
 		const client = new EvolvClient(options);
@@ -1907,14 +1907,55 @@ var EvolvAssetManager = (function () {
 			context
 		);
 
+		const maxTimeoutAttempts = 3;
+		const maxTimeout = 1000;
+
+		let timeoutAttempts = 0;
 		let appliedClasses = [];
 		let unappliedFunctions = new Set();
 		let appliedFunctions = new Set();
 
+		function retrieveEvolvCssAsset() {
+			let cssAsset;
+		
+			const links = document.getElementsByTagName('link');
+
+			for (let i = 0; i < links.length; i++) {
+				const link = links[i];
+				if (link.rel === 'stylesheet' && link.href && link.href.indexOf('evolv.ai') >= 0 && link.href.indexOf('assets.css') >= 0) {
+					cssAsset = link;
+					break;
+				}
+			}
+
+			return cssAsset
+		}
+
+		function retrieveEvolvJsAsset() {
+			let jsAsset;
+		
+			const scripts = document.getElementsByTagName('script');
+		
+			for (let i = 0; i < scripts.length; i++) {
+				const script = scripts[i];
+				if (script.src && script.src.indexOf('evolv.ai') >= 0 && script.src.indexOf('assets.js') >= 0) {
+					jsAsset = script;
+					break;
+				}
+			}
+		
+			return jsAsset;
+		}
+
 		const invokeFunctions = function () {
 			const evolv = window._evolv;
 			if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
-				this.timer = setTimeout(this);
+				if (timeoutAttempts < maxTimeoutAttempts) {
+					this.timer = setTimeout(this, maxTimeout);
+					timeoutAttempts++;
+				} else {
+					client.contaminate();
+				}
 				return;
 			}
 
@@ -1927,16 +1968,21 @@ var EvolvAssetManager = (function () {
 			});
 
 			Promise.all(promises)
+				.then(function () {
+					client.confirm();
+				})
 				.catch(function (err) {
-					evolv.contaminate();
+					client.contaminate();
 				});
 		};
 
+		const cssAsset = retrieveEvolvCssAsset();
+		const jsAsset = retrieveEvolvJsAsset();
+
 		client.getActiveKeys('web').listen(function (keys) {
-			const classes = keys.map(function (key) {
+			const liveContexts = keys.map(function (key) {
 				return 'evolv_'.concat(key.replace(/\./g, '_'));
 			});
-			console.log(classes);	
 
 			if (appliedClasses.length) {
 				appliedClasses.forEach(function (c) {
@@ -1944,20 +1990,21 @@ var EvolvAssetManager = (function () {
 				});
 			}
 
-			classes.forEach(function (c) {
+			liveContexts.forEach(function (c) {
 				document.documentElement.classList.add(c);
 			});
-			appliedClasses = classes.slice();
+			appliedClasses = liveContexts.slice();
 
-			classes.forEach(function (key) {
-				if (!appliedFunctions.has(key)) {
-					unappliedFunctions.add(key);
-				}
-			});
-
-			invokeFunctions.call(invokeFunctions);
-
-			client.confirm();
+			if (jsAsset) {
+				liveContexts.forEach(function (key) {
+					if (!appliedFunctions.has(key)) {
+						unappliedFunctions.add(key);
+					}
+				});
+				invokeFunctions.call(invokeFunctions);
+			} else if (cssAsset) {
+				client.confirm();
+			}
 		});
 	}
 
