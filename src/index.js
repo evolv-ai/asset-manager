@@ -1,11 +1,17 @@
 import Evolv from '@evolv/javascript-sdk';
 
 function EvolvAssetManager(options) {
-
 	const client = new Evolv(options);
-	Object.defineProperty(this, 'client', { get: function () { return client }});
 
-	this.initialize = client.initialize.bind(client)
+	// Expose client and context proprties
+	Object.defineProperty(this, 'client', { get: function () { return client }});
+	Object.defineProperty(this, 'context', { get: function () { return client.context }});
+
+	// Expose client methods for easier access
+	this.initialize = client.initialize.bind(client);
+	this.emit = client.emit.bind(client);
+	this.confirm = client.confirm.bind(client);
+	this.contaminate = client.contaminate.bind(client);
 
 	const context = {
 		web: {
