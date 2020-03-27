@@ -40,7 +40,7 @@ function main(client) {
 	}
 
 	const invokeFunctions = function () {
-		const evolv = window._evolv;
+		const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
 			if (timeoutAttempts < MAX_TIMEOUT_ATTEMPTS) {
 				setTimeout(this, MAX_TIMEOUT);
