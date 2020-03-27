@@ -1,0 +1,37 @@
+{
+  "name": "asset-manager",
+  "version": "1.0.0",
+  "description": "Manages Evolv distributed assets",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "mocha",
+    "test:debug": "node --inspect node_modules/.bin/mocha",
+    "build": "rollup --config"
+  },
+  "keywords": [
+    "evolv",
+    "manager",
+    "asset"
+  ],
+  "author": "Frazer Bayley",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@evolv/javascript-sdk": "github:evolv-ai/javascript-sdk#temp"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "mocha": "^7.1.1",
+    "rollup": "^2.2.0",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "mocha": {
+    "extension": [
+      "js"
+    ],
+    "spec": "src/tests/*.test.js",
+    "recursive": true
+  }
+}
