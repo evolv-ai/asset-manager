@@ -68,12 +68,16 @@ const script = currentScript();
 const env = script.dataset.env;
 let js = script.dataset.js;
 let css = script.dataset.css;
+let uid = script.dataset.uid;
+let sid = script.dataset.sid;
 let endpoint = script.dataset.endpoint || 'https://participants.evolv.ai/v1';
+
 if (!env) {
 	throw new Error('Evolv: Environment not specified');
 }
-const uid = ensureId(evolv, 'uid', false);
-const sid = ensureId(evolv, 'sid', true);
+
+uid = uid || ensureId(evolv, 'uid', false);
+sid = sid || ensureId(evolv, 'sid', true);
 
 js = !js || js === 'true';
 css = !css || css === 'true';
