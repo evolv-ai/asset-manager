@@ -2,11 +2,15 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonJs from '@rollup/plugin-commonjs';
 
 export default {
-  input: 'src/index.js',
-  output: {
-    file: 'bundle.js',
+	input: 'src/webloader.js',
+	output: {
+		file: './dist/webloader.js',
 		format: 'iife',
-		name: 'EvolvAssetManager'
-  },
-  plugins: [ resolve(), commonJs() ]
+		name: 'webloader'
+	},
+	external: ['http', 'https'],
+	plugins: [
+		resolve({preferBuiltins: true}),
+		commonJs()
+	]
 };

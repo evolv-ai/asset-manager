@@ -108,3 +108,6 @@ bundle.js
 
 # VS Code
 .vscode
+
+# Idea
+.idea/
