@@ -1,65 +1,50 @@
 import Evolv from '@evolv/javascript-sdk';
 
-function main(client, options) {
-	const context = {
-		web: {
-			url: window.location.href
-		},
-		user_attributes: options.user.attributes
-	}
 
-	client.initialize(
-		options.user.uid,
-		options.user.sid,
-		context
-	);
+const MAX_TIMEOUT_ATTEMPTS = 3;
+const MAX_TIMEOUT = 1000;
 
-	const maxTimeoutAttempts = 3
-	const maxTimeout = 1000
 
-	let timeoutAttempts = 0
+function main(client) {
+	let timeoutAttempts = 0;
 	let appliedClasses = [];
 	let unappliedFunctions = new Set();
 	let appliedFunctions = new Set();
 
 	function retrieveEvolvCssAsset() {
-		let cssAsset;
-	
-		const links = document.getElementsByTagName('link');
+		const styleSheets = document.styleSheets;
 
-		for (let i = 0; i < links.length; i++) {
-			const link = links[i];
-			if (link.rel === 'stylesheet' && link.href && link.href.indexOf('evolv.ai') >= 0 && link.href.indexOf('assets.css') >= 0) {
-				cssAsset = link;
-				break;
+		for (let i = 0; i < styleSheets.length; i++) {
+			const link = styleSheets[i];
+			if (link.href &&
+					link.href.indexOf('evolv.ai') >= 0 &&
+					link.href.indexOf('assets.css') >= 0) {
+				return link;
 			}
 		}
 
-		return cssAsset
+		return undefined;
 	}
 
 	function retrieveEvolvJsAsset() {
-		let jsAsset;
-	
-		const scripts = document.getElementsByTagName('script');
+		const scripts = document.scripts;
 	
 		for (let i = 0; i < scripts.length; i++) {
 			const script = scripts[i];
 			if (script.src && script.src.indexOf('evolv.ai') >= 0 && script.src.indexOf('assets.js') >= 0) {
-				jsAsset = script;
-				break;
+				return script;
 			}
 		}
 	
-		return jsAsset;
+		return undefined;
 	}
 
 	const invokeFunctions = function () {
 		const evolv = window._evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
-			if (timeoutAttempts < maxTimeoutAttempts) {
-				this.timer = setTimeout(this, maxTimeout);
-				timeoutAttempts++
+			if (timeoutAttempts < MAX_TIMEOUT_ATTEMPTS) {
+				setTimeout(this, MAX_TIMEOUT);
+				timeoutAttempts++;
 			} else {
 				client.contaminate();
 			}
@@ -80,6 +65,7 @@ function main(client, options) {
 			})
 			.catch(function (err) {
 				client.contaminate();
+				console.log('Evolv: Loading of variants timed out. ' + err);
 			});
 	};
 
@@ -117,21 +103,14 @@ function main(client, options) {
 	});
 }
 
-function EvolvAssetManager(options) {
-	const client = new Evolv(options);
+function EvolvAssetManager(client) {
+	client.context.set('web.url', window.location.href);
 
 	// Expose client and context proprties
 	Object.defineProperty(this, 'client', { get: function () { return client }});
 	Object.defineProperty(this, 'context', { get: function () { return client.context }});
 
-	// Expose client methods for easier access
-	this.initialize = client.initialize.bind(client);
-	this.emit = client.emit.bind(client);
-	this.confirm = client.confirm.bind(client);
-	this.contaminate = client.contaminate.bind(client);
-
-	main(client, options);
+	main(client);
 }
 
-export { main };
 export default EvolvAssetManager;

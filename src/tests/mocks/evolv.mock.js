@@ -4,6 +4,7 @@ class EvolvMock {
 		this.contaminations = 0;
 		this.initializations = 0;
 		this.keys = keys;
+		this.context = new EvolvContextMock();
 	}
 
 	initialize(uid, sid, remoteContext, localContext) {
@@ -25,8 +26,19 @@ class EvolvMock {
 		});
 		promise.listen = function(f) {
 			f(keys.filter(key => key.startsWith(prefix)))
-		}
+		};
 		return promise;
+	}
+}
+
+class EvolvContextMock {
+	constructor(values) {
+		this.values = values || {};
+	}
+
+	set(key, value, local) {
+		this.values[key] = value;
+		return true;
 	}
 }
 
