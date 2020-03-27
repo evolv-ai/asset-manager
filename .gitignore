@@ -105,3 +105,6 @@ dist
 
 # Rollup bundle
 bundle.js
+
+# VS Code
+.vscode

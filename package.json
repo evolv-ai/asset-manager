@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
+    "test:debug": "node --inspect node_modules/.bin/mocha",
     "build": "rollup --config"
   },
   "keywords": [
@@ -22,7 +23,15 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
+    "mocha": "^7.1.1",
     "rollup": "^2.2.0",
     "xmlhttprequest": "^1.8.0"
+  },
+  "mocha": {
+    "extension": [
+      "js"
+    ],
+    "spec": "src/tests/*.test.js",
+    "recursive": true
   }
 }
