@@ -25,6 +25,7 @@
     "@rollup/plugin-node-resolve": "^7.1.1",
     "mocha": "^7.1.1",
     "rollup": "^2.2.0",
+    "rollup-plugin-terser": "^5.3.0",
     "xmlhttprequest": "^1.8.0"
   },
   "mocha": {
