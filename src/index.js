@@ -1,6 +1,3 @@
-import Evolv from '@evolv/javascript-sdk';
-
-
 const MAX_TIMEOUT_ATTEMPTS = 3;
 const MAX_TIMEOUT = 1000;
 
