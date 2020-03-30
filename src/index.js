@@ -9,7 +9,7 @@ function main(client) {
 	let appliedFunctions = new Set();
 
 	function retrieveEvolvCssAsset() {
-		const styleSheets = document.styleSheets;
+		const styleSheets = document.getElementsByTagName("link");
 
 		for (let i = 0; i < styleSheets.length; i++) {
 			const link = styleSheets[i];
