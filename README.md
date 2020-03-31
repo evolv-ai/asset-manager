@@ -21,4 +21,14 @@ Drop the following snippet in the head of your webpage(s). Preferrably as high a
 
 If you would like to only render css assets place `data-js="false"` into the script tag. If you would like to only render js assets place `data-css="false"` in the script tag.
 
+This snippet handles the bulk of the work needed to run an experiment. It confirms or contaminates users and activates impotent variants when the current context matches the parameters of the experiment. The context is evaluated on things like page, demographics and more.
+
+Once the snippet has loaded firing an event can be done through the globally excessable client with:
+
+```javascript
+evolv.client.emit('my-event');
+```
+
+The global object `evolv` has other methods and objects that are now accessable within the context of your webpage. For a manaually activated experiment you can acess `evolv.context` and change the current context to match the requirements of your experiment.
+
 ### [Homepage](https://www.evolv.ai)
