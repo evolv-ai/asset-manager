@@ -26,6 +26,7 @@
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.1.0",
     "eslint": "^6.8.0",
     "husky": "^4.2.3",
     "mocha": "^7.1.1",
@@ -57,12 +58,14 @@
           "revert"
         ],
         "warnOnFail": false,
-        "maxSubjectLength": 100,
-        "subjectPattern": "^[A-Z]+-[0-9]+ - .*",
-        "subjectPatternErrorMsg": "Subject must be in format 'RKT-123 - Commit message'",
-        "helpMessage": ""
+        "maxSubjectLength": 100
       },
       "pre-commit": "npm test && npm run lint && npm run build"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
     }
   }
 }
