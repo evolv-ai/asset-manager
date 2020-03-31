@@ -5,12 +5,13 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
     "test": "mocha",
     "test:debug": "node --inspect node_modules/.bin/mocha",
     "lint": "eslint src",
     "build": "rollup --config",
-    "commitmsg": "validate-commit-msg"
+    "commitmsg": "validate-commit-msg",
+    "destroy": "rm -rf node_modules package-lock.json dist",
+    "deploy": "npm run destroy && npm install && npm run build && aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read"
   },
   "keywords": [
     "evolv",
@@ -20,7 +21,7 @@
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
   "dependencies": {
-    "@evolv/javascript-sdk": "github:evolv-ai/javascript-sdk#temp"
+    "@evolv/javascript-sdk": "file:../javascript-sdk"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",

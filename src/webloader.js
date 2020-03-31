@@ -23,8 +23,9 @@ function currentScript() {
 	}
 
 	for (let i = 0; i < document.scripts.length; i++) {
-		if ('env' in document.scripts.dataset) {
-			return document.scripts;
+		const script = document.scripts[i];
+		if (script && script.dataset && 'env' in script.dataset) {
+			return script;
 		}
 	}
 }
