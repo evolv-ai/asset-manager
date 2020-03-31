@@ -82,14 +82,14 @@ describe('asset manager handles correctly', () => {
 
 		describe('given no active keys', () => {
 			it('should not add to the classlist', () => {
-				global.document = new DocumentMock({styleSheets});
+				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock();
 				new EvolvAssetManager(client);
 				assert.equal(document.classList.classList.length, 0)
 			});
 	
 			it('should not confirm', () => {
-				global.document = new DocumentMock({styleSheets});
+				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock();
 				new EvolvAssetManager(client);
 				assert.equal(client.confirmations, 0);
@@ -100,7 +100,7 @@ describe('asset manager handles correctly', () => {
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
 
 			it('should add class names to the document classlist', () => {
-				global.document = new DocumentMock({styleSheets});
+				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
 				assert.equal(document.classList.classList.length, 3);
@@ -111,7 +111,7 @@ describe('asset manager handles correctly', () => {
 			});
 	
 			it('should confirm once', () => {
-				global.document = new DocumentMock({styleSheets});
+				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
 				assert.equal(client.confirmations, 1);
@@ -129,13 +129,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({scripts});
+				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock();
 				new EvolvAssetManager(client);
 				assert.equal(document.classList.classList.length, 0);
@@ -147,13 +147,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({scripts});
+				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock();
 				new EvolvAssetManager(client);
 				assert.equal(invokedJavascript.length, 0);
@@ -177,13 +177,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({scripts});
+				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
 				assert.equal(document.classList.classList.length, 0)
@@ -195,13 +195,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({scripts});
+				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
 				assert.equal(invokedJavascript.length, 3);
@@ -231,13 +231,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({styleSheets, scripts});
+				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock();
 				new EvolvAssetManager(client);
 				assert.equal(document.classList.classList.length, 0)
@@ -249,13 +249,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({styleSheets, scripts});
+				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock();
 				new EvolvAssetManager(client);
 				assert.equal(invokedJavascript.length, 0)
@@ -279,13 +279,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({styleSheets, scripts});
+				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
 				assert.equal(document.classList.classList.length, 3)
@@ -299,13 +299,13 @@ describe('asset manager handles correctly', () => {
 					location: {
 						href: 'https://test-site.com'
 					},
-					_evolv: {
+					evolv: {
 						javascript: {
 							variants: generateJsVariants(invokedJavascript)
 						}
 					}
 				};
-				global.document = new DocumentMock({styleSheets, scripts});
+				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
 				assert.equal(invokedJavascript.length, 3)

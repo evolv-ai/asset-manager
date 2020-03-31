@@ -35,6 +35,7 @@ class ElementMock {
 class StyleSheetMock {
 	constructor(href) {
 		this.href = href;
+		this.tagName = 'link';
 	}
 }
 
@@ -78,6 +79,9 @@ class DocumentMock {
 			this.children.push(element);
 			this.elements.push(element);
 		};
+		this.getElementsByTagName = (tagName) => {
+			return this.elements.filter(element => element.tagName === tagName);
+		}
   }
 
 	getElementsByTagName(tagName) {
