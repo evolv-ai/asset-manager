@@ -19,6 +19,6 @@ Drop the following snippet in the head of your webpage(s). Preferrably as high a
 ></script>
 ```
 
-If you would like to only render css assets place `data-js=false` into the script tag. If you would like to only render js assets place `data-css=false` in the script tag.
+If you would like to only render css assets place `data-js="false"` into the script tag. If you would like to only render js assets place `data-css="false"` in the script tag.
 
 ### [Homepage](https://www.evolv.ai)
