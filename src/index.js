@@ -62,7 +62,7 @@ function main(client) {
 			})
 			.catch(function (err) {
 				client.contaminate();
-				console.log('Evolv: Loading of variants timed out. ' + err);
+				console.warn('[Evolv]: Loading of variants timed out. ' + err);
 			});
 	};
 

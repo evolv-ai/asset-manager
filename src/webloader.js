@@ -28,6 +28,8 @@ function currentScript() {
 			return script;
 		}
 	}
+
+	throw new Error('[Evolv] Environment not specified');
 }
 
 function injectScript(endpoint, env, uid) {
@@ -66,12 +68,11 @@ function main() {
 
 	const script = currentScript();
 	const env = script.dataset.evolvEnvironment;
+
 	let js = script.dataset.evolvJs;
 	let css = script.dataset.evolvCss;
 	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/v1';
-	if (!env) {
-		throw new Error('Evolv: Environment not specified');
-	}
+
 	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
 	const sid = script.dataset.evolvSid || ensureId(evolv, 'sid', true);
 
