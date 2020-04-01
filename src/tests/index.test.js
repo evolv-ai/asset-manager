@@ -39,7 +39,7 @@ describe('asset manager handles correctly', () => {
 	}
 
 	describe('given no assets on page', () => {
-		global.window = {location: {href: 'https://test-site.com'}, _evolv: {}};
+		global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
 
 		describe('given no active keys', () => {
 			it('should not add to the classlist', () => {
@@ -78,7 +78,7 @@ describe('asset manager handles correctly', () => {
 
 	describe('given only css assets on page', () => {
 		const styleSheets = [new StyleSheetMock(evolvCssAssetSrc)];
-		global.window = {location: {href: 'https://test-site.com'}, _evolv: {}};
+		global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
 
 		describe('given no active keys', () => {
 			it('should not add to the classlist', () => {
