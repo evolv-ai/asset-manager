@@ -48,9 +48,7 @@ function injectStylesheet(endpoint, env, uid) {
 }
 
 function main() {
-	if (!window.evolv) {
-		window.evolv = {};
-	}
+	window.evolv = window.evolv || {};
 
 	const evolv = window.evolv;
 
