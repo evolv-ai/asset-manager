@@ -5,8 +5,7 @@ const MAX_TIMEOUT = 1000;
 function main(client) {
 	let timeoutAttempts = 0;
 	let appliedClasses = [];
-	let unappliedFunctions = new Set();
-	let appliedFunctions = new Set();
+	let functions = new Set();
 
 	function retrieveEvolvCssAsset(environment) {
 		return document.querySelector('link[href *= "' + environment + '"][href *= "assets.css"]');
@@ -29,10 +28,9 @@ function main(client) {
 		}
 
 		const promises = [];
-		unappliedFunctions.forEach(function (key) {
+		functions.forEach(function (key) {
 			if (key in evolv.javascript.variants) {
 				promises.push(evolv.javascript.variants[key]());
-				appliedFunctions.add(key);
 			}
 		});
 
@@ -73,9 +71,7 @@ function main(client) {
 
 		if (jsAsset && liveContexts.length > 0) {
 			liveContexts.forEach(function (key) {
-				if (!appliedFunctions.has(key)) {
-					unappliedFunctions.add(key);
-				}
+				functions.add(key);
 			});
 			invokeFunctions();
 		} else if (cssAsset && liveContexts.length > 0) {
