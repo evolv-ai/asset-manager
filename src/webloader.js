@@ -69,11 +69,11 @@ function main() {
 
 	const script = currentScript();
 	const env = script.dataset.evolvEnvironment;
+	const version = 1;
 
 	let js = script.dataset.evolvJs;
 	let css = script.dataset.evolvCss;
 	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/';
-	let version = script.dataset.evolvVersion || 1;
 
 	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
 	const sid = script.dataset.evolvSid || ensureId(evolv, 'sid', true);
