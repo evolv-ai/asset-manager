@@ -107,7 +107,7 @@ dist
 bundle.js
 
 # VS Code
-.vscode
+.vscode/
 
 # Idea
 .idea/

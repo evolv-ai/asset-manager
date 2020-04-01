@@ -1,5 +1,5 @@
 {
-  "name": "asset-manager",
+  "name": "@evolv/asset-manager",
   "version": "1.0.0",
   "description": "Manages Evolv distributed assets",
   "main": "src/index.js",
