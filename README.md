@@ -37,7 +37,7 @@ There are 3 patterns of use that we forsee.
 
 1. First is the one described above (simplest implementation). Take the asset manager web loader snippet, place it on the page and it will append the css or js assets to the page's head for you. Creating a unique user and storing the uid in local storage.
 
-2. The second is a small alteration of the first. Follow the same steps but pass in a uid using the `data-uid` parameter on the script tag. This method reduces the need for state management like local storage. 
+2. The second is a small alteration of the first. Follow the same steps but pass in a uid using the `data-uid` parameter on the script tag. With this approach no ids or information is stored on the client.
 
 ```html
 <head>
