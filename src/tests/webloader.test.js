@@ -19,11 +19,13 @@ describe('the web loader', () => {
 			}
 		});
 		const window = new WindowMock({document});
+		const navigator = { doNotTrack: false }
 		global.window = window;
 		global.document = document;
 		global.window.location = {
 			href: 'https://test-site.com'
 		};
+		global.navigator = navigator;
 
 		global.evolv = {
 			client: new EvolvMock()
