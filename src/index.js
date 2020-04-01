@@ -23,6 +23,7 @@ function main(client) {
 				timeoutAttempts++;
 			} else {
 				client.contaminate();
+				console.warn('[Evolv]: Loading of variants timed out.');
 			}
 			return;
 		}
@@ -40,7 +41,7 @@ function main(client) {
 			})
 			.catch(function (err) {
 				client.contaminate();
-				console.warn('[Evolv]: Loading of variants timed out. ' + err);
+				console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
 			});
 	};
 
@@ -51,6 +52,7 @@ function main(client) {
 
 		if (jsAsset && typeof Promise === 'undefined') {
 			// Bail if a jsAsset is being used and Promise does not exist
+			console.warn('[Evolv]: Javascript assets requested but no "Promise" implemented.');
 			return;
 		}
 
