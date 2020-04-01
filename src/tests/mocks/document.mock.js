@@ -42,6 +42,7 @@ class StyleSheetMock {
 class ScriptMock {
 	constructor(src) {
 		this.src = src;
+		this.tagName = 'script';
 	}
 }
 
@@ -79,8 +80,13 @@ class DocumentMock {
 			this.children.push(element);
 			this.elements.push(element);
 		};
-		this.getElementsByTagName = (tagName) => {
-			return this.elements.filter(element => element.tagName === tagName);
+		this.querySelector = (selector) => {
+			if (selector.indexOf('js') > -1) {
+				return this.elements.filter(e => e.tagName === 'script')[0]
+			} else if (selector.indexOf('css') > -1) {
+				return this.elements.filter(e => e.tagName === 'link')[0]
+			}
+			return undefined;
 		}
   }
 

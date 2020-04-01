@@ -8,32 +8,12 @@ function main(client) {
 	let unappliedFunctions = new Set();
 	let appliedFunctions = new Set();
 
-	function retrieveEvolvCssAsset() {
-		const styleSheets = document.getElementsByTagName("link");
-
-		for (let i = 0; i < styleSheets.length; i++) {
-			const link = styleSheets[i];
-			if (link.href &&
-					link.href.indexOf('evolv.ai') >= 0 &&
-					link.href.indexOf('assets.css') >= 0) {
-				return link;
-			}
-		}
-
-		return undefined;
+	function retrieveEvolvCssAsset(environment) {
+		return document.querySelector(`link[href *= "${environment}"][href *= "assets.css"]`);
 	}
 
-	function retrieveEvolvJsAsset() {
-		const scripts = document.scripts;
-	
-		for (let i = 0; i < scripts.length; i++) {
-			const script = scripts[i];
-			if (script.src && script.src.indexOf('evolv.ai') >= 0 && script.src.indexOf('assets.js') >= 0) {
-				return script;
-			}
-		}
-	
-		return undefined;
+	function retrieveEvolvJsAsset(environment) {
+		return document.querySelector(`script[src *= "${environment}"][src *= "assets.js"]`);
 	}
 
 	const invokeFunctions = function () {
@@ -67,8 +47,9 @@ function main(client) {
 	};
 
 	client.getActiveKeys('web').listen(function (keys) {
-		const cssAsset = retrieveEvolvCssAsset();
-		const jsAsset = retrieveEvolvJsAsset();
+		const environment = client.environment;
+		const cssAsset = retrieveEvolvCssAsset(environment);
+		const jsAsset = retrieveEvolvJsAsset(environment);
 
 		const liveContexts = keys.map(function (key) {
 			return 'evolv_'.concat(key.replace(/\./g, '_'));

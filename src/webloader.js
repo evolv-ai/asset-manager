@@ -32,20 +32,20 @@ function currentScript() {
 	throw new Error('[Evolv] Environment not specified');
 }
 
-function injectScript(endpoint, env, uid) {
+function injectScript(endpoint, env, version, uid) {
 	const script = document.createElement('script');
 	script.type = 'text/javascript';
-	script.src = endpoint + '/' + env + '/' + uid + '/assets.js';
+	script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js';
 	script.defer = true;
 
 	document.head.appendChild(script);
 }
 
-function injectStylesheet(endpoint, env, uid) {
+function injectStylesheet(endpoint, env, version, uid) {
 	const stylesheet = document.createElement('link');
 	stylesheet.setAttribute('rel', 'stylesheet');
 	stylesheet.setAttribute('type', 'text/css');
-	stylesheet.setAttribute('href', endpoint + '/' + env + '/' + uid + '/assets.css');
+	stylesheet.setAttribute('href', endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.css');
 
 	document.head.appendChild(stylesheet);
 }
@@ -72,7 +72,8 @@ function main() {
 
 	let js = script.dataset.evolvJs;
 	let css = script.dataset.evolvCss;
-	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/v1';
+	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/';
+	let version = script.dataset.evolvVersion || 1;
 
 	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
 	const sid = script.dataset.evolvSid || ensureId(evolv, 'sid', true);
@@ -81,18 +82,19 @@ function main() {
 	css = !css || css === 'true';
 
 	if (js) {
-		injectScript(endpoint, env, uid);
+		injectScript(endpoint, env, version, uid);
 	}
 
 	if (css) {
-		injectStylesheet(endpoint, env, uid);
+		injectStylesheet(endpoint, env, version, uid);
 	}
 
 	let client = evolv.client;
 	if (!client) {
 		let options = {
-			env: env,
-			endpoint: endpoint
+			environment: env,
+			endpoint: endpoint,
+			version: version
 		};
 		client = new EvolvClient(options);
 		client.initialize(uid, sid);
