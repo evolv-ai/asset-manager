@@ -72,7 +72,7 @@ function main(client) {
 					unappliedFunctions.add(key);
 				}
 			});
-			invokeFunctions.call(invokeFunctions);
+			invokeFunctions();
 		} else if (cssAsset && liveContexts.length > 0) {
 			client.confirm();
 		}
