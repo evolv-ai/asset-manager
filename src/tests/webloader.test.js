@@ -34,16 +34,16 @@ describe('the web loader', () => {
 		const links = document.getElementsByTagName('link');
 		assert.equal(scripts.length, 1, 'The script should have been added');
 		assert.equal(links.length, 1, 'The stylesheet should have been added');
-		assert.ok(window.localStorage.values['evolv_uid'], 'The user id should have been generated and stored');
-		assert.ok(window.sessionStorage.values['evolv_sid'], 'The session id should have been generated and stored');
+		assert.ok(window.localStorage.values['evolv:uid'], 'The user id should have been generated and stored');
+		assert.ok(window.sessionStorage.values['evolv:sid'], 'The session id should have been generated and stored');
 		assert.ok(window.evolv.context, 'The evolv context should have been exposed');
 		assert.ok(window.evolv.client, 'The evolv client should have been exposed');
 		assert.ok(window.evolv.assetManager, 'The evolv assetManager should have been exposed');
 		assert.equal(
-			window.evolv.context.uid, window.localStorage.values['evolv_uid'],
+			window.evolv.context.uid, window.localStorage.values['evolv:uid'],
 			'The evolv context should have been initialized with the same uid as stored');
 		assert.equal(
-			window.evolv.context.sid, window.sessionStorage.values['evolv_sid'],
+			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
 			'The evolv context should have been initialized with the same sid as stored');
 	});
 });

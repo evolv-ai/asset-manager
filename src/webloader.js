@@ -56,13 +56,13 @@ function main() {
 
 	if (!evolv.store) {
 		evolv.store = function (key, value, session) {
-			(session ? window.sessionStorage : window.localStorage).setItem('evolv_' + key, value);
+			(session ? window.sessionStorage : window.localStorage).setItem('evolv:' + key, value);
 		}
 	}
 
 	if (!evolv.retrieve) {
 		window.evolv.retrieve = function (key, session) {
-			return (session ? window.sessionStorage : window.localStorage).getItem('evolv_' + key);
+			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
 		}
 	}
 
