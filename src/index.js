@@ -20,7 +20,7 @@ function main(client) {
 		const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
 			if (timeoutAttempts < MAX_TIMEOUT_ATTEMPTS) {
-				setTimeout(this, MAX_TIMEOUT);
+				setTimeout(invokeFunctions, MAX_TIMEOUT);
 				timeoutAttempts++;
 			} else {
 				client.contaminate();
