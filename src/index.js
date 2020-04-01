@@ -9,11 +9,11 @@ function main(client) {
 	let appliedFunctions = new Set();
 
 	function retrieveEvolvCssAsset(environment) {
-		return document.querySelector(`link[href *= "${environment}"][href *= "assets.css"]`);
+		return document.querySelector('link[href *= "' + environment + '"][href *= "assets.css"]');
 	}
 
 	function retrieveEvolvJsAsset(environment) {
-		return document.querySelector(`script[src *= "${environment}"][src *= "assets.js"]`);
+		return document.querySelector('script[src *= "' + environment + '"][src *= "assets.js"]');
 	}
 
 	const invokeFunctions = function () {
