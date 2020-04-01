@@ -36,6 +36,7 @@ function injectScript(endpoint, env, uid) {
 	const script = document.createElement('script');
 	script.type = 'text/javascript';
 	script.src = endpoint + '/' + env + '/' + uid + '/assets.js';
+	script.defer = true;
 
 	document.head.appendChild(script);
 }
