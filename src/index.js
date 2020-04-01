@@ -55,11 +55,9 @@ function main(client) {
 			return 'evolv_'.concat(key.replace(/\./g, '_'));
 		});
 
-		if (appliedClasses.length) {
-			appliedClasses.forEach(function (c) {
-				document.documentElement.classList.remove(c);
-			});
-		}
+		appliedClasses.forEach(function (c) {
+			document.documentElement.classList.remove(c);
+		});
 
 		if (cssAsset) {
 			liveContexts.forEach(function (c) {
