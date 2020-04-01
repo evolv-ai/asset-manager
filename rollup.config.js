@@ -16,9 +16,8 @@ export default {
 			plugins: [terser()]
 		}
 	],
-	external: ['http', 'https'],
 	plugins: [
-		resolve({preferBuiltins: true}),
+		resolve({}),
 		commonJs()
 	]
 };
