@@ -11,7 +11,7 @@ describe('the web loader', () => {
 
 	it('should initialize properly', async () => {
 		const dataset = {
-			env: 'testing'
+			evolvEnvironment: 'testing'
 		};
 		const document = new DocumentMock({
 			currentScript: {

@@ -24,7 +24,7 @@ function currentScript() {
 
 	for (let i = 0; i < document.scripts.length; i++) {
 		const script = document.scripts[i];
-		if (script && script.dataset && 'env' in script.dataset) {
+		if (script && script.dataset && 'evolvEnvironment' in script.dataset) {
 			return script;
 		}
 	}
@@ -67,15 +67,15 @@ function main() {
 	}
 
 	const script = currentScript();
-	const env = script.dataset.env;
-	let js = script.dataset.js;
-	let css = script.dataset.css;
-	let endpoint = script.dataset.endpoint || 'https://participants.evolv.ai/v1';
+	const env = script.dataset.evolvEnvironment;
+	let js = script.dataset.evolvJs;
+	let css = script.dataset.evolvCss;
+	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/v1';
 	if (!env) {
 		throw new Error('Evolv: Environment not specified');
 	}
-	const uid = script.dataset.uid || ensureId(evolv, 'uid', false);
-	const sid = script.dataset.sid || ensureId(evolv, 'sid', true);
+	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
+	const sid = script.dataset.evolvSid || ensureId(evolv, 'sid', true);
 
 	js = !js || js === 'true';
 	css = !css || css === 'true';
