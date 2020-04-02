@@ -1,11 +1,13 @@
-const MAX_TIMEOUT_ATTEMPTS = 3;
-const MAX_TIMEOUT = 1000;
+const MAX_TIMEOUT = 100;
+const THRESHOLD = 1000;
 
 
 function main(client) {
-	let timeoutAttempts = 0;
 	let appliedClasses = [];
 	let functions = new Set();
+	let applyTimeout = true;
+	let timeout = null;
+	let confirmed = false;
 
 	function retrieveEvolvCssAsset(environment) {
 		return document.querySelector('link[href *= "' + environment + '"][href *= "assets.css"]');
@@ -15,14 +17,32 @@ function main(client) {
 		return document.querySelector('script[src *= "' + environment + '"][src *= "assets.js"]');
 	}
 
+	function confirm() {
+		if (!confirmed) {
+			client.confirm();
+			confirmed = true;
+		}
+	}
+
 	const invokeFunctions = function () {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = null;
+		}
+
 		const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
-			if (timeoutAttempts < MAX_TIMEOUT_ATTEMPTS) {
-				setTimeout(invokeFunctions, MAX_TIMEOUT);
-				timeoutAttempts++;
+			if (!applyTimeout) {
+				return;
+			}
+			
+			const timeNow = Date.now();
+			const domContentLoadedEventStart = performance.timing.domContentLoadedEventStart;
+			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + THRESHOLD) {
+				timeout = setTimeout(invokeFunctions, MAX_TIMEOUT);
 			} else {
 				client.contaminate();
+				applyTimeout = false;
 				console.warn('[Evolv]: Loading of variants timed out.');
 			}
 			return;
@@ -37,11 +57,13 @@ function main(client) {
 
 		Promise.all(promises)
 			.then(function () {
-				client.confirm()
+				confirm();
 			})
 			.catch(function (err) {
 				client.contaminate();
 				console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
+			}).finally(function () {
+				applyTimeout = false;
 			});
 	};
 
@@ -77,7 +99,7 @@ function main(client) {
 			});
 			invokeFunctions();
 		} else if (cssAsset && liveContexts.length > 0) {
-			client.confirm();
+			confirm();
 		}
 	});
 }
