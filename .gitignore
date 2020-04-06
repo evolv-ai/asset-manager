@@ -102,3 +102,12 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Rollup bundle
+bundle.js
+
+# VS Code
+.vscode/
+
+# Idea
+.idea/

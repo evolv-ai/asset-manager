@@ -1,0 +1,72 @@
+{
+  "name": "@evolv/asset-manager",
+  "version": "1.0.0",
+  "description": "Manages Evolv distributed assets",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha",
+    "test:debug": "node --inspect node_modules/.bin/mocha",
+    "lint": "eslint src",
+    "build": "rollup --config",
+    "commitmsg": "validate-commit-msg",
+    "destroy": "rm -rf node_modules package-lock.json dist",
+    "deploy": "npm run destroy && npm install && npm run build && aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read"
+  },
+  "keywords": [
+    "evolv",
+    "manager",
+    "asset"
+  ],
+  "author": "Frazer Bayley",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@evolv/javascript-sdk": "github:evolv-ai/javascript-sdk#master"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.1.0",
+    "eslint": "^6.8.0",
+    "husky": "^4.2.3",
+    "mocha": "^7.1.1",
+    "rollup": "^2.2.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "validate-commit-msg": "^2.14.0",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "mocha": {
+    "extension": [
+      "js"
+    ],
+    "spec": "src/tests/*.test.js",
+    "recursive": true
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "validate-commit-msg",
+      "validate-commit-msg": {
+        "types": [
+          "feat",
+          "fix",
+          "docs",
+          "style",
+          "refactor",
+          "perf",
+          "test",
+          "chore",
+          "revert"
+        ],
+        "warnOnFail": false,
+        "maxSubjectLength": 100
+      },
+      "pre-commit": "npm test && npm run lint && npm run build"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
