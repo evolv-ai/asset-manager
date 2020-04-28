@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	branches: [
 		{ name: 'master', channel: 'next' },
 		{ name: 'release/*', channel: 'rc', prerelease: 'rc' }

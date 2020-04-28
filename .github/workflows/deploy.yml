@@ -8,15 +8,18 @@ jobs:
     - name: 'Checkout'
       uses: 'actions/checkout@v1'
 
-    - run: npm ci --production=false
+    - run: |
+        npm ci --production=false
 
     - name: 'Publish next'
-      if: ${{ github.event.deployment/payload == 'next' }}
-      run: npm run release:next
+      if: ${{ github.event.deployment.payload == 'next' }}
+      run: |
+        npm run release:next
 
     - name: 'Publish latest'
-      if: ${{ github.event.deployment/payload == 'latest' }}
-      run: npm run release:latest
+      if: ${{ github.event.deployment.payload == 'latest' }}
+      run: |
+        npm run release:latest
 
     - name: 'Deployment pending'
       uses: 'deliverybot/deployment-status@master'

@@ -12,6 +12,7 @@
     "commitmsg": "validate-commit-msg",
     "release:latest": "semantic-release --branches=\"release/*\"",
     "release:next": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run",
     "destroy": "rm -rf node_modules package-lock.json dist",
     "deploy": "npm run destroy && npm install && npm run build && aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read"
   },
@@ -43,7 +44,6 @@
     "rollup": "^2.2.0",
     "rollup-plugin-terser": "^5.3.0",
     "semantic-release": "^17.0.7",
-    "validate-commit-msg": "^2.14.0",
     "xmlhttprequest": "^1.8.0"
   },
   "mocha": {
@@ -55,22 +55,7 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "validate-commit-msg",
-      "validate-commit-msg": {
-        "types": [
-          "feat",
-          "fix",
-          "docs",
-          "style",
-          "refactor",
-          "perf",
-          "test",
-          "chore",
-          "revert"
-        ],
-        "warnOnFail": false,
-        "maxSubjectLength": 100
-      },
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "npm test && npm run lint && npm run build"
     }
   },
