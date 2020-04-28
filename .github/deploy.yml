@@ -1,0 +1,8 @@
+latest:
+  environment: latest
+  production_environment: true
+
+next:
+  environment: next
+  production_environment: false
+  auto_deploy_on: refs/heads/release/*
