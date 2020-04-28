@@ -10,6 +10,8 @@
     "lint": "eslint src",
     "build": "rollup --config",
     "commitmsg": "validate-commit-msg",
+    "release:latest": "semantic-release --branches=\"release/*\"",
+    "release:next": "semantic-release",
     "destroy": "rm -rf node_modules package-lock.json dist",
     "deploy": "npm run destroy && npm install && npm run build && aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read"
   },
@@ -24,8 +26,15 @@
     "@evolv/javascript-sdk": "github:evolv-ai/javascript-sdk#master"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/travis-cli": "^8.3.5",
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
+    "@semantic-release/changelog": "^5.0.0",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/release-notes-generator": "^9.0.0",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.1.0",
     "eslint": "^6.8.0",
@@ -33,6 +42,7 @@
     "mocha": "^7.1.1",
     "rollup": "^2.2.0",
     "rollup-plugin-terser": "^5.3.0",
+    "semantic-release": "^17.0.7",
     "validate-commit-msg": "^2.14.0",
     "xmlhttprequest": "^1.8.0"
   },
