@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to release some code
     steps:
+    - name: Checkout source code
+      uses: actions/checkout@v1
     - name: Hello world action step
       id: hello
       uses: evolv-ai/github-actions/release@master
