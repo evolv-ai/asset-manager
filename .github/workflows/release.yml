@@ -1,0 +1,13 @@
+on: [push]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: A job to release some code
+    steps:
+    - name: Hello world action step
+      id: hello
+      uses: evolv/github-actions/release@v1
+      with:
+        stage-to-release: 'staging'
+        release-script: 'scripts/myman.sh'
