@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: Checkout source code
       uses: actions/checkout@v1
-    - name: Hello world action step
+    - name: Release step
       id: hello
       uses: evolv-ai/github-actions/release@master
       with:
