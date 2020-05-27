@@ -10,4 +10,4 @@ jobs:
       uses: evolv-ai/github-actions/release@v2
       with:
         stage-to-release: 'staging'
-        release-script: 'scripts/myman.sh'
+        release-script: '/scripts/myman.sh'
