@@ -3,7 +3,7 @@ on: [push]
 jobs:
   release:
     runs-on: ubuntu-latest
-    name: A job to release some code
+    name: a job to release some code
     steps:
     - name: Hello world action step
       id: hello
