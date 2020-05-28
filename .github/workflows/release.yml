@@ -32,7 +32,7 @@ jobs:
         with:
           token: "${{ github.token }}"
           environment: staging
-      - uses: evolv-ai/release@master
+      - uses: evolv-ai/github-actions/release@master
         name: Deploy the code
         with:
           stage-to-release: staging
