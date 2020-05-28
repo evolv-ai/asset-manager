@@ -26,7 +26,6 @@ jobs:
           tag: v${{ steps.get_tag.outputs.SEM_VER }}
           name: v${{ steps.get_tag.outputs.SEM_VER }}
           prerelease: true
-          draft: true
           allow_override: true
       - uses: chrnorm/deployment-action@releases/v1
         name: Create GitHub deployment
@@ -48,14 +47,6 @@ jobs:
           token: "${{ github.token }}"
           state: "success"
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-      - uses: meeDamian/github-release@2.0
-        if: success()
-        with:
-          token: ${{ github.token }}
-          tag: v${{ steps.get_tag.outputs.SEM_VER }}
-          name: v${{ steps.get_tag.outputs.SEM_VER }}
-          prerelease: true
-          allow_override: true
       - name: Update deployment status (failure)
         if: failure()
         uses: chrnorm/deployment-status@releases/v1
