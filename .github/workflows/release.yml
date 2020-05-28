@@ -16,7 +16,7 @@ jobs:
         id: get_tag
         run: |
           echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
-          echo ::set-output name=SEM_VER::${GITHUB_REF/refs\/tags\/release/}
+          echo ::set-output name=SEM_VER::${GITHUB_REF/refs\/tags\/release\/}
       - uses: actions/checkout@v1
         with: 
           ref: ${{ steps.get_tag.outputs.TAG }}
