@@ -2,6 +2,7 @@
 
 echo "Beginning asset-manager release to $1!"
 
+npm ci
 npm test
 npm run lint 
 
