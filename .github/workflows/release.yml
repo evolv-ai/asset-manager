@@ -34,6 +34,7 @@ jobs:
         with:
           token: "${{ github.token }}"
           ref: ${{ steps.get_tag.outputs.TAG }}
+          description: ${{ steps.get_tag.outputs.TAG }}
           environment: staging
       - uses: evolv-ai/github-actions/release@master
         name: Deploy the code
