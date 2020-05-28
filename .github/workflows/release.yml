@@ -20,13 +20,17 @@ jobs:
       - uses: actions/checkout@v1
         with: 
           ref: ${{ steps.get_tag.outputs.TAG }}
-      - uses: meeDamian/github-release@2.0
-        with:
-          token: ${{ github.token }}
-          tag: v${{ steps.get_tag.outputs.SEM_VER }}
-          name: v${{ steps.get_tag.outputs.SEM_VER }}
-          prerelease: true
-          allow_override: true
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deploy-staging
+          SLACK_TITLE: asset-manager deployment starting
+          SLACK_MESSAGE: 'Deploying tag ${{ steps.get_tag.outputs.TAG }} to staging. https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}'
+          SLACK_COLOR: '#ffff00'
+          SLACK_TITLE: Staging Deployment
+          SLACK_USERNAME: deploy-bot
+          SLACK_ICON_EMOJI: ':robot_face:'
       - uses: chrnorm/deployment-action@releases/v1
         name: Create GitHub deployment
         id: deployment
@@ -47,6 +51,14 @@ jobs:
           token: "${{ github.token }}"
           state: "success"
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+      - uses: meeDamian/github-release@2.0
+        if: success()
+        with:
+          token: ${{ github.token }}
+          tag: v${{ steps.get_tag.outputs.SEM_VER }}
+          name: v${{ steps.get_tag.outputs.SEM_VER }}
+          prerelease: true
+          allow_override: true
       - name: Update deployment status (failure)
         if: failure()
         uses: chrnorm/deployment-status@releases/v1
@@ -54,3 +66,27 @@ jobs:
           token: "${{ github.token }}"
           state: "failure"
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Slack Notification (Success)
+        if: success()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deploy-staging
+          SLACK_TITLE: asset-manager deployment success
+          SLACK_MESSAGE: 'Deployment of tag ${{ steps.get_tag.outputs.TAG }} to staging succeeded. https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}'
+          SLACK_COLOR: '#33cc33'
+          SLACK_TITLE: Staging Deployment
+          SLACK_USERNAME: deploy-bot
+          SLACK_ICON_EMOJI: ':robot_face:'
+      - name: Slack Notification (Failure)
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deploy-staging
+          SLACK_TITLE: asset-manager deployment failure
+          SLACK_MESSAGE: 'Deployment of tag ${{ steps.get_tag.outputs.TAG }} to staging failed.  https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}'
+          SLACK_COLOR: '#ff0000'
+          SLACK_TITLE: Staging Deployment
+          SLACK_USERNAME: deploy-bot
+          SLACK_ICON_EMOJI: ':robot_face:'
