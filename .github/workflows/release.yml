@@ -25,7 +25,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: deploy-staging
-          SLACK_TITLE: 'asset-manager deployment starting :cross_fingers:'
+          SLACK_TITLE: 'asset-manager deployment starting :crossed_fingers:'
           SLACK_MESSAGE: 'Deploying tag <https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to staging.'
           SLACK_COLOR: '#ffff00'
       - uses: chrnorm/deployment-action@releases/v1
