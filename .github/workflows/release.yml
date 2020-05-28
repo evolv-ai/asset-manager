@@ -28,7 +28,6 @@ jobs:
           SLACK_TITLE: asset-manager deployment starting
           SLACK_MESSAGE: 'Deploying tag ${{ steps.get_tag.outputs.TAG }} to staging. https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}'
           SLACK_COLOR: '#ffff00'
-          SLACK_TITLE: Staging Deployment
           SLACK_USERNAME: deploy-bot
           SLACK_ICON_EMOJI: ':robot_face:'
       - uses: chrnorm/deployment-action@releases/v1
@@ -75,7 +74,6 @@ jobs:
           SLACK_TITLE: asset-manager deployment success
           SLACK_MESSAGE: 'Deployment of tag ${{ steps.get_tag.outputs.TAG }} to staging succeeded. https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}'
           SLACK_COLOR: '#33cc33'
-          SLACK_TITLE: Staging Deployment
           SLACK_USERNAME: deploy-bot
           SLACK_ICON_EMOJI: ':robot_face:'
       - name: Slack Notification (Failure)
@@ -87,6 +85,5 @@ jobs:
           SLACK_TITLE: asset-manager deployment failure
           SLACK_MESSAGE: 'Deployment of tag ${{ steps.get_tag.outputs.TAG }} to staging failed.  https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}'
           SLACK_COLOR: '#ff0000'
-          SLACK_TITLE: Staging Deployment
           SLACK_USERNAME: deploy-bot
           SLACK_ICON_EMOJI: ':robot_face:'
