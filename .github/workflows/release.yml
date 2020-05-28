@@ -40,7 +40,9 @@ jobs:
         name: Deploy the code
         with:
           stage-to-release: staging
-          release-script: /scripts/myman.sh
+          release-script: /scripts/release.sh
+        env:
+          SEM_VER: ${{ steps.get_tag.outputs.SEM_VER }}
       - name: Update deployment status (success)
         if: success()
         uses: chrnorm/deployment-status@releases/v1
@@ -52,8 +54,8 @@ jobs:
         if: success()
         with:
           token: ${{ github.token }}
-          tag: v${{ steps.get_tag.outputs.SEM_VER }}
-          name: v${{ steps.get_tag.outputs.SEM_VER }}
+          tag: ${{ steps.get_tag.outputs.SEM_VER }}
+          name: ${{ steps.get_tag.outputs.SEM_VER }}
           prerelease: true
           allow_override: true
       - name: Update deployment status (failure)

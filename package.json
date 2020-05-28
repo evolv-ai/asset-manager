@@ -11,7 +11,11 @@
     "build": "rollup --config",
     "commitmsg": "validate-commit-msg",
     "destroy": "rm -rf node_modules package-lock.json dist",
-    "deploy": "npm run destroy && npm install && npm run build && aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read"
+    "prerelease": "npm ci && npm run build && npm run deploy:next:s3 && npm run deploy:version:s3",
+    "release": "npm ci && npm run build && npm run deploy:latest:s3",
+    "deploy:next:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/next/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/next/webloader.min.js --acl public-read",
+    "deploy:version:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/$SEM_VER/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/$SEM_VER/webloader.min.js --acl public-read",
+    "deploy:latest:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read"
   },
   "keywords": [
     "evolv",
