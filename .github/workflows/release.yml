@@ -14,15 +14,17 @@ jobs:
     steps:
       - name: Get the tag
         id: get_tag
-        run: echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
+        run: |
+          echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
+          echo ::set-output name=SEM_VER::${GITHUB_REF/refs\/tags\/release/}
       - uses: actions/checkout@v1
         with: 
           ref: ${{ steps.get_tag.outputs.TAG }}
       - uses: meeDamian/github-release@2.0
         with:
           token: ${{ github.token }}
-          tag: ${{ steps.get_tag.outputs.TAG }}
-          name: ${{ steps.get_tag.outputs.TAG }}
+          tag: v${{ steps.get_tag.outputs.SEM_VER }}
+          name: v${{ steps.get_tag.outputs.SEM_VER }}
           prerelease: true
           draft: true
           allow_override: true
@@ -48,8 +50,8 @@ jobs:
         if: success()
         with:
           token: ${{ github.token }}
-          tag: ${{ steps.get_tag.outputs.TAG }}
-          name: ${{ steps.get_tag.outputs.TAG }}
+          tag: v${{ steps.get_tag.outputs.SEM_VER }}
+          name: v${{ steps.get_tag.outputs.SEM_VER }}
           prerelease: true
           allow_override: true
       - name: Update deployment status (failure)
