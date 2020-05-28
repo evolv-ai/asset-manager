@@ -6,10 +6,12 @@ npm test
 npm run lint 
 
 if [[ "$1" == "prod" ]]; then
+	pip install awscli
 	echo "Releasing asset-manager to prod"
 	# npm run release
 	echo "Done releasing asset-manager to prod"
 elif [[ "$1" == "staging" ]]; then
+	pip install awscli
 	echo "Releasing asset-manager to staging"
 	npm run prerelease
 	echo "Done releasing asset-manager to staging"
