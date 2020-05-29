@@ -2,6 +2,8 @@
 
 echo "Beginning asset-manager release to $EVOLV_STAGE!"
 
+breakplease!
+
 npm ci
 npm test
 npm run lint 
