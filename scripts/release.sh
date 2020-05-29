@@ -1,21 +1,21 @@
 #!/bin/sh -l
 
-echo "Beginning asset-manager release to $1!"
+echo "Beginning asset-manager release to $EVOLV_STAGE!"
 
 npm ci
 npm test
 npm run lint 
 
-if [[ "$1" == "prod" ]]; then
+if [[ "$EVOLV_STAGE" == "prod" ]]; then
 	pip install awscli
 	echo "Releasing asset-manager to prod"
 	# npm run release
 	echo "Done releasing asset-manager to prod"
-elif [[ "$1" == "staging" ]]; then
+elif [[ "$EVOLV_STAGE" == "staging" ]]; then
 	pip install awscli
 	echo "Releasing asset-manager to staging"
 	npm run prerelease
 	echo "Done releasing asset-manager to staging"
 else
-	echo "EVOLV_STAGE '$1' not recognized. Doing nothing."
+	echo "EVOLV_STAGE '$EVOLV_STAGE' not recognized. Doing nothing."
 fi
