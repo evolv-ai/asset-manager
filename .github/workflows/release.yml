@@ -11,9 +11,10 @@ jobs:
       - name: Set Variables
         id: set_variables
         run: |
-          echo ${github.event}
-          echo ${github.event.deployment}
-          echo ::set-output name=RELEASE_VERSION::${github.event.deployment.ref}
+          echo ${{github.event.deployment.id}}
+          echo ${{github.event.deployment.ref}}
+          echo ${{github.event.deployment.environment}}
+          echo ::set-output name=RELEASE_VERSION::${{github.event.deployment.ref}}
           if [[ "${gitbub.event.deployment.environment" == "prod"}]]; then
             echo ::set-output name=SLACK_CHANNEL::deploy-prod
             echo ::set-output name=CREATE_RELEASE::true
