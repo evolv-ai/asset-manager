@@ -11,10 +11,7 @@ jobs:
       - name: Set Variables
         id: set_variables
         run: |
-          echo ${{github.event.deployment.id}}
-          echo ${{github.event.deployment.ref}}
-          echo ${{github.event.deployment.environment}}
-          echo ::set-output name=RELEASE_VERSION::${{github.event.deployment.ref}}
+          echo ::set-output name=SEM_VER::${{github.event.deployment.ref}release\/}
           if [[ "${{github.event.deployment.environment}}" == "prod" ]]
           then
             echo ::set-output name=SLACK_CHANNEL::deploy-prod
@@ -47,7 +44,7 @@ jobs:
           release-script: /scripts/release.sh
         env:
           EVOLV_STAGE: ${{ github.event.deployment.environment }}
-          SEM_VER: ${{ steps.set_variables.outputs.RELEASE_VERSION }}
+          SEM_VER: ${{ steps.set_variables.outputs.SEM_VER }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-west-2
@@ -63,8 +60,8 @@ jobs:
         if: success() && ${{ steps.set_variables.outputs.CREATE_RELEASE }}
         with:
           token: ${{ github.token }}
-          tag: ${{ steps.set_variables.outputs.RELEASE_VERSION }}
-          name: ${{ steps.set_variables.outputs.RELEASE_VERSION }}
+          tag: ${{github.event.deployment.ref}}
+          name: ${{github.event.deployment.ref}}
           prerelease: ${{ steps.set_variables.outputs.PRERELEASE }}
           allow_override: true
       - name: Slack Notification (success)
@@ -73,7 +70,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-          SLACK_TITLE: '${{ github.repository }} to ${{ github.event.deployment.environment }} success :rocket:'
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.event.deployment.environment }} success :rocket:'
           SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }} succeeded.'
           SLACK_COLOR: '#33cc33'
       - name: Update Deployment Status (failure)
@@ -90,5 +87,5 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
           SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.event.deployment.environment }} failure :boom:'
-          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to ${{ github.event.deployment.environment }} failed.'
+          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }} failed.'
           SLACK_COLOR: '#ff0000'
