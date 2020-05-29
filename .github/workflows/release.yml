@@ -27,7 +27,7 @@ jobs:
             echo ::set-output name=CREATE_RELEASE::false
           fi
       - name: Checkout Ref
-      - uses: actions/checkout@v1
+        uses: actions/checkout@v1
         with: 
           ref: ${{ github.events.deployment.ref }}
       - name: Slack Notification
