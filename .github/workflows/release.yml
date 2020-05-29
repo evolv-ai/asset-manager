@@ -38,7 +38,7 @@ jobs:
           SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.events.deployment.environment }} starting :crossed_fingers:'
           SLACK_MESSAGE: 'Deploying tag <https://github.com/${{ github.repository }}/tree/${{ github.events.deployment.ref }}|${{ github.events.deployment.ref }}> to ${{ github.events.deployment.environment }}.'
           SLACK_COLOR: '#ffff00'
-        name: Deploy Code
+      - name: Deploy Code
         uses: evolv-ai/github-actions/release@master
         with:
           release-script: /scripts/release.sh
