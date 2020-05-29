@@ -1,9 +1,7 @@
 name: Deploy to Environment
 
 on:
-  deployment:
-    types: 
-      - created
+  deployment
 
 jobs:
   deploy:
