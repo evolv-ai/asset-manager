@@ -11,9 +11,9 @@ jobs:
       - name: Set Variables
         id: set_variables
         run: |
-          echo ${{github.event}}
-          echo ${{github.event.deployment}}
-          echo ::set-output name=RELEASE_VERSION::${github.event.deployment.ref/refs\/tags\/release\/}
+          echo ${github.event}
+          echo ${github.event.deployment}
+          echo ::set-output name=RELEASE_VERSION::${github.event.deployment.ref}
           if [[ "${gitbub.event.deployment.environment" == "prod"}]]; then
             echo ::set-output name=SLACK_CHANNEL::deploy-prod
             echo ::set-output name=CREATE_RELEASE::true
@@ -29,21 +29,21 @@ jobs:
       - name: Checkout Ref
         uses: actions/checkout@v1
         with: 
-          ref: ${{ github.events.deployment.ref }}
+          ref: ${{ github.event.deployment.ref }}
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-          SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.events.deployment.environment }} starting :crossed_fingers:'
-          SLACK_MESSAGE: 'Deploying tag <https://github.com/${{ github.repository }}/tree/${{ github.events.deployment.ref }}|${{ github.events.deployment.ref }}> to ${{ github.events.deployment.environment }}.'
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.event.deployment.environment }} starting :crossed_fingers:'
+          SLACK_MESSAGE: 'Deploying tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }}.'
           SLACK_COLOR: '#ffff00'
       - name: Deploy Code
         uses: evolv-ai/github-actions/release@master
         with:
           release-script: /scripts/release.sh
         env:
-          EVOLV_STAGE: ${{ github.events.deployment.environment }}
+          EVOLV_STAGE: ${{ github.event.deployment.environment }}
           SEM_VER: ${{ steps.set_variables.outputs.RELEASE_VERSION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -54,7 +54,7 @@ jobs:
         with:
           token: "${{ github.token }}"
           state: "success"
-          deployment_id: ${{ github.events.deployment.id }}
+          deployment_id: ${{ github.event.deployment.id }}
       - name: Create Github Release (success)
         uses: meeDamian/github-release@2.0
         if: success() && ${{ steps.set_variables.outputs.CREATE_RELEASE }}
@@ -70,8 +70,8 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-          SLACK_TITLE: '${{ github.repository }} to ${{ github.events.deployment.environment }} success :rocket:'
-          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ github.events.deployment.ref }}|${{ github.events.deployment.ref }}> to ${{ github.events.deployment.environment }} succeeded.'
+          SLACK_TITLE: '${{ github.repository }} to ${{ github.event.deployment.environment }} success :rocket:'
+          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }} succeeded.'
           SLACK_COLOR: '#33cc33'
       - name: Update Deployment Status (failure)
         if: failure()
@@ -86,6 +86,6 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-          SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.events.deployment.environment }} failure :boom:'
-          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to ${{ github.events.deployment.environment }} failed.'
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.event.deployment.environment }} failure :boom:'
+          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to ${{ github.event.deployment.environment }} failed.'
           SLACK_COLOR: '#ff0000'
