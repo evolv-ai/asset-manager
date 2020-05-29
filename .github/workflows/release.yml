@@ -15,11 +15,13 @@ jobs:
           echo ${{github.event.deployment.ref}}
           echo ${{github.event.deployment.environment}}
           echo ::set-output name=RELEASE_VERSION::${{github.event.deployment.ref}}
-          if [[ "${{github.event.deployment.environment}}" == "prod"}]]; then
+          if [[ "${{github.event.deployment.environment}}" == "prod"}]]
+          then
             echo ::set-output name=SLACK_CHANNEL::deploy-prod
             echo ::set-output name=CREATE_RELEASE::true
             echo ::set-output name=PRERELEASE::false
-          elif [[ "${{github.event.deployment.environment}}" == "staging"}]]; then
+          elif [[ "${{github.event.deployment.environment}}" == "staging"}]]
+          then
             echo ::set-output name=SLACK_CHANNEL::deploy-staging
             echo ::set-output name=CREATE_RELEASE::true
             echo ::set-output name=PRERELEASE::true
