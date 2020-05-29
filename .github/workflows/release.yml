@@ -1,89 +1,91 @@
-name: Deploy to Staging On Release Tag
+name: Deploy to Environment
 
 on:
-  push:
-    tags:
-      - 'release/*'
+  deployment:
+    types: 
+      - created
 
 jobs:
   deploy:
-    name: Deploy to Staging
-
+    name: Deploy to Environment
     runs-on: ubuntu-latest
-
     steps:
-      - name: Get the tag
-        id: get_tag
+      - name: Set Variables
+        id: set_variables
         run: |
-          echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
-          echo ::set-output name=SEM_VER::${GITHUB_REF/refs\/tags\/release\/}
+          echo ::set-output name=RELEASE_VERSION::${github.event.deployment.ref/refs\/tags\/release\/}
+          if [[ "${gitbub.event.deployment.environment" == "prod"}]]; then
+            echo ::set-output name=SLACK_CHANNEL::deploy-prod
+            echo ::set-output name=CREATE_RELEASE::true
+            echo ::set-output name=PRERELEASE::false
+          elif [[ "${gitbub.event.deployment.environment" == "staging"}]]; then
+            echo ::set-output name=SLACK_CHANNEL::deploy-staging
+            echo ::set-output name=CREATE_RELEASE::true
+            echo ::set-output name=PRERELEASE::true
+          else
+            echo ::set-output name=SLACK_CHANNEL::deploy
+            echo ::set-output name=CREATE_RELEASE::false
+          fi
+      - name: Checkout Ref
       - uses: actions/checkout@v1
         with: 
-          ref: ${{ steps.get_tag.outputs.TAG }}
+          ref: ${{ github.events.deployment.ref }}
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: deploy-staging
-          SLACK_TITLE: 'asset-manager deployment starting :crossed_fingers:'
-          SLACK_MESSAGE: 'Deploying tag <https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to staging.'
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.events.deployment.environment }} starting :crossed_fingers:'
+          SLACK_MESSAGE: 'Deploying tag <https://github.com/${{ github.repository }}/tree/${{ github.events.deployment.ref }}|${{ github.events.deployment.ref }}> to ${{ github.events.deployment.environment }}.'
           SLACK_COLOR: '#ffff00'
-      - uses: chrnorm/deployment-action@releases/v1
-        name: Create GitHub deployment
-        id: deployment
+        name: Deploy Code
+        uses: evolv-ai/github-actions/release@master
         with:
-          token: "${{ github.token }}"
-          ref: ${{ steps.get_tag.outputs.TAG }}
-          description: ${{ steps.get_tag.outputs.TAG }}
-          environment: staging
-      - uses: evolv-ai/github-actions/release@master
-        name: Deploy the code
-        with:
-          stage-to-release: staging
           release-script: /scripts/release.sh
         env:
-          EVOLV_STAGE: staging
-          SEM_VER: ${{ steps.get_tag.outputs.SEM_VER }}
+          EVOLV_STAGE: ${{ github.events.deployment.environment }}
+          SEM_VER: ${{ steps.set_variables.outputs.RELEASE_VERSION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-west-2
-      - name: Update deployment status (success)
+      - name: Update Deployment Status (success)
         if: success()
         uses: chrnorm/deployment-status@releases/v1
         with:
           token: "${{ github.token }}"
           state: "success"
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-      - uses: meeDamian/github-release@2.0
-        if: success()
+          deployment_id: ${{ github.events.deployment.id }}
+      - name: Create Github Release (success)
+        uses: meeDamian/github-release@2.0
+        if: success() && ${{ steps.set_variables.outputs.CREATE_RELEASE }}
         with:
           token: ${{ github.token }}
-          tag: ${{ steps.get_tag.outputs.SEM_VER }}
-          name: ${{ steps.get_tag.outputs.SEM_VER }}
-          prerelease: true
+          tag: ${{ steps.set_variables.outputs.RELEASE_VERSION }}
+          name: ${{ steps.set_variables.outputs.RELEASE_VERSION }}
+          prerelease: ${{ steps.set_variables.outputs.PRERELEASE }}
           allow_override: true
-      - name: Update deployment status (failure)
+      - name: Slack Notification (success)
+        if: success()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} to ${{ github.events.deployment.environment }} success :rocket:'
+          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ github.events.deployment.ref }}|${{ github.events.deployment.ref }}> to ${{ github.events.deployment.environment }} succeeded.'
+          SLACK_COLOR: '#33cc33'
+      - name: Update Deployment Status (failure)
         if: failure()
         uses: chrnorm/deployment-status@releases/v1
         with:
           token: "${{ github.token }}"
           state: "failure"
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: Slack Notification (Success)
-        if: success()
-        uses: rtCamp/action-slack-notify@v2.0.2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: deploy-staging
-          SLACK_TITLE: 'asset-manager deployment success :rocket:'
-          SLACK_MESSAGE: 'Deployment of tag <https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to staging succeeded.'
-          SLACK_COLOR: '#33cc33'
-      - name: Slack Notification (Failure)
+      - name: Slack Notification (failure)
         if: failure()
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: deploy-staging
-          SLACK_TITLE: 'asset-manager deployment failure :boom:'
-          SLACK_MESSAGE: 'Deployment of tag <https://github.com/evolv-ai/asset-manager/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to staging failed.'
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.events.deployment.environment }} failure :boom:'
+          SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ steps.get_tag.outputs.TAG }}|${{ steps.get_tag.outputs.TAG }}> to ${{ github.events.deployment.environment }} failed.'
           SLACK_COLOR: '#ff0000'
