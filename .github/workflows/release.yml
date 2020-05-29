@@ -11,6 +11,8 @@ jobs:
       - name: Set Variables
         id: set_variables
         run: |
+          echo ${{github.event}}
+          echo ${{github.event.deployment}}
           echo ::set-output name=RELEASE_VERSION::${github.event.deployment.ref/refs\/tags\/release\/}
           if [[ "${gitbub.event.deployment.environment" == "prod"}]]; then
             echo ::set-output name=SLACK_CHANNEL::deploy-prod
