@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Environment
+    name: Run Tests and Linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Ref
@@ -13,7 +13,7 @@ jobs:
         with: 
           ref: ${{ github.event.push.after }}
       - name: Run Tests and Lint
-        uses: evolv-ai/github-actions/cicd/nodejs13@master
+        uses: evolv-ai/github-actions/cicd/nodejs13@v1
         with:
           script: /scripts/test.sh
         env:
