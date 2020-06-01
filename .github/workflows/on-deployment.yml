@@ -23,7 +23,7 @@ jobs:
             echo ::set-output name=SLACK_CHANNEL::deploy-staging
             echo ::set-output name=CREATE_RELEASE::true
             echo ::set-output name=PRERELEASE::true
-            echo ::set-output name=SEM_VER::${SEM_VER}-${GITHUB_SHA}
+            echo ::set-output name=SEM_VER::${SEM_VER}-${GITHUB_SHA:0:9}
           else
             echo ::set-output name=SLACK_CHANNEL::deploy
             echo ::set-output name=CREATE_RELEASE::false
