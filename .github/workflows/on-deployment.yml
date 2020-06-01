@@ -23,6 +23,7 @@ jobs:
             echo ::set-output name=SLACK_CHANNEL::deploy-staging
             echo ::set-output name=CREATE_RELEASE::true
             echo ::set-output name=PRERELEASE::true
+            echo ::set-output name=SEM_VER::${SEM_VER}-${GITHUB_SHA}
           else
             echo ::set-output name=SLACK_CHANNEL::deploy
             echo ::set-output name=CREATE_RELEASE::false
@@ -61,8 +62,8 @@ jobs:
         if: success() && ${{ steps.set_variables.outputs.CREATE_RELEASE }}
         with:
           token: ${{ github.token }}
-          tag: ${{github.event.deployment.ref}}
-          name: ${{github.event.deployment.ref}}
+          tag: v${{ steps.set_variables.outputs.SEM_VER }}
+          name: ${{ steps.set_variables.outputs.SEM_VER }}
           prerelease: ${{ steps.set_variables.outputs.PRERELEASE }}
           allow_override: true
       - name: Slack Notification (success)
