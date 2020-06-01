@@ -111,3 +111,6 @@ bundle.js
 
 # Idea
 .idea/
+
+# OSX
+.DS_Store

@@ -1,6 +1,6 @@
 {
   "name": "@evolv/asset-manager",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Manages Evolv distributed assets",
   "main": "src/index.js",
   "type": "module",
@@ -11,11 +11,13 @@
     "build": "rollup --config",
     "commitmsg": "validate-commit-msg",
     "destroy": "rm -rf node_modules package-lock.json dist",
-    "prerelease": "npm ci && npm run build && npm run deploy:version:s3 && npm run deploy:next:s3",
-    "release": "npm ci && npm run build && npm run deploy:version:s3 && npm run deploy:latest:s3",
+    "prerelease": "npm ci && npm run build && npm run deploy:version:s3 && npm run deploy:next:s3 && npm run deploy:next:npm",
+    "release": "npm ci && npm run build && npm run deploy:version:s3 && npm run deploy:latest:s3 && npm run deploy:latest:npm",
     "deploy:next:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/next/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/next/webloader.min.js --acl public-read",
     "deploy:version:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/$SEM_VER/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/$SEM_VER/webloader.min.js --acl public-read",
-    "deploy:latest:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read"
+    "deploy:latest:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read",
+    "deploy:next:npm": "node ./scripts/updateVersion.js ./package.json $SEM_VER && npm publish --tag next --access public",
+    "deploy:latest:npm": "node ./scripts/updateVersion.js ./package.json $SEM_VER && npm publish --access public"
   },
   "keywords": [
     "evolv",
