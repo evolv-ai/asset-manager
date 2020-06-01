@@ -46,7 +46,7 @@ describe('asset manager handles correctly', () => {
 				global.document = new DocumentMock();
 				const client = new EvolvMock();
 				new EvolvAssetManager(client);
-				assert.equal(document.classList.classList.length, 0)
+				assert.equal(document.classList.classList.length, 5)
 			});
 	
 			it('should not confirm', () => {
