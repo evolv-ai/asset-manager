@@ -15,7 +15,7 @@ jobs:
       - name: Run Tests and Lint
         uses: evolv-ai/github-actions/cicd/nodejs13@master
         with:
-          script: /scripts/release.sh
+          script: /scripts/test.sh
         env:
           EVOLV_STAGE: ${{ github.event.deployment.environment }}
           SEM_VER: ${{ steps.set_variables.outputs.SEM_VER }}
