@@ -1,0 +1,24 @@
+name: Run Tests and Linting
+
+on:
+  push
+
+jobs:
+  deploy:
+    name: Deploy to Environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Ref
+        uses: actions/checkout@v1
+        with: 
+          ref: ${{ github.event.push.after }}
+      - name: Run Tests and Lint
+        uses: evolv-ai/github-actions/cicd/nodejs13@master
+        with:
+          script: /scripts/release.sh
+        env:
+          EVOLV_STAGE: ${{ github.event.deployment.environment }}
+          SEM_VER: ${{ steps.set_variables.outputs.SEM_VER }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-2

@@ -40,9 +40,9 @@ jobs:
           SLACK_MESSAGE: 'Deploying tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }}.'
           SLACK_COLOR: '#ffff00'
       - name: Deploy Code
-        uses: evolv-ai/github-actions/release@master
+        uses: evolv-ai/github-actions/cicd/python3.7-nodejs13@master
         with:
-          release-script: /scripts/release.sh
+          script: /scripts/release.sh
         env:
           EVOLV_STAGE: ${{ github.event.deployment.environment }}
           SEM_VER: ${{ steps.set_variables.outputs.SEM_VER }}
