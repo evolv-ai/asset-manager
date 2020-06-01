@@ -12,7 +12,8 @@ jobs:
         id: set_variables
         run: |
           export RELEASE_TAG=${{github.event.deployment.ref}}
-          echo ::set-output name=SEM_VER::${RELEASE_TAG/release\/}
+          export SEM_VER=${RELEASE_TAG/release\/}
+          echo ::set-output name=SEM_VER::${SEM_VER}
           if [[ "${{github.event.deployment.environment}}" == "prod" ]]
           then
             echo ::set-output name=SLACK_CHANNEL::deploy-prod
