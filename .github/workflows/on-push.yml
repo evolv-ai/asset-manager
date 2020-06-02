@@ -16,4 +16,4 @@ jobs:
         with:
           node-version: '13'
       - name: Run Tests and Lint
-        run: bash ./scripts/test.sh
+        run: bash -e ./scripts/test.sh
