@@ -41,9 +41,17 @@ jobs:
         run: |
           if [[ "${{github.event.deployment.environment}}" == "prod" ]] || [[ "${{github.event.deployment.environment}}" == "staging" ]]
           then
-            echo ::set-output name=NEW_TAG::v${{ steps.set_variables.outputs.SEM_VER }}
-            git tag v${{ steps.set_variables.outputs.SEM_VER }}
-            git push --tags
+            export NEW_TAG="v${{ steps.set_variables.outputs.SEM_VER }}"
+            echo ::set-output name=NEW_TAG::${NEW_TAG}
+            # POST a new ref to repo via Github API
+            curl -s -X POST https://api.github.com/repos/${{ github.repository }}/git/refs \
+            -H "Authorization: token ${{ github.token }}" \
+            -d @- << EOF
+            {
+              "ref": "refs/tags/${NEW_TAG}",
+              "sha": "${{ github.event.deployment.sha }}"
+            }
+            EOF
           fi
       - name: Setup Node
         uses: actions/setup-node@v1
