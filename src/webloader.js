@@ -1,6 +1,8 @@
+import EvolvClient from '@evolv/javascript-sdk';
+
 import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
-import EvolvClient from "@evolv/javascript-sdk";
+import { modes } from './modes/index.js';
 
 
 function ensureId(evolv, key, session) {
@@ -67,8 +69,13 @@ function main() {
 		}
 	}
 
+	modes.forEach(mode => mode.shouldActivate() && mode.activate());
+	
+	const candidateToken = evolv.retrieve('candidateToken', true);
+
 	const script = currentScript();
-	const env = script.dataset.evolvEnvironment;
+	const env = candidateToken || script.dataset.evolvEnvironment;
+	
 	const version = 1;
 
 	let js = script.dataset.evolvJs;
@@ -78,8 +85,8 @@ function main() {
 	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
 	const sid = script.dataset.evolvSid || ensureId(evolv, 'sid', true);
 
-	js = !js || js === 'true';
-	css = !css || css === 'true';
+	js = !!candidateToken || !js || js === 'true';
+	css = !!candidateToken || !css || css === 'true';
 
 	if (js) {
 		injectScript(endpoint, env, version, uid);
