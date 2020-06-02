@@ -36,6 +36,19 @@ jobs:
         uses: actions/checkout@v1
         with: 
           ref: ${{ github.event.deployment.ref }}
+      - name: Create Tag
+        id: create_tag
+        run: |
+          if [[ "${{github.event.deployment.environment}}" == "prod" ]] || [[ "${{github.event.deployment.environment}}" == "staging" ]]
+          then
+            export NEW_TAG="v${{ steps.set_variables.outputs.SEM_VER }}"
+            echo ::set-output name=NEW_TAG::${NEW_TAG}
+            # POST a new ref to repo via Github API
+            curl -s -X POST https://api.github.com/repos/${{ github.repository }}/git/refs \
+            -H "Authorization: token ${{ github.token }}" \
+            -H "Content-Type: application/json" \
+            -d '{"ref":"refs/tags/'"$NEW_TAG"'", "sha":"${{ github.event.deployment.sha }}"}'
+          fi
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -73,7 +86,7 @@ jobs:
         if: success() && ${{ steps.set_variables.outputs.CREATE_RELEASE }}
         with:
           token: ${{ github.token }}
-          tag: ${{ github.event.deployment.ref }}
+          tag: ${{ steps.create_tag.outputs.NEW_TAG }}
           name: ${{ steps.set_variables.outputs.SEM_VER }}
           prerelease: ${{ steps.set_variables.outputs.PRERELEASE }}
           allow_override: true
