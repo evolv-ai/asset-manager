@@ -19,15 +19,18 @@ jobs:
             echo ::set-output name=SLACK_CHANNEL::deploy-prod
             echo ::set-output name=CREATE_RELEASE::true
             echo ::set-output name=PRERELEASE::false
+            echo ::set-output name=SLACK_WEBHOOK::${{ secrets.PROD_SLACK_WEBHOOK }}
           elif [[ "${{github.event.deployment.environment}}" == "staging" ]]
           then
             echo ::set-output name=SLACK_CHANNEL::deploy-staging
             echo ::set-output name=CREATE_RELEASE::true
             echo ::set-output name=PRERELEASE::true
             echo ::set-output name=SEM_VER::${SEM_VER}-${GITHUB_SHA:0:9}
+            echo ::set-output name=SLACK_WEBHOOK::${{ secrets.STAGING_SLACK_WEBHOOK }}
           else
             echo ::set-output name=SLACK_CHANNEL::deploy
             echo ::set-output name=CREATE_RELEASE::false
+            echo ::set-output name=SLACK_WEBHOOK::${{ secrets.SLACK_WEBHOOK }}
           fi
       - name: Checkout Ref
         uses: actions/checkout@v1
@@ -36,7 +39,7 @@ jobs:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
           SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.event.deployment.environment }} starting :crossed_fingers:'
           SLACK_MESSAGE: 'Deploying tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }}.'
@@ -72,7 +75,7 @@ jobs:
         if: success()
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
           SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.event.deployment.environment }} success :rocket:'
           SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }} succeeded.'
@@ -88,7 +91,7 @@ jobs:
         if: failure()
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
           SLACK_TITLE: '${{ github.repository }} deployment to ${{ github.event.deployment.environment }} failure :boom:'
           SLACK_MESSAGE: 'Deployment of tag <https://github.com/${{ github.repository }}/tree/${{ github.event.deployment.ref }}|${{ github.event.deployment.ref }}> to ${{ github.event.deployment.environment }} failed.'
