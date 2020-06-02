@@ -12,9 +12,8 @@ jobs:
         uses: actions/checkout@v1
         with: 
           ref: ${{ github.event.push.after }}
-      - name: Run Tests and Lint
-        uses: evolv-ai/github-actions/cicd/nodejs13@v1
+      - uses: actions/setup-node@v1
         with:
-          script: /scripts/test.sh
-        env:
-          NPM_TOKEN: ""
+          node-version: '13'
+      - name: Run Tests and Lint
+        run: bash ./scripts/test.sh
