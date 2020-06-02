@@ -47,7 +47,7 @@ jobs:
             curl -s -X POST https://api.github.com/repos/${{ github.repository }}/git/refs \
             -H "Authorization: token ${{ github.token }}" \
             -H "Content-Type: application/json" \
-            -d '{"ref":"refs/tags/${NEW_TAG}", "sha":"${{ github.event.deployment.sha }}"}'
+            -d '{"ref":"refs/tags/'"$NEW_TAG"'", "sha":"${{ github.event.deployment.sha }}"}'
           fi
       - name: Setup Node
         uses: actions/setup-node@v1
