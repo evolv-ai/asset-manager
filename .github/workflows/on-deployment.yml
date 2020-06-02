@@ -67,8 +67,7 @@ jobs:
         if: success() && ${{ steps.set_variables.outputs.CREATE_RELEASE }}
         with:
           token: ${{ github.token }}
-          commitish: ${{ github.event.deployment.ref }}
-          tag: v${{ steps.set_variables.outputs.SEM_VER }}
+          tag: ${{ github.event.deployment.ref }}
           name: ${{ steps.set_variables.outputs.SEM_VER }}
           prerelease: ${{ steps.set_variables.outputs.PRERELEASE }}
           allow_override: true
