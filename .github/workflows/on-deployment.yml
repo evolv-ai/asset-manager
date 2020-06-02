@@ -46,12 +46,8 @@ jobs:
             # POST a new ref to repo via Github API
             curl -s -X POST https://api.github.com/repos/${{ github.repository }}/git/refs \
             -H "Authorization: token ${{ github.token }}" \
-            -d @- << EOF
-            {
-              "ref": "refs/tags/${NEW_TAG}",
-              "sha": "${{ github.event.deployment.sha }}"
-            }
-            EOF
+            -H "Content-Type: application/json" \
+            -d '{"ref":"refs/tags/${NEW_TAG}", "sha":"${{ github.event.deployment.sha }}"}'
           fi
       - name: Setup Node
         uses: actions/setup-node@v1
