@@ -27,7 +27,7 @@
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
   "dependencies": {
-    "@evolv/javascript-sdk": "github:evolv-ai/javascript-sdk#master"
+    "@evolv/javascript-sdk": "^1.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
