@@ -1,6 +1,6 @@
 # Evolv Asset Manager
 
-Tool used for managing Evolv created variants.
+Tool used for managing Evolv created variants, TEST
 
 ## Setup 
 
