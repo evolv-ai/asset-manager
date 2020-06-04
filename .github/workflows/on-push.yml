@@ -32,18 +32,13 @@ jobs:
           fi
         env: 
           NPM_TOKEN: ""
-      - name: Get Tags
-        uses: evolv-ai/github-actions/get-refs@v1
-        id: get_refs
-        with:
-          token: "${{ github.token }}"
-          ref: 'tags/v${{steps.variables.outputs.MAJOR}}.${{steps.variables.outputs.MINOR}}.'
       - name: Bump n Tag
-        uses: evolv-ai/github-actions/semver-bump-tag@v1
+        uses: evolv-ai/github-actions/semver-bump-tag@new-approach
         id: semver_bump
         with:
           token: "${{ github.token }}"
-          tags: ${{steps.get_refs.outputs.refs}}
+          major: ${{steps.variables.outputs.MAJOR}}
+          minor: ${{steps.variables.outputs.MINOR}}
           bump: patch
           suffix: ${{steps.variables.outputs.SUFFIX}}
       - name: Run Tests and Lint
