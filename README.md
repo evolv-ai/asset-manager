@@ -64,4 +64,4 @@ There are 3 patterns of use that we foresee.
 </head>
 ```
 
-For more about Evolv and what we do, go [here](https://www.evolv.ai).
+For more about Evolv and what we do, please visit [here](https://www.evolv.ai).
