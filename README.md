@@ -64,4 +64,6 @@ There are 3 patterns of use that we foresee.
 </head>
 ```
 
+NOT FOR RELEASE
+
 For more about Evolv and what we do, please visit [here](https://www.evolv.ai).
