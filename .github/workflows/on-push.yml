@@ -10,7 +10,8 @@ jobs:
     name: Run Tests and Linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v1
+      - name: Set up Node
+        uses: actions/setup-node@v1
         with:
           node-version: '13'
       - name: Checkout Ref
@@ -31,12 +32,14 @@ jobs:
           fi
         env: 
           NPM_TOKEN: ""
-      - uses: evolv-ai/github-actions/get-refs@master
+      - name: Get Tags
+        uses: evolv-ai/github-actions/get-refs@v1
         id: get_refs
         with:
           token: "${{ github.token }}"
           ref: 'tags/v${{steps.variables.outputs.MAJOR}}.${{steps.variables.outputs.MINOR}}.'
-      - uses: evolv-ai/github-actions/semver-bump-tag@master
+      - name: Bump n Tag
+        uses: evolv-ai/github-actions/semver-bump-tag@v1
         id: semver_bump
         with:
           token: "${{ github.token }}"
