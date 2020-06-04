@@ -8,9 +8,14 @@ jobs:
     name: Deploy to Environment
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Ref
+        uses: actions/checkout@v1
+        with: 
+          ref: ${{ github.event.deployment.ref }}
       - name: Set Variables
         id: set_variables
         run: |
+          cat README.md
           export RELEASE_REF=${{github.event.deployment.ref}}
           export SEM_VER=${RELEASE_REF/v}
           echo ::set-output name=SEM_VER::${SEM_VER}
@@ -32,10 +37,6 @@ jobs:
             echo ::set-output name=CREATE_RELEASE::false
             echo ::set-output name=SLACK_WEBHOOK::${{ secrets.SLACK_WEBHOOK }}
           fi
-      - name: Checkout Ref
-        uses: actions/checkout@v1
-        with: 
-          ref: ${{ github.event.deployment.ref }}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
