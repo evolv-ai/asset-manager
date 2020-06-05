@@ -2,6 +2,8 @@
 
 Tool used for managing Evolv created variants.
 
+NOT FOR THE CURRENT RELEASE 
+
 ## Setup 
 
 ### Web
