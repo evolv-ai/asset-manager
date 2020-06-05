@@ -76,6 +76,7 @@ jobs:
           token: ${{ github.token }}
           tag: v${{ steps.set_variables.outputs.SEM_VER }}
           name: ${{ steps.set_variables.outputs.SEM_VER }}
+          commitish: ${GITHUB_SHA}
           prerelease: ${{ steps.set_variables.outputs.PRERELEASE }}
           allow_override: true
       - name: Slack Notification (success)
