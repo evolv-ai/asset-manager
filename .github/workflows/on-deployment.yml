@@ -30,7 +30,12 @@ jobs:
             echo ::set-output name=SLACK_CHANNEL::deploy-staging
             echo ::set-output name=CREATE_RELEASE::true
             echo ::set-output name=PRERELEASE::true
-            echo ::set-output name=SEM_VER::${SEM_VER}-${GITHUB_SHA:0:7}
+            echo ::set-output name=SEM_VER::${SEM_VER}-alpha-${GITHUB_SHA:0:7}
+            # POST a new ref to repo via Github API
+            curl -s -X POST https://api.github.com/repos/${{ github.repository }}/git/refs \
+            -H "Authorization: token ${{ github.token }}" \
+            -H "Content-Type: application/json" \
+            -d '{"ref":"refs/tags/'"v${SEM_VER}-alpha-${GITHUB_SHA:0:7}"'", "sha":"${{ github.event.deployment.sha }}"}'
             echo ::set-output name=SLACK_WEBHOOK::${{ secrets.STAGING_SLACK_WEBHOOK }}
           else
             echo ::set-output name=SLACK_CHANNEL::deploy
@@ -76,7 +81,6 @@ jobs:
           token: ${{ github.token }}
           tag: v${{ steps.set_variables.outputs.SEM_VER }}
           name: ${{ steps.set_variables.outputs.SEM_VER }}
-          commitish: ${GITHUB_SHA}
           prerelease: ${{ steps.set_variables.outputs.PRERELEASE }}
           allow_override: true
       - name: Slack Notification (success)
