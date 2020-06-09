@@ -2,8 +2,6 @@
 
 Tool used for managing Evolv created variants.
 
-NOT FOR THE CURRENT RELEASE 
-
 ## Setup 
 
 ### Web
@@ -51,9 +49,6 @@ There are 3 patterns of use that we foresee.
 ```
 
 3. Third is a server side rendering approach. The two options above automatically append the needed css and / or js assets on the page for you. In this approach the implementer would render these assets serverside. Placing them on the page along with the asset manager webloader. This approach reduces the round trip calls needed for variant rendering and leads to a faster implementation.
-
-
-FOR RELEASE
 
 ```html
 <head>
