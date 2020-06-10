@@ -1,4 +1,4 @@
-name: Run Tests and Linting
+name: Cherry Pick Commits
 
 on:
   pull_request
@@ -13,4 +13,4 @@ jobs:
         id: cherry-picker
         with:
           token: "${{ github.token }}"
-          pull_request: "${{ github.event }}"
+          pull_request: "${{ github.event.pull_request.number }}"
