@@ -2,8 +2,8 @@ name: Run Tests and Linting
 
 on:
   push:
-    branches: 
-      - '!cherry-pick'
+    branches-ignore:
+      - 'cherry-pick**'
 
 jobs:
   deploy:
