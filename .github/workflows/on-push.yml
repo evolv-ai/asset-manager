@@ -3,7 +3,7 @@ name: Run Tests and Linting
 on:
   push:
     branches: 
-      - '**'
+      - '!cherry-pick'
 
 jobs:
   deploy:
