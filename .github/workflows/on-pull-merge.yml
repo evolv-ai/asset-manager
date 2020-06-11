@@ -7,20 +7,13 @@ on:
     types: [closed]
 
 jobs:
-  echo:
-    name: Echo
-    runs-on: ubuntu-latest
-    steps:
-      - name: Echo
-        run: echo ${{github.event.pull_request.merged}} == 'true'
-
   cherry-pick:
     name: Cherry Pick Commits
     if: ${{github.event.pull_request.merged}} == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Cherry Picker
-        uses: evolv-ai/github-actions/cherry-picker@cherry-picker
+        uses: evolv-ai/github-actions/cherry-picker@v3
         id: cherry-picker
         with:
           token: "${{ secrets.GH_TOKEN }}"
