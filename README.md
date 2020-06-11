@@ -20,7 +20,7 @@ Drop the following snippet in the head of your webpage(s). Preferrably as high a
 </head>
 ```
 
-If you would like to only render css assets place `data-evolv-js="false"` into the script tag. If you would like to only render js assets place `data-evolv-css="false"` in the script tag.
+If you would like to only render css assets place `data-evolv-js="false"` into the script tag. If you would like to only render js assets place `data-evolv-css="false"` into the script tag.
 
 This snippet handles the bulk of the work needed to run an experiment. It confirms or contaminates users and activates dormant variants when the current context matches the parameters of the experiment. The context is evaluated on things like page, demographics and more.
 
