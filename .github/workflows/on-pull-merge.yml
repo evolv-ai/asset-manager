@@ -1,11 +1,15 @@
 name: Cherry Pick Commits
 
 on:
-  pull_request
+  pull_request:
+    branches: 
+      - master
+    types: [closed]
 
 jobs:
   deploy:
     name: Cherry Pick Commits
+    if: github.event.pull_request.merged == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Cherry Picker
