@@ -1,0 +1,16 @@
+name: Cherry Pick Commits
+
+on:
+  pull_request
+
+jobs:
+  deploy:
+    name: Cherry Pick Commits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cherry Picker
+        uses: evolv-ai/github-actions/cherry-picker@cherry-picker
+        id: cherry-picker
+        with:
+          token: "${{ secrets.GH_TOKEN }}"
+          pull_number: ${{ github.event.pull_request.number }}
