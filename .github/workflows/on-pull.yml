@@ -14,3 +14,4 @@ jobs:
         with:
           token: "${{ secrets.GH_TOKEN }}"
           pull_number: ${{ github.event.pull_request.number }}
+          slack_webhook: ${{ secrets.CHERRY_PICK_SLACK_WEBHOOK }}
