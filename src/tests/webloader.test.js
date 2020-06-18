@@ -23,7 +23,8 @@ describe('the web loader', () => {
 		global.window = window;
 		global.document = document;
 		global.window.location = {
-			href: 'https://test-site.com'
+			href: 'https://test-site.com',
+			hash: ''
 		};
 		global.navigator = navigator;
 

@@ -69,11 +69,11 @@ function main() {
 		}
 	}
 
-	modes.forEach(mode => mode.shouldActivate() && mode.activate());
+	const script = currentScript();
+
+	modes.forEach(mode => mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate());
 	
 	const candidateToken = evolv.retrieve('candidateToken', true);
-
-	const script = currentScript();
 	const env = candidateToken || script.dataset.evolvEnvironment;
 	
 	const version = 1;
