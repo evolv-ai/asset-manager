@@ -59,7 +59,6 @@ describe('asset manager handles correctly', () => {
 
 		describe('given active keys', () => {
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
-
 			it('should not add to the classlist', () => {
 				global.document = new DocumentMock();
 				const client = new EvolvMock(keys);
