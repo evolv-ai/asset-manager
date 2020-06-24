@@ -9,7 +9,7 @@ describe('the web loader', () => {
 		delete global.document;
 	});
 
-	it('should initialize properly', async () => {
+	function setupGlobal(doNotTrack) {
 		const dataset = {
 			evolvEnvironment: 'testing'
 		};
@@ -19,7 +19,7 @@ describe('the web loader', () => {
 			}
 		});
 		const window = new WindowMock({document});
-		const navigator = { doNotTrack: false }
+		const navigator = { doNotTrack: doNotTrack };
 		global.window = window;
 		global.document = document;
 		global.window.location = {
@@ -31,6 +31,10 @@ describe('the web loader', () => {
 		global.evolv = {
 			client: new EvolvMock()
 		};
+	}
+
+	it('should initialize properly', async () => {
+		setupGlobal(null);
 
 		webloader = await import('../webloader.js');
 		const scripts = document.getElementsByTagName('script');
@@ -48,5 +52,38 @@ describe('the web loader', () => {
 		assert.equal(
 			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
 			'The evolv context should have been initialized with the same sid as stored');
+	});
+
+	it('should initialize with firefox DNT setup', async () => {
+		setupGlobal('unspecified');
+
+		webloader = await import(`../webloader.js?foo=${Math.random()}`);
+		const scripts = global.document.getElementsByTagName('script');
+		const links = global.document.getElementsByTagName('link');
+		assert.equal(scripts.length, 1, 'The script should have been added');
+		assert.equal(links.length, 1, 'The stylesheet should have been added');
+		assert.ok(global.window.evolv, 'The evolv object should have been exposed');
+	});
+
+	it('should initialize with \'0\' DNT setup', async () => {
+		setupGlobal('0');
+
+		webloader = await import(`../webloader.js?foo=${Math.random()}`);
+
+		const scripts = document.getElementsByTagName('script');
+		const links = document.getElementsByTagName('link');
+		assert.equal(scripts.length, 1, 'The script should have been added');
+		assert.equal(links.length, 1, 'The stylesheet should have been added');
+		assert.ok(window.evolv, 'The evolv object should have been exposed');
+	});
+
+	it('should not initialize with DNT true', async () => {
+		setupGlobal('1');
+		webloader = await import('../webloader.js');
+		const scripts = document.getElementsByTagName('script');
+		const links = document.getElementsByTagName('link');
+		assert.equal(scripts.length, 0, 'The script should not have been added');
+		assert.equal(links.length, 0, 'The stylesheet should not have been added');
+		assert.strictEqual(window.evolv, undefined,'The evolv object should not have been exposed');
 	});
 });
