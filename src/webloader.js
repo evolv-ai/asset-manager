@@ -131,6 +131,6 @@ function main() {
 }
 
 // If the user has requested not to be tracked, or the browser is older than ie11, bail out.
-if (!navigator.doNotTrack && typeof Map !== 'undefined') {
+if ((!navigator.doNotTrack || navigator.doNotTrack === 'unspecified' || navigator.doNotTrack === '0') && typeof Map !== 'undefined') {
 	main();
 }
