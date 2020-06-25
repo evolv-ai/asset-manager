@@ -27,7 +27,7 @@
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
   "dependencies": {
-    "@evolv/javascript-sdk": "git://github.com/evolv-ai/javascript-sdk.git#feat/analytics-on"
+    "@evolv/javascript-sdk": "git://github.com/evolv-ai/javascript-sdk.git#feat/RKT-7545-data-endpoint"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
