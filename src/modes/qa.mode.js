@@ -1,5 +1,6 @@
 const QA_RE = 'evolvCandidateToken=([_0-9]+)';
-const QA_RE_REPLACE = `#?&?${QA_RE}`;
+// template strings is not supported by IE
+const QA_RE_REPLACE = '#?&?' + QA_RE;
 
 export default {
 	shouldActivate() {
