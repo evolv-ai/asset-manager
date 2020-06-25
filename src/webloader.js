@@ -102,7 +102,8 @@ function main() {
 			environment: env,
 			endpoint: endpoint,
 			version: version,
-			autoConfirm: false
+			autoConfirm: false,
+			analytics: true
 		};
 		client = new EvolvClient(options);
 		client.initialize(uid, sid);
