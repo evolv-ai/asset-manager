@@ -69,7 +69,9 @@ function main() {
 		}
 	}
 
-	modes.forEach(mode => mode.shouldActivate() && mode.activate());
+	modes.forEach(function(mode) { 
+		return mode.shouldActivate() && mode.activate() 
+	});
 	
 	const candidateToken = evolv.retrieve('candidateToken', true);
 
