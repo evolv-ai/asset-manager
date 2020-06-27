@@ -1,3 +1,5 @@
+import all from './all.js';
+
 const MAX_TIMEOUT = 100;
 const THRESHOLD = 1000;
 
@@ -55,16 +57,15 @@ function main(client) {
 			}
 		});
 
-		Promise.all(promises)
-			.then(function () {
-				confirm();
-			})
-			.catch(function (err) {
-				client.contaminate();
-				console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
-			}).finally(function () {
-				applyTimeout = false;
-			});
+		all(promises).then(function () {
+			confirm();
+		})
+		.catch(function(err) {
+			client.contaminate();
+			console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
+		}).finally(function() {
+			applyTimeout = false;
+		});
 	};
 
 	client.getActiveKeys('web').listen(function (keys) {
