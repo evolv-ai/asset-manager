@@ -17,7 +17,10 @@
     "deploy:version:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/$SEM_VER/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/$SEM_VER/webloader.min.js --acl public-read",
     "deploy:latest:s3": "aws s3 cp ./dist/webloader.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.js --acl public-read && aws s3 cp ./dist/webloader.min.js  s3://evolv-execution-plan-binaries/asset-manager/releases/latest/webloader.min.js --acl public-read && aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths /asset-manager/releases/latest/*",
     "deploy:next:npm": "npm version $SEM_VER --no-git-tag-version && npm publish --tag next --access public",
-    "deploy:latest:npm": "npm version $SEM_VER --no-git-tag-version && npm publish --access public"
+    "deploy:latest:npm": "npm version $SEM_VER --no-git-tag-version && npm publish --access public",
+    "pree2e": "npm run build",
+    "e2e": "node e2e/launcher/start.js",
+    "e2e:debug": "node e2e/launcher/start.js"
   },
   "keywords": [
     "evolv",
@@ -27,7 +30,12 @@
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
   "dependencies": {
-    "@evolv/javascript-sdk": "^1.0.0"
+    "@evolv/javascript-sdk": "^1.0.0",
+    "browser-sync": "^2.26.7",
+    "commander": "^5.1.0",
+    "sinon": "^9.0.2",
+    "testcafe": "^1.8.7",
+    "ts-node": "^8.10.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
