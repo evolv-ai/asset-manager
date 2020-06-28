@@ -3,7 +3,7 @@ import {ClientFunction, RequestMock} from 'testcafe';
 
 const getWindowTopProp = ClientFunction(prop => window.top[prop]);
 
-fixture `Audience Filters`
+fixture `Basic Render`
     .page `http://localhost:9000/tests/basic/index.html`
     .requestHooks(
         [
@@ -44,10 +44,16 @@ fixture `Audience Filters`
 
 const page = new Page();
 
-test(`should render the page`, async t => {
+test(`should not change the button color`, async t => {
     await t
         .expect(page.button.getStyleProperty('color'))
         .eql('rgb(0, 0, 0)', 'expected to find the button unchanged');
+});
+
+test(`should not change the  header text`, async t => {
+    await t
+        .expect(page.header.innerText)
+        .eql('Evolv', 'expected to find the header text updated');
 });
 
 test(`should be able to read the evolv object`, async t => {
