@@ -6,8 +6,7 @@ export const browsersForLocal = [
 	'safari'*/
 ];
 
-// TODO bvuilding on CI
-export const browsersForTravis = [
+export const browsersForCI = [
 	'chrome:headless',
 	'firefox:headless'
 ];
@@ -17,10 +16,9 @@ export const browsersForBrowserStack = [
 
 	// FIXME: Parallel tests behave badly
 	// 'browserstack:edge',
-	// 'browserstack:firefox',
+	'browserstack:firefox',
 	// 'browserstack:opera',
 	// 'browserstack:safari',
 
-	// FIXME: End-to-end tests fail for IE
-	// 'browserstack:ie',
+	'browserstack:ie'
 ];
