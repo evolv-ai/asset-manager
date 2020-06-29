@@ -25,8 +25,8 @@ fixture `Apply changes`
                 }),
             RequestMock()
                 .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/.*\/assets.css/)
-                .respond('html.evolv_web_wki40gf5c_qzhnnwxj2 button{color:green}', 200, {
-                    'content-type': 'application/css',
+                .respond('html.evolv_web_wki40gf5c_qzhnnwxj2 button{color:rgb(0, 255, 0)}', 200, {
+                    'content-type': 'text/css; charset=utf-8',
                     'access-control-allow-credentials': true,
                     'access-control-allow-origin': '*'
                 }),
@@ -105,10 +105,8 @@ test(`should change the button color`, async t => {
         .eql('rgb(0, 255, 0)', 'expected to find the button color updated');
 });
 
-// TODO - assets.css doesn't apply until resaved in chrome
-/*
 test(`should change the header text`, async t => {
     await t
         .expect(page.header.innerText)
         .eql('Evolved', 'expected to find the header text updated');
-});*/
+});
