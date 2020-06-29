@@ -62,6 +62,15 @@ describe('asset manager handles correctly', () => {
 		}
 	};
 
+    let origWindow;
+    beforeEach(function(){
+        origWindow = global.window;
+    });
+
+    afterEach(function(){
+        global.window = origWindow;
+    });
+
 	describe('given no assets on page', () => {
 		global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
 
@@ -85,6 +94,7 @@ describe('asset manager handles correctly', () => {
 		describe('given active keys', () => {
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
 			it('should not add to the classlist', () => {
+                global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
 				global.document = new DocumentMock();
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
