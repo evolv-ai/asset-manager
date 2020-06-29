@@ -52,23 +52,36 @@ describe('qa mode reqex', () => {
 });
 
 describe('qa mode shouldActivate', () => {
+	let origWindow;
+	beforeEach(function(){
+		origWindow = global.window;
+	});
+
+	afterEach(function(){
+		global.window = origWindow;
+	});
+
 	it('should return true if environment id matches token', () => {
-		global.window.location = {
-			href: 'https://mydomain.com',
-			hash: 'evolvCandidateToken=111_111_aa11bb22'
-		}
+		global.window = {
+			location: {
+				href: 'https://mydomain.com',
+				hash: 'evolvCandidateToken=111_111_aa11bb22'
+			}
+		};
 		const environmentId = 'aa11bb22';
 
 		const result = qaMode.shouldActivate(environmentId);
 
 		assert.ok(result);
-	})
+	});
 
 	it('should return false if environment id does not match token', () => {
-		global.window.location = {
-			href: 'https://mydomain.com',
-			hash: 'evolvCandidateToken=111_111_aa11bb22'
-		}
+		global.window = {
+			location: {
+				href: 'https://mydomain.com',
+				hash: 'evolvCandidateToken=111_111_aa11bb22'
+			}
+		};
 		const environmentId = 'bb22cc33';
 
 		const result = qaMode.shouldActivate(environmentId);
