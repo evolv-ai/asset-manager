@@ -71,7 +71,9 @@ function main() {
 
 	const script = currentScript();
 
-	modes.forEach(mode => mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate());
+	modes.forEach(function(mode) {
+		mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
+	});
 	
 	const candidateToken = evolv.retrieve('candidateToken', true);
 	const env = candidateToken || script.dataset.evolvEnvironment;

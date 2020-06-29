@@ -3,11 +3,11 @@ export const QA_RE = 'evolvCandidateToken=(([0-9]+)_([0-9]+)_([0-9a-z]+))';
 const QA_RE_REPLACE = '#?&?' + QA_RE;
 
 export default {
-	shouldActivate(environmentId) {
+	shouldActivate: function(environmentId) {
 		const match = window.location.hash.match(new RegExp(QA_RE));
 		return match && environmentId === match[4];
 	},
-	activate() {
+	activate: function() {
 		const match = window.location.hash.match(new RegExp(QA_RE));
 
 		if (match) {

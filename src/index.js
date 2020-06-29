@@ -72,12 +72,6 @@ function main(client) {
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
 
-		if (jsAsset && typeof Promise === 'undefined') {
-			// Bail if a jsAsset is being used and Promise does not exist
-			console.warn('[Evolv]: Javascript assets requested but no "Promise" implemented.');
-			return;
-		}
-
 		const liveContexts = keys.map(function (key) {
 			return 'evolv_'.concat(key.replace(/\./g, '_'));
 		});
