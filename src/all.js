@@ -18,7 +18,8 @@ export default function all(promises) {
     };
 
     const checkDone = function() {
-        if (--count === 0) {
+        count--;
+        if (count === 0) {
             markDone();
         }
     };
