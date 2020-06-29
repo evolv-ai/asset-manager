@@ -72,9 +72,17 @@ describe('asset manager handles correctly', () => {
     });
 
 	describe('given no assets on page', () => {
-		global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
-
 		describe('given no active keys', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+				global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			it('should not add to the classlist', () => {
 				global.document = new DocumentMock();
 				const client = new EvolvMock();
@@ -92,6 +100,16 @@ describe('asset manager handles correctly', () => {
 		});
 
 		describe('given active keys', () => {
+			let origWindow;
+
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
 			it('should not add to the classlist', () => {
                 global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
@@ -124,7 +142,16 @@ describe('asset manager handles correctly', () => {
 
 	describe('given only css assets on page', () => {
 		const styleSheets = [new StyleSheetMock(evolvCssAssetSrc)];
-		global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
+		let origWindow;
+
+		beforeEach(function(){
+			origWindow = global.window;
+			global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
+		});
+
+		afterEach(function(){
+			global.window = origWindow;
+		});
 
 		describe('given no active keys', () => {
 			it('should not add to the classlist', () => {
@@ -144,6 +171,14 @@ describe('asset manager handles correctly', () => {
 		});
 
 		describe('given active keys', () => {
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
 
 			it('should add class names to the document classlist', () => {
@@ -182,6 +217,15 @@ describe('asset manager handles correctly', () => {
 		const scripts = [new ScriptMock(evolvJsAssetSrc)];
 
 		describe('given no active keys', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			it('should not add class names to the document classlist', () => {
 				const invokedJavascript = [];
 				global.window = {
@@ -240,6 +284,15 @@ describe('asset manager handles correctly', () => {
 		});
 
 		describe('given active keys', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
 
 			it('should not add class names to the document classlist', () => {
@@ -309,6 +362,15 @@ describe('asset manager handles correctly', () => {
 		const scripts = [new ScriptMock(evolvJsAssetSrc)];
 
 		describe('given no active keys', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			it('should not add class names to the document classlist', () => {
 				const invokedJavascript = [];
 				global.window = {
@@ -367,6 +429,15 @@ describe('asset manager handles correctly', () => {
 		});
 
 		describe('given active keys', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
 
 			it('should add class names to the document classlist', () => {
@@ -432,6 +503,15 @@ describe('asset manager handles correctly', () => {
 		});
 
 		describe('given active keys with an error', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
 			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
 
 			it('should add class names to the document classlist', () => {
