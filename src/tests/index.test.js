@@ -8,46 +8,47 @@ import wait from './wait.js';
 
 function generateJsVariants(invokedJavascript) {
 	return {
-		'evolv_web_page1': () => {
-			return new Promise((resolve, reject) => {
-				invokedJavascript.push('evolv_web_page1');
-				resolve(true);
-			});
+		'evolv_web_page1': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page1');
 		},
-		'evolv_web_page1_variable1': () => {
-			return new Promise((resolve, reject) => {
-				invokedJavascript.push('evolv_web_page1_variable1');
-				resolve(true);
-			});
+		'evolv_web_page1_variable1': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page1_variable1');
 		},
-		'evolv_web_page1_variable2': () => {
-			return new Promise((resolve, reject) => {
-				invokedJavascript.push('evolv_web_page1_variable2');
-				resolve(true);
-			});
+		'evolv_web_page1_variable2': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page1_variable2');
 		}
 	}
 }
 
 function generateErroringJsVariant(invokedJavascript) {
 	return {
-		'evolv_web_page1': () => {
-			return new Promise((resolve, reject) => {
-				invokedJavascript.push('evolv_web_page1');
-				resolve(true);
-			});
+		'evolv_web_page1': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page1');
 		},
-		'evolv_web_page1_variable1': () => {
-			return new Promise((resolve, reject) => {
-				invokedJavascript.push('evolv_web_page1_variable1');
-				reject('I broke');
-			});
+		'evolv_web_page1_variable1': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page1_variable1');
+			throw new Error('I broke');
 		},
-		'evolv_web_page1_variable2': () => {
-			return new Promise((resolve, reject) => {
-				invokedJavascript.push('evolv_web_page1_variable2');
+		'evolv_web_page1_variable2': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page1_variable2');
+			setTimeout(function() {
 				reject('I also broke');
-			});
+			}, 10);
+
+			return true;
+		}
+	}
+}
+
+function generateSingleErroringJsVariant(invokedJavascript) {
+	return {
+		'evolv_web_page1_variable2': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page1_variable2');
+			setTimeout(function() {
+				reject('I broke');
+			}, 10);
+
+			return true;
 		}
 	}
 }
@@ -444,7 +445,7 @@ describe('asset manager handles correctly', () => {
 					'evolv_web_page1', 'evolv_web_page1_variable1', 'evolv_web_page1_variable2'])
 			});
 
-			it('should invoke javscript', () => {
+			it('should invoke javascript', () => {
 				const invokedJavascript = [];
 				global.window = {
 					location: {
@@ -480,7 +481,27 @@ describe('asset manager handles correctly', () => {
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client);
-				await wait(0);
+				await wait(40);
+				assert.equal(client.confirmations, 0);
+				assert.equal(client.contaminations, 1);
+			});
+
+			it('should contaminate once - single error', async() => {
+				const invokedJavascript = [];
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					},
+					evolv: {
+						javascript: {
+							variants: generateSingleErroringJsVariant(invokedJavascript)
+						}
+					}
+				};
+				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client);
+				await wait(40);
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 1);
 			});

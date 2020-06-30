@@ -138,6 +138,25 @@ describe('all should act like Promise.all', () => {
                     done();
                 });
             });
+
+            it('should call catch + finally', (done) => {
+                let catchCalled = false;
+                let failPromise1 = Promise.reject('fail');
+
+                const promises = [failPromise1];
+
+                setTimeout(() => {
+                    all(promises).then(function(values) {
+                        assert.strictEqual(false, true); // unexpected path
+                    }).catch(function(err) {
+                        assert.strictEqual(err, 'fail');
+                        catchCalled = true;
+                    }).finally(function() {
+                        assert.strictEqual(catchCalled, true);
+                        done();
+                    });
+                }, 10);
+            });
         });
 
         describe('that errors', () => {
