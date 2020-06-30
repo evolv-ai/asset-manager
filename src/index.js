@@ -1,4 +1,5 @@
 import all from './all.js';
+import { MiniPromise } from "@evolv/javascript-sdk";
 
 const MAX_TIMEOUT = 100;
 const THRESHOLD = 1000;
@@ -53,7 +54,16 @@ function main(client) {
 		const promises = [];
 		functions.forEach(function (key) {
 			if (key in evolv.javascript.variants) {
-				promises.push(evolv.javascript.variants[key]());
+				let promise = new MiniPromise(function(resolve,  reject) {
+					try {
+						if (!evolv.javascript.variants[key](resolve, reject)) {
+							resolve();
+						}
+					} catch(err) {
+						reject(err);
+					}
+				});
+				promises.push(promise);
 			}
 		});
 
@@ -72,12 +82,6 @@ function main(client) {
 		const environment = client.environment;
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
-
-		if (jsAsset && typeof Promise === 'undefined') {
-			// Bail if a jsAsset is being used and Promise does not exist
-			console.warn('[Evolv]: Javascript assets requested but no "Promise" implemented.');
-			return;
-		}
 
 		const liveContexts = keys.map(function (key) {
 			return 'evolv_'.concat(key.replace(/\./g, '_'));
