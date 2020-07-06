@@ -20,7 +20,8 @@
     "deploy:latest:npm": "npm version $SEM_VER --no-git-tag-version && npm publish --access public",
     "pree2e": "npm run build",
     "e2e": "node e2e/launcher/start.js",
-    "e2e:debug": "node e2e/launcher/start.js"
+    "e2e:debug": "node e2e/launcher/start.js --debug=true",
+    "e2e:browserstack": "node e2e/launcher/start.js --mode=browserstack"
   },
   "keywords": [
     "evolv",
