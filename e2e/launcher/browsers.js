@@ -20,5 +20,5 @@ export const browsersForBrowserStack = [
 	// 'browserstack:opera',
 	// 'browserstack:safari',
 
-	'browserstack:ie'
+	// 'browserstack:ie'
 ];
