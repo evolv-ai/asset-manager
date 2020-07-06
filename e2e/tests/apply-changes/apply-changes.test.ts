@@ -12,11 +12,8 @@ fixture `Apply changes`
                       evolv.javascript = evolv.javascript || {};
                       evolv.javascript.variants = evolv.javascript.variants || {};
                     
-                      evolv.javascript.variants["evolv_web_wki40gf5c_qzhnnwxj2"] = function () {
-                        return new Promise(function (resolve, reject) {
-                          document.querySelector('h1').innerText='Evolved';
-                          resolve();
-                        });
+                      evolv.javascript.variants["evolv_web_wki40gf5c_qzhnnwxj2"] = function (resolve, reject) {                       
+                          document.querySelector('h1').innerText='Evolved';                     
                       };                                     
                     })(window.evolv);`, 200, {
                     'content-type': 'application/js',
