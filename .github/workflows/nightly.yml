@@ -32,7 +32,7 @@ jobs:
             SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
             SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
             SLACK_TITLE: '${{ github.repository }} e2e tests started:'
-            SLACK_MESSAGE: 'Testing <https://github.com/${{ github.repository }} against multiple browsers'
+            SLACK_MESSAGE: 'Testing <https://github.com/${{ github.repository }}> against multiple browsers'
             SLACK_COLOR: '#ffff00'
       - name: Run e2e Tests
         run: npm run e2e:browserstack
@@ -45,5 +45,5 @@ jobs:
             SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
             SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
             SLACK_TITLE: '${{ github.repository }} e2e tests failed :boom:'
-            SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }} failed.'
+            SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }}> failed.'
             SLACK_COLOR: '#ff0000'
