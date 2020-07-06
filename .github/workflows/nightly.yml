@@ -27,23 +27,32 @@ jobs:
         with:
           ref: ${{ github.event.push.after }}
       - name: Slack Notification
-          uses: rtCamp/action-slack-notify@v2.0.2
-          env:
-            SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
-            SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-            SLACK_TITLE: '${{ github.repository }} e2e tests started:'
-            SLACK_MESSAGE: 'Testing <https://github.com/${{ github.repository }}> against multiple browsers'
-            SLACK_COLOR: '#ffff00'
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} e2e tests started:'
+          SLACK_MESSAGE: 'Testing <https://github.com/${{ github.repository }}> against multiple browsers'
+          SLACK_COLOR: '#ffff00'
       - name: Run e2e Tests
         run: npm run e2e:browserstack
         env:
           NPM_TOKEN: ""
       - name: Slack Notification (failure)
-          if: failure()
-          uses: rtCamp/action-slack-notify@v2.0.2
-          env:
-            SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
-            SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-            SLACK_TITLE: '${{ github.repository }} e2e tests failed :boom:'
-            SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }}> failed.'
-            SLACK_COLOR: '#ff0000'
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} e2e tests failed :boom:'
+          SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }}> failed.'
+          SLACK_COLOR: '#ff0000'
+      - name: Slack Notification (success)
+        if: success()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} e2e tests failed :boom:'
+          SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }}> succeeded.'
+          SLACK_COLOR: '#33cc33'
