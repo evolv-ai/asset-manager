@@ -5,8 +5,8 @@ import program from 'commander';
 
 program
 	.version('1.0.0')
-	.option('--mode <mode>', 'Run tests locally or on BrowserStack', undefined, 'local')
-	.option('--debug', 'Run in debug mode', value => !!value)
+	.option('--mode <mode>', 'Run tests locally or on BrowserStack', 'local')
+	.option('--debug <debug>', 'Run in debug mode', false)
 	.action(main)
 	.parse(process.argv);
 

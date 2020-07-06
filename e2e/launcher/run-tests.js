@@ -1,4 +1,4 @@
-import { browsersForBrowserStack, browsersForLocal, browsersForCI } from './browsers.js';
+import { browsersForBrowserStack, browsersForLocal } from './browsers.js';
 import testcafe from "testcafe";
 
 
@@ -17,9 +17,7 @@ export async function runTests(mode, debug) {
 
 	let browsers = (mode === Mode.BrowserStack)
 		? browsersForBrowserStack
-		: (mode === Mode.GithubActions)
-			? browsersForCI
-			: browsersForLocal;
+		: browsersForLocal;
 
 
 	const results = instance
