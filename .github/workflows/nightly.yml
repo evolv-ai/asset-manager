@@ -13,6 +13,11 @@ jobs:
     name: Run e2e tests
     runs-on: ubuntu-latest
     steps:
+      - name: Set Variables
+        id: set_variables
+        run: |
+          echo ::set-output name=SLACK_CHANNEL::nightly-runs
+          echo ::set-output name=SLACK_WEBHOOK::${{ secrets.SLACK_WEBHOOK }}
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
