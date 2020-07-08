@@ -1,11 +1,8 @@
 name: Run Tests and Linting
 
-on:
-  push:
-    branches-ignore:
-     - 'cherry-pick**'
-    tags-ignore:
-     - '**'
+pull_request:
+  branches:
+    - perm-testing
 
 jobs:
   deploy:
