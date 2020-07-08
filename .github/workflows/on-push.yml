@@ -12,32 +12,6 @@ jobs:
     name: Run Tests and Linting
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: '13'
-      - name: Checkout Ref
-        uses: actions/checkout@v1
-        with: 
-          ref: ${{ github.event.push.after }}
-      - name: Set Up Variables
-        id: variables
-        run: |
-          export EMPTY_STRING=""
-          echo ::set-output name=MAJOR::$(node -p "re = new RegExp('^(\\\d+).(\\\d+).(\\\d+)'); v = require('./package.json').version; re.exec(v)[1]")
-          echo ::set-output name=MINOR::$(node -p "re = new RegExp('^(\\\d+).(\\\d+).(\\\d+)'); v = require('./package.json').version; re.exec(v)[2]")
-        env:
-         NPM_TOKEN: ""
-      - name: Bump n Tag
-        if: github.event.ref == 'refs/heads/master'
-        uses: evolv-ai/github-actions/semver-bump-tag@v4
-        id: semver_bump
-        with:
-          token: "${{ github.token }}"
-          major: ${{steps.variables.outputs.MAJOR}}
-          minor: ${{steps.variables.outputs.MINOR}}
-          bump: patch
-          suffix: ""
       - name: Run Tests and Lint
         run: bash -e ./scripts/test.sh
         env: 
