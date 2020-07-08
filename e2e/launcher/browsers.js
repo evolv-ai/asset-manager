@@ -12,9 +12,9 @@ export const browsersForCI = [
 ];
 
 export const browsersForBrowserStack = [
-	'browserstack:chrome',
+	// 'browserstack:chrome',
 
-	// FIXME: Parallel tests behave badly
+	// FIXME: Running more than 2 browsers fails
 	// 'browserstack:edge',
 	'browserstack:firefox',
 	// 'browserstack:opera',
