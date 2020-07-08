@@ -6,7 +6,7 @@ export default function all(promises) {
     let finallyHandler = null;
     let allResolved = false;
     let err = null;
-    // arbitrary change
+    // arbitrary change 2
     const markDone = function() {
         allResolved = true;
 
