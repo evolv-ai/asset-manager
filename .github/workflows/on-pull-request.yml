@@ -2,8 +2,6 @@ name: Run Tests and Linting
 
 on:
   pull-request:
-    branches:
-      - perm-testing
 
 jobs:
   unit:
