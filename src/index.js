@@ -38,7 +38,7 @@ function main(client) {
 			if (!applyTimeout) {
 				return;
 			}
-			
+
 			const timeNow = Date.now();
 			const domContentLoadedEventStart = performance.timing.domContentLoadedEventStart;
 			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + THRESHOLD) {
@@ -112,7 +112,7 @@ function main(client) {
 function EvolvAssetManager(client) {
 	client.context.set('web.url', window.location.href);
 
-	// Expose client and context proprties
+	// Expose client and context properties
 	Object.defineProperty(this, 'client', { get: function () { return client }});
 	Object.defineProperty(this, 'context', { get: function () { return client.context }});
 
