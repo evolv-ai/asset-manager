@@ -3,7 +3,7 @@ name: Cherry Pick Commits
 on:
   pull_request:
     branches: 
-      - master
+      - perm-testing
     types: [closed]
 
 jobs:
