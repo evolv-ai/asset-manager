@@ -3,8 +3,8 @@
  * to sufficiently reduce collisions in high traffic scenarios.
  *
  * @description
- * This is provided to avoid the extra weight of the code
- * needed to generate UUIDs.
+ * This is provided to avoid the extra weight of the
+ * code needed to generate UUIDs.
  */
 export function generate() {
   const prefix = Math.round(Math.random() * 100000000);
