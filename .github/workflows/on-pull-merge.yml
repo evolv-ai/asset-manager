@@ -29,7 +29,7 @@ jobs:
         env:
           NPM_TOKEN: ""
       - name: Bump n Tag
-        if: github.event.ref == 'refs/heads/master'
+#        if: github.event.ref == 'refs/heads/master'
         uses: evolv-ai/github-actions/semver-bump-tag@v4
         id: semver_bump
         with:
