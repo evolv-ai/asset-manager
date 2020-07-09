@@ -102,6 +102,7 @@ class WindowMock {
 		this.localStorage = options.localStorage || new StorageMock();
 		this.sessionStorage = options.sessionStorage || new StorageMock();
 		this.eventListeners = [];
+		this.navigator = { sendBeacon: () => {} }
 	}
 	addEventListener(event, listener) {
 		this.eventListeners.push(event, listener);
