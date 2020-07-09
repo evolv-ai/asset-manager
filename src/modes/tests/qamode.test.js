@@ -12,7 +12,7 @@ describe('qa mode reqex', () => {
 		assert.equal(result[0], "evolvCandidateToken=111_111_aa11bb22")
 		assert.equal(result[1], "111_111_aa11bb22")
 		assert.equal(result[2], "111")
-		assert.equal(result[3], "111")
+		assert.equal(result[3], "1112")
 		assert.equal(result[4], "aa11bb22")
 	});
 
