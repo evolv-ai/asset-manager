@@ -2,10 +2,8 @@ name: Run Tests and Linting
 
 on:
   pull-request:
-    branches-ignore:
-     - 'cherry-pick**'
-    tags-ignore:
-     - '**'
+    branches:
+      - perm-testing
 
 jobs:
   unit:
