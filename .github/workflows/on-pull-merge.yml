@@ -12,6 +12,16 @@ jobs:
     if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     steps:
+      # Generate a GitHub App installation access token from an App ID and private key
+      # To create a new GitHub App:
+      #   https://developer.github.com/apps/building-github-apps/creating-a-github-app/
+      # See /utilities/app.yml for an example app manifest
+#      - name: Generate token
+#        id: generate_token
+#        uses: tibdex/github-app-token@v1
+#        with:
+#          app_id: ${{ secrets.APP_ID }}
+#          private_key: ${{ secrets.PRIVATE_KEY }}
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
@@ -29,7 +39,7 @@ jobs:
         env:
           NPM_TOKEN: ""
       - name: Bump n Tag
-#        if: github.event.ref == 'refs/heads/master'
+        if: github.event.ref == 'refs/heads/perm-testing'
         uses: evolv-ai/github-actions/semver-bump-tag@v4
         id: semver_bump
         with:
