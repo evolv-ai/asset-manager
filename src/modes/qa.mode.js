@@ -1,5 +1,4 @@
 export const QA_RE = 'evolvCandidateToken=(([0-9]+)_([0-9]+)_([0-9a-z]+))';
-// template strings are not supported by IE
 const QA_RE_REPLACE = '#?&?' + QA_RE;
 
 export default {
