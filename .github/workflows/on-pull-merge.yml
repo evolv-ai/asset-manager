@@ -8,6 +8,9 @@ on:
 
 jobs:
   tag:
+    name: Tag Build
+    if: github.event.pull_request.merged
+    runs-on: ubuntu-latest
     steps:
       - name: Set Up Variables
         id: variables
