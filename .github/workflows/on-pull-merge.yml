@@ -38,6 +38,12 @@ jobs:
           echo ::set-output name=MINOR::$(node -p "re = new RegExp('^(\\\d+).(\\\d+).(\\\d+)'); v = require('./package.json').version; re.exec(v)[2]")
         env:
           NPM_TOKEN: ""
+      - name: Get github.ref
+        run: echo ${{ github.ref }}
+      - name: Get github.event.ref
+          run: echo ${{ github.event.ref }}
+      - name: Get github.event.pull_request.ref
+        run: echo ${{ github.event.pull_request.ref }}
       - name: Bump n Tag
         if: github.ref == 'refs/heads/perm-testing'
         uses: evolv-ai/github-actions/semver-bump-tag@v4
