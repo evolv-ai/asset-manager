@@ -1,4 +1,4 @@
-name: Cherry Pick Commits
+name: OK to Test
 
 on:
   pull_request:
