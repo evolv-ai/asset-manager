@@ -45,7 +45,8 @@ jobs:
       - name: Get github.event.pull_request.ref
         run: echo ${{ github.event.pull_request.ref }}
       - name: Bump n Tag
-        if: github.ref == 'refs/heads/perm-testing'
+#        if: github.ref == 'master' OR WILL BE refs/heads/master?
+        if: github.ref == 'perm-testing'
         uses: evolv-ai/github-actions/semver-bump-tag@v4
         id: semver_bump
         with:
