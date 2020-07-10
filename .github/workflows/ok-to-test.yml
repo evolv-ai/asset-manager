@@ -1,7 +1,6 @@
 name: OK to Test
 
 on:
-  pull_request:
   repository_dispatch:
     types: [ok-to-test-command]
 
