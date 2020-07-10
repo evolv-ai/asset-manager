@@ -1,0 +1,55 @@
+name: Cherry Pick Commits
+
+on:
+  pull_request:
+  repository_dispatch:
+    types: [ok-to-test-command]
+
+jobs:
+  tag:
+    name: Tag Build
+    runs-on: ubuntu-latest
+    steps:
+      # Generate a GitHub App installation access token from an App ID and private key
+      # To create a new GitHub App:
+      #   https://developer.github.com/apps/building-github-apps/creating-a-github-app/
+      # See /utilities/app.yml for an example app manifest
+      #      - name: Generate token
+      #        id: generate_token
+      #        uses: tibdex/github-app-token@v1
+      #        with:
+      #          app_id: ${{ secrets.APP_ID }}
+      #          private_key: ${{ secrets.PRIVATE_KEY }}
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13'
+      - name: Checkout Ref
+        uses: actions/checkout@v1
+        with:
+          ref: ${{ github.event.pull_request.ref }}
+      - name: Set Up Variables
+        id: variables
+        run: |
+          export EMPTY_STRING=""
+          echo ::set-output name=MAJOR::$(node -p "re = new RegExp('^(\\\d+).(\\\d+).(\\\d+)'); v = require('./package.json').version; re.exec(v)[1]")
+          echo ::set-output name=MINOR::$(node -p "re = new RegExp('^(\\\d+).(\\\d+).(\\\d+)'); v = require('./package.json').version; re.exec(v)[2]")
+        env:
+          NPM_TOKEN: ""
+      - name: Get github.ref
+        run: echo ${{ github.ref }}
+      - name: Get github.event.ref
+        run: echo ${{ github.event.ref }}
+      - name: Get github.event.pull_request.ref
+        run: echo ${{ github.event.pull_request.ref }}
+      - name: Bump n Tag
+        #        if: github.ref == 'master' OR WILL BE refs/heads/master?
+        if: github.ref == 'perm-testing'
+        uses: evolv-ai/github-actions/semver-bump-tag@v4
+        id: semver_bump
+        with:
+          token: "${{ github.token }}"
+          major: ${{steps.variables.outputs.MAJOR}}
+          minor: ${{steps.variables.outputs.MINOR}}
+          bump: patch
+          suffix: "test"
