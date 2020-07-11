@@ -133,7 +133,7 @@ function main() {
 	});
 }
 
-// If the user has requested not to be tracked, or the browser is older than ie11, bail out.
+// If the user has requested not to be tracked, or the browser is older than ie11 then bail out.
 if ((!navigator.doNotTrack || navigator.doNotTrack === 'unspecified' || navigator.doNotTrack === '0') && typeof Map !== 'undefined') {
 	main();
 }
