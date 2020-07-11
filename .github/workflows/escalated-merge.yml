@@ -1,4 +1,6 @@
-name: OK to Test
+name: Escalated Merge
+# Merge actions kicked off by probot (https://github.com/SentientTechnologies/probot)
+# This allows PRs from forked repos to run actions that require values from secrets when  a team member merges
 
 on:
   repository_dispatch:
@@ -9,16 +11,6 @@ jobs:
     name: Tag Build
     runs-on: ubuntu-latest
     steps:
-      # Generate a GitHub App installation access token from an App ID and private key
-      # To create a new GitHub App:
-      #   https://developer.github.com/apps/building-github-apps/creating-a-github-app/
-      # See /utilities/app.yml for an example app manifest
-      #      - name: Generate token
-      #        id: generate_token
-      #        uses: tibdex/github-app-token@v1
-      #        with:
-      #          app_id: ${{ secrets.APP_ID }}
-      #          private_key: ${{ secrets.PRIVATE_KEY }}
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
