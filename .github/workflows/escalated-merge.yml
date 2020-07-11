@@ -4,7 +4,7 @@ name: Escalated Merge
 
 on:
   repository_dispatch:
-    types: [ok-to-test-command]
+    types: [escalated-merge-command]
 
 jobs:
   tag:
