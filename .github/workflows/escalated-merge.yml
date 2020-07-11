@@ -34,8 +34,7 @@ jobs:
       - name: Get github.event.pull_request.ref
         run: echo ${{ github.event.pull_request.ref }}
       - name: Bump n Tag
-        #        if: github.ref == 'master' OR WILL BE refs/heads/master?
-        if: github.ref == 'perm-testing'
+        if: github.event.ref == 'perm-testing'
         uses: evolv-ai/github-actions/semver-bump-tag@v4
         id: semver_bump
         with:
@@ -44,3 +43,10 @@ jobs:
           minor: ${{steps.variables.outputs.MINOR}}
           bump: patch
           suffix: "test"
+      - name: Cherry Picker
+        uses: evolv-ai/github-actions/cherry-picker@v6
+        id: cherry-picker
+        with:
+          token: "${{ secrets.GH_TOKEN }}"
+          pull_number: ${{ github.event.pull_request.number }}
+          slack_webhook: ${{ secrets.CHERRY_PICK_SLACK_WEBHOOK }}
