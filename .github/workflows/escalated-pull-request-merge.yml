@@ -1,6 +1,6 @@
 name: Escalated Pull Request Merge
 # Merge actions kicked off by probot (https://github.com/SentientTechnologies/probot)
-# This allows PRs from forked repos to run actions that require values from secrets when  a team member merges
+# This allows PRs from forked repos to run actions that require values from secrets when a team member merges
 
 on:
   repository_dispatch:
