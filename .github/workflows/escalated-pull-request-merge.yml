@@ -1,10 +1,10 @@
-name: Escalated Merge
+name: Escalated Pull Request Merge
 # Merge actions kicked off by probot (https://github.com/SentientTechnologies/probot)
 # This allows PRs from forked repos to run actions that require values from secrets when  a team member merges
 
 on:
   repository_dispatch:
-    types: [escalated-push-command]
+    types: [escalated-pull-request-merge-command]
 
 jobs:
   tag:
@@ -27,16 +27,8 @@ jobs:
           echo ::set-output name=MINOR::$(node -p "re = new RegExp('^(\\\d+).(\\\d+).(\\\d+)'); v = require('./package.json').version; re.exec(v)[2]")
         env:
           NPM_TOKEN: ""
-      - name: Get github.ref
-        run: echo ${{ github.ref }}
-      - name: Get github.ref
-        run: echo ${{ github.ref }}
-      - name: Get github.event.ref
-        run: echo ${{ github.event.ref }}
-      - name: Get github.event.pull_request.ref
-        run: echo ${{ github.event.pull_request.ref }}
       - name: Bump n Tag
-        if: github.event.client_payload.ref == 'perm-testing'
+        if: github.event.client_payload.ref == 'master'
         uses: evolv-ai/github-actions/semver-bump-tag@v4
         id: semver_bump
         with:
@@ -44,9 +36,10 @@ jobs:
           major: ${{steps.variables.outputs.MAJOR}}
           minor: ${{steps.variables.outputs.MINOR}}
           bump: patch
-          suffix: "test"
+          suffix: "test" # TODO delete this once ready
+# TODO allow this to run and test against this to see if we have the right info in the cherry picker
 #      - name: Cherry Picker
-#        if: github.event.client_payload.ref == 'perm-testing'
+#        if: github.event.client_payload.ref == 'master'
 #        uses: evolv-ai/github-actions/cherry-picker@v6
 #        id: cherry-picker
 #        with:
