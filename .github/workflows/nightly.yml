@@ -51,6 +51,6 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-          SLACK_TITLE: '${{ github.repository }} e2e tests failed :boom:'
+          SLACK_TITLE: '${{ github.repository }} e2e tests success :rocket:'
           SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }}> succeeded.'
           SLACK_COLOR: '#33cc33'
