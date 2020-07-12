@@ -4,7 +4,7 @@ name: Escalated Merge
 
 on:
   repository_dispatch:
-    types: [escalated-merge-command]
+    types: [escalated-push-command]
 
 jobs:
   tag:
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout Ref
         uses: actions/checkout@v1
         with:
-          ref: ${{ github.event.pull_request.ref }}
+          ref: ${{ github.event.client_payload.ref }}
       - name: Set Up Variables
         id: variables
         run: |
@@ -29,13 +29,14 @@ jobs:
           NPM_TOKEN: ""
       - name: Get github.ref
         run: echo ${{ github.ref }}
+      - name: Get github.ref
+        run: echo ${{ github.ref }}
       - name: Get github.event.ref
         run: echo ${{ github.event.ref }}
       - name: Get github.event.pull_request.ref
         run: echo ${{ github.event.pull_request.ref }}
       - name: Bump n Tag
-        #        if: github.ref == 'master' OR WILL BE refs/heads/master?
-        if: github.ref == 'perm-testing'
+        if: github.event.client_payload.ref == 'perm-testing'
         uses: evolv-ai/github-actions/semver-bump-tag@v4
         id: semver_bump
         with:
@@ -44,3 +45,11 @@ jobs:
           minor: ${{steps.variables.outputs.MINOR}}
           bump: patch
           suffix: "test"
+#      - name: Cherry Picker
+#        if: github.event.client_payload.ref == 'perm-testing'
+#        uses: evolv-ai/github-actions/cherry-picker@v6
+#        id: cherry-picker
+#        with:
+#          token: "${{ secrets.GH_TOKEN }}"
+#          pull_number: ${{ github.event.pull_request.number }}
+#          slack_webhook: ${{ secrets.CHERRY_PICK_SLACK_WEBHOOK }}
