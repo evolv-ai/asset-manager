@@ -1,11 +1,9 @@
-name: Run Tests and Linting
+name: Tag Build
 
 on:
   push:
-    branches-ignore:
-     - 'cherry-pick**'
-    tags-ignore:
-     - '**'
+    branches:
+      master
 
 jobs:
   deploy:
