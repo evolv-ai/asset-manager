@@ -51,7 +51,7 @@ export default function all(promises) {
                 fn(results)
             }
             thenHandler = fn;
-            return this; // Note  -  we can can only do 'then' once by returning 'this'
+            return this; // Note - we can can only do 'then' once by returning 'this'
         },
         catch: function(fn) {
             if (err) {
