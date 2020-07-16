@@ -4,7 +4,7 @@
  *
  * @description
  * This is provided to avoid the extra weight of the code
- * needed to generate UUIDs.
+ * needed to generate the UUIDs.
  */
 export function generate() {
   const prefix = Math.round(Math.random() * 100000000);
