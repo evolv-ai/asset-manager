@@ -24,7 +24,7 @@ export default function all(promises) {
         }
     };
 
-    // Handle when no promises
+    // Handle with no promises
     if (count === 0) {
         markDone();
     }
