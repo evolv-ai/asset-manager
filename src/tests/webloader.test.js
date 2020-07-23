@@ -43,7 +43,7 @@ describe('the web loader', () => {
 		assert.equal(links.length, 1, 'The stylesheet should have been added');
 		assert.ok(window.localStorage.values['evolv:uid'], 'The user id should have been generated and stored');
 		assert.ok(window.sessionStorage.values['evolv:sid'], 'The session id should have been generated and stored');
-		assert.ok(window.evolv.context, 'The evolv context should have been exposed');
+		assert.ok(window.evolv.contexts, 'The evolv context should have been exposed');
 		assert.ok(window.evolv.client, 'The evolv client should have been exposed');
 		assert.ok(window.evolv.assetManager, 'The evolv assetManager should have been exposed');
 		assert.equal(
