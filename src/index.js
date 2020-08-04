@@ -2,7 +2,7 @@ import all from './all.js';
 import { MiniPromise } from "@evolv/javascript-sdk";
 
 const MAX_TIMEOUT = 100;
-const THRESHOLD = 1000;
+const THRESHOLD = 60000;
 
 
 function main(client) {
