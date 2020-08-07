@@ -2,15 +2,13 @@ import all from './all.js';
 import { MiniPromise } from "@evolv/javascript-sdk";
 
 const MAX_TIMEOUT = 100;
-const THRESHOLD = 60000;
 
-
-function main(client) {
+function main(client, options, _performance) {
 	let appliedClasses = [];
 	let functions = new Set();
 	let applyTimeout = true;
-	let timeout = null;
 	let confirmed = false;
+	options = options || {};
 
 	function retrieveEvolvCssAsset(environment) {
 		return document.querySelector('link[href *= "' + environment + '"][href *= "assets.css"]');
@@ -28,11 +26,6 @@ function main(client) {
 	}
 
 	const invokeFunctions = function () {
-		if (timeout) {
-			clearTimeout(timeout);
-			timeout = null;
-		}
-
 		const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
 			if (!applyTimeout) {
@@ -40,9 +33,10 @@ function main(client) {
 			}
 			
 			const timeNow = Date.now();
-			const domContentLoadedEventStart = performance.timing.domContentLoadedEventStart;
-			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + THRESHOLD) {
-				timeout = setTimeout(invokeFunctions, MAX_TIMEOUT);
+			const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
+			var threshold = options.timeoutThreshold || 60000;
+			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
+				setTimeout(invokeFunctions, MAX_TIMEOUT);
 			} else {
 				client.contaminate();
 				applyTimeout = false;
@@ -109,14 +103,14 @@ function main(client) {
 	});
 }
 
-function EvolvAssetManager(client) {
+function EvolvAssetManager(client, options, performance) {
 	client.context.set('web.url', window.location.href);
 
 	// Expose client and context proprties
 	Object.defineProperty(this, 'client', { get: function () { return client }});
 	Object.defineProperty(this, 'context', { get: function () { return client.context }});
 
-	main(client);
+	main(client, options, performance);
 }
 
 export default EvolvAssetManager;
