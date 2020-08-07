@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<title>Single Page Application</title>
+
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+	<link href="css/spa.css" rel="stylesheet">
+
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+	  <script src="/webloader.js"
+	          data-evolv-environment="dac0c777f5"
+	          data-evolv-endpoint="http://localhost:10020/"
+	          data-evolv-js="false">
+	  </script>
+  </head>
+
+  <body>
+	<div id="app">
+	  <div class="container">
+		<header class="blog-header py-3">
+		  <div class="row flex-nowrap justify-content-between align-items-center">
+			<div class="col-4 pt-1">
+			  <a class="text-muted" href="#" v-on:click="activate">Subscribe</a>
+			</div>
+			<div class="col-4 text-center">
+			  <a class="blog-header-logo text-dark" href="#">Large</a>
+			</div>
+			<div class="col-4 d-flex justify-content-end align-items-center">
+			  <a class="text-muted" href="#">
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-3"><circle cx="10.5" cy="10.5" r="7.5"></circle><line x1="21" y1="21" x2="15.8" y2="15.8"></line></svg>
+			  </a>
+			  <a class="btn btn-sm btn-outline-secondary" href="#">Sign up</a>
+			</div>
+		  </div>
+		</header>
+
+		<div class="nav-scroller py-1 mb-2">
+		  <nav class="nav d-flex justify-content-between">
+			<router-link class="p-2 text-muted" to="/world">World</router-link>
+			<router-link class="p-2 text-muted" to="/us">U.S.</router-link>
+			<router-link class="p-2 text-muted" to="/technology">Technology</router-link>
+			<a class="p-2 text-muted" href="#">Design</a>
+			<a class="p-2 text-muted" href="#">Culture</a>
+			<a class="p-2 text-muted" href="#">Business</a>
+			<a class="p-2 text-muted" href="#">Politics</a>
+			<a class="p-2 text-muted" href="#">Opinion</a>
+			<a class="p-2 text-muted" href="#">Science</a>
+			<a class="p-2 text-muted" href="#">Health</a>
+			<a class="p-2 text-muted" href="#">Style</a>
+			<a class="p-2 text-muted" href="#">Travel</a>
+		  </nav>
+		</div>
+
+
+	  </div>
+
+	  <main>
+		<router-view></router-view>
+	  </main>
+
+	  <footer class="blog-footer">
+		<p>Blog template built for <a href="https://getbootstrap.com/">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+		<p>
+		  <a href="#">Back to top</a>
+		</p>
+	  </footer>
+	</div>
+
+	<script src="../lib/js/jquery.js"></script>
+	<script src="../lib/js/popper.min.js"></script>
+	<script src="../lib/js/bootstrap.bundle.js"></script>
+
+	<script>
+	  Vue.component('blog-article', {
+	    props: ['sectionName'],
+	    template: `
+		  <div class="card flex-md-row mb-4 box-shadow h-md-250">
+			<div class="card-body d-flex flex-column align-items-start">
+			  <strong class="d-inline-block mb-2 text-primary">{{ sectionName }}</strong>
+			  <h3 class="mb-0">
+				<a class="" href="#">{{ sectionName }} post</a>
+			  </h3>
+			  <div class="mb-1 text-muted">Nov 12</div>
+			  <p class="card-text mb-auto">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
+			  <a href="#">Continue reading</a>
+			</div>
+		  </div>
+	    `
+	  });
+
+	  const Section = Vue.component('blog-section', {
+	    props: ['name'],
+	    template: `
+		  <div class="row mb-2">
+			<div class="col-md-6">
+  				<blog-article :section-name="name"></blog-article>
+			</div>
+			<div class="col-md-6">
+			  <blog-article :section-name="name"></blog-article>
+			</div>
+		  </div>
+	    `
+	  });
+
+	  const router = new VueRouter({
+		routes: [
+		  { path: '/world', component: Section, props: { name: 'World' } },
+		  { path: '/us', component: Section, props: { name: 'US' } },
+		  { path: '/technology', component: Section, props: { name: 'Technology' } },
+		  { path: '*', redirect: '/world' }
+		]
+	  });
+
+	  const app = new Vue({
+		router,
+		 methods: {
+			activate: async function() {
+				(await evolv.runtime).activate(4);
+			}
+		 }
+	  }).$mount('#app');
+
+	</script>
+  </body>
+</html>
