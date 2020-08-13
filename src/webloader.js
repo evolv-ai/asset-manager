@@ -52,6 +52,34 @@ function injectStylesheet(endpoint, env, version, uid) {
 	document.head.appendChild(stylesheet);
 }
 
+function handlePushstate(client) {
+	const pushStateOrig = history.pushState;
+
+	history.pushState = function() {
+		const args = Array.prototype.slice.call(arguments);
+		pushStateOrig.apply(history, args);
+	
+		let event;
+		const eventType = 'pushstate_evolv';
+	
+		if (Event.prototype.constructor) {
+			event = new CustomEvent(eventType, {});
+		} else { // For IE Compatibility
+			event = document.createEvent('Event');
+			event.initEvent(eventType);
+		}
+	
+		window.dispatchEvent(event);
+	};
+
+	const updateContext = function () {
+		client.context.set('web.url', window.location.href);
+	};
+
+	window.addEventListener('popstate', updateContext);
+	window.addEventListener('pushstate_evolv', updateContext);
+}
+
 function main() {
 	window.evolv = window.evolv || {};
 
@@ -82,6 +110,7 @@ function main() {
 
 	let js = script.dataset.evolvJs;
 	let css = script.dataset.evolvCss;
+	let pushstate = script.dataset.evolvPushstate;
 	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/';
 
 	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
@@ -89,6 +118,7 @@ function main() {
 
 	js = !!candidateToken || !js || js === 'true';
 	css = !!candidateToken || !css || css === 'true';
+	pushstate = pushstate && pushstate === 'true';
 
 	if (js) {
 		injectScript(endpoint, env, version, uid);
@@ -119,6 +149,11 @@ function main() {
 				return client.context
 			}
 		});
+	}
+
+	if (pushstate) {
+		// Handling for single-page applications
+		handlePushstate(client);
 	}
 
 	client.context.set('webloader.js', js);
