@@ -597,4 +597,108 @@ describe('asset manager handles correctly', () => {
 			});
 		});
 	});
+
+	describe('given only js assets on page', () => {
+		const scripts = [new ScriptMock(evolvJsAssetSrc)];
+
+		describe('given active keys and time delay threshold', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
+			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
+
+			it('should contaminate once with timeout', async() => {
+				const invokedJavascript = [];
+
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					}
+				};
+
+				global.document = new DocumentMock({elements: scripts, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client, { timeoutThreshold: 10}, {
+					timing: {
+						domContentLoadedEventStart: new Date().getTime() - 20
+					}
+				});
+
+				global.window.evolv = {
+					javascript: {
+						variants: generateJsVariants(invokedJavascript)
+					}
+				};
+
+				await wait(0);
+				assert.equal(invokedJavascript.length, 0);
+				assert.equal(client.confirmations, 0);
+				assert.equal(client.contaminations, 1);
+			});
+
+			it('should no contaminate as run before timeout', async() => {
+				const invokedJavascript = [];
+
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					}
+				};
+
+				global.document = new DocumentMock({elements: scripts, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client, { timeoutThreshold: 30}, {
+					timing: {
+						domContentLoadedEventStart: new Date().getTime() - 20
+					}
+				});
+
+				global.window.evolv = {
+					javascript: {
+						variants: generateJsVariants(invokedJavascript)
+					}
+				};
+
+				await wait(200);
+				assert.equal(invokedJavascript.length, 3);
+				assert.equal(client.confirmations, 1);
+				assert.equal(client.contaminations, 0);
+			});
+
+			it('should no contaminate as no timeout', async() => {
+				const invokedJavascript = [];
+
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					}
+				};
+
+				global.document = new DocumentMock({elements: scripts, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client, {}, {
+					timing: {
+						domContentLoadedEventStart: new Date().getTime() - 2000
+					}
+				});
+
+				global.window.evolv = {
+					javascript: {
+						variants: generateJsVariants(invokedJavascript)
+					}
+				};
+
+				await wait(200);
+				assert.equal(invokedJavascript.length, 3);
+				assert.equal(client.confirmations, 1);
+				assert.equal(client.contaminations, 0);
+			});
+		});
+	});
 });

@@ -159,7 +159,9 @@ function main() {
 	client.context.set('webloader.js', js);
 	client.context.set('webloader.css', css);
 
-	const assetManager = new EvolvAssetManager(client);
+	const assetManager = new EvolvAssetManager(client, {
+		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined
+	});
 
 	Object.defineProperty(window.evolv, 'assetManager', {
 		get: function () {

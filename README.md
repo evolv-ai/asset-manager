@@ -64,4 +64,19 @@ There are 3 patterns of use that we foresee.
 </head>
 ```
 
+### Additional data parameters
+An optional timeout parameter of 'data-evolv-timeout' can be passed in to contaminate participants where we try to render the javascript changes great this time in ms after domContentLoadedEventStart time.
+
+Default is 60000ms
+```html
+<head>
+    <script type="text/javascript" src="https://participants.evolv.ai/v1/<environment_id>/<uid>/assets.js"></script>
+    <script
+        src="https://media.evolv.ai/asset-manager/releases/latest/webloader.min.js"
+        data-evolv-environment="<environment_id>"
+        data-evolv-timeout="<timeout-length-in-ms>"
+    ></script>
+</head>
+```
+
 For more about Evolv and what we do, please visit [here](https://www.evolv.ai).
