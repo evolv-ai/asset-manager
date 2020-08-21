@@ -33,7 +33,7 @@
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
   "dependencies": {
-    "@evolv/javascript-sdk": "^1.3.4"
+    "@evolv/javascript-sdk": "1.3.6-alpha-e2685a0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
