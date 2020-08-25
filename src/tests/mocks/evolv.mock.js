@@ -24,8 +24,11 @@ class EvolvMock {
 		const promise = new Promise((resolve, reject) => {
 			resolve(true);
 		});
-		promise.listen = function(f) {
-			f(keys.filter(key => key.startsWith(prefix)))
+		promise.listen = function(listener) {
+			listener({
+				current: keys.filter(key => key.startsWith(prefix)),
+				previous: []
+			})
 		};
 		return promise;
 	}
