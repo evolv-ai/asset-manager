@@ -85,7 +85,7 @@ function main(client, options, _performance) {
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
 
-		const liveContexts = keys.map(function (key) {
+		const liveContexts = keys.current.map(function (key) {
 			return 'evolv_'.concat(key.replace(/\./g, '_'));
 		});
 
