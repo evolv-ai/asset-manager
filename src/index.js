@@ -1,5 +1,6 @@
 import all from './all.js';
 import { MiniPromise } from "@evolv/javascript-sdk";
+import { toContextKey } from './keys.js';
 
 const MAX_TIMEOUT = 100;
 
@@ -25,18 +26,20 @@ function main(client, options, _performance) {
 		}
 	}
 
-	const invokeFunctions = function () {
+	const invokeFunctions = function(subset) {
 		const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
 			if (!applyTimeout) {
 				return;
 			}
-			
+
 			const timeNow = Date.now();
 			const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
 			var threshold = options.timeoutThreshold || 60000;
 			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
-				setTimeout(invokeFunctions, MAX_TIMEOUT);
+				setTimeout(function() {
+					invokeFunctions(subset);
+				}, MAX_TIMEOUT);
 			} else {
 				client.contaminate();
 				applyTimeout = false;
@@ -46,9 +49,14 @@ function main(client, options, _performance) {
 		}
 
 		const promises = [];
+
 		functions.forEach(function (key) {
+			if (subset && subset.indexOf(toContextKey(key)) > -1) {
+				return;
+			}
+
 			if (key in evolv.javascript.variants) {
-				let promise = new MiniPromise(function(resolve,  reject) {
+				let promise = MiniPromise.createPromise(function(resolve, reject) {
 					try {
 						if (!evolv.javascript.variants[key](resolve, reject)) {
 							resolve();
@@ -96,7 +104,8 @@ function main(client, options, _performance) {
 			liveContexts.forEach(function (key) {
 				functions.add(key);
 			});
-			invokeFunctions();
+
+			invokeFunctions(keys.previous);
 		} else if (cssAsset && liveContexts.length > 0) {
 			confirm();
 		}

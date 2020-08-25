@@ -8,7 +8,8 @@ export default {
 		{
 			file: './dist/webloader.js',
 			format: 'iife',
-			name: 'webloader'
+			name: 'webloader',
+			sourcemap: true
 		},
 		{
 			file: './dist/webloader.min.js',
