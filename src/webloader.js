@@ -168,6 +168,11 @@ function main() {
 			return assetManager
 		}
 	});
+
+	window.evolv.rerun = function(prefix) {
+		client.clearActiveKeys(prefix);
+		client.reevaluateContext();
+	}
 }
 
 // If the user has requested not to be tracked, or the browser is older than ie11, bail out.
