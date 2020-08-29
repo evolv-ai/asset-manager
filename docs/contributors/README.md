@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-To get started: 
+To get started:
 
 ```bash
 npm install
@@ -10,7 +10,7 @@ npm install
 
 ## Running Tests and Linting
 
-To test run: 
+To test run:
 
 ```bash
 npm test
@@ -32,7 +32,7 @@ npm run build
 
 ## Commit Message Style
 
-Commit message syntax is enforced by husky and commitizen. Commits must follow the following style:
+Commit message syntax is enforced by husky and commitizen. Commits must follow the style:
 ```
 (type): subject
 ```
