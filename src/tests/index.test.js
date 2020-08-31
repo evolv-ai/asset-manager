@@ -16,6 +16,15 @@ function generateJsVariants(invokedJavascript) {
 		},
 		'evolv_web_page1_variable2': (resolve, reject) => {
 			invokedJavascript.push('evolv_web_page1_variable2');
+		},
+		'evolv_web_page2': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page2');
+		},
+		'evolv_web_page2_variable1': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page2_variable1');
+		},
+		'evolv_web_page2_variable2': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page2_variable2');
 		}
 	}
 }
@@ -480,6 +489,61 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+			});
+
+			it('should not invoke javascript again until the keys are refired and not already matching', () => {
+				const invokedJavascript = [];
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					},
+					evolv: {
+						javascript: {
+							variants: generateJsVariants(invokedJavascript)
+						}
+					}
+				};
+				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client);
+				assert.equal(invokedJavascript.length, 3);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+
+				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2'])
+
+				// The previous matching functions should have been cleared
+				assert.equal(invokedJavascript.length, 6);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
+
+				// The previous matching functions should have been cleared
+				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2'])
+
+				assert.equal(invokedJavascript.length, 6);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
+
+
+				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2', 'web.page1']);
+
+				assert.equal(invokedJavascript.length, 7);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') === 0);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
+				assert.ok(invokedJavascript[6] === 'evolv_web_page1');
 			});
 	
 			it('should confirm once', async() => {
