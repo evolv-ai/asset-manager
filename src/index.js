@@ -81,6 +81,7 @@ function main(client, options, _performance) {
 	};
 
 	client.getActiveKeys('web').listen(function (keys) {
+		functions.clear();
 		const environment = client.environment;
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
