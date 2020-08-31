@@ -6,7 +6,6 @@ const MAX_TIMEOUT = 100;
 
 function main(client, options, _performance) {
 	let appliedClasses = [];
-	let functions = new Set();
 	let applyTimeout = true;
 	let confirmed = false;
 	options = options || {};
@@ -26,7 +25,7 @@ function main(client, options, _performance) {
 		}
 	}
 
-	const invokeFunctions = function(subset) {
+	const invokeFunctions = function(subset, functions) {
 		const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
 			if (!applyTimeout) {
@@ -38,7 +37,7 @@ function main(client, options, _performance) {
 			var threshold = options.timeoutThreshold || 60000;
 			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
 				setTimeout(function() {
-					invokeFunctions(subset);
+					invokeFunctions(subset, functions);
 				}, MAX_TIMEOUT);
 			} else {
 				client.contaminate();
@@ -81,7 +80,7 @@ function main(client, options, _performance) {
 	};
 
 	client.getActiveKeys('web').listen(function (keys) {
-		functions.clear();
+		let functions = new Set();
 		const environment = client.environment;
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
@@ -106,7 +105,7 @@ function main(client, options, _performance) {
 				functions.add(key);
 			});
 
-			invokeFunctions(keys.previous);
+			invokeFunctions(keys.previous, functions);
 		} else if (cssAsset && liveContexts.length > 0) {
 			confirm();
 		}
