@@ -3,6 +3,7 @@ import EvolvClient from '@evolv/javascript-sdk';
 import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
 import { modes } from './modes/index.js';
+import { setCookie, getCookie } from "./cookies.js";
 
 
 function ensureId(evolv, key, session) {
@@ -84,20 +85,26 @@ function main() {
 	window.evolv = window.evolv || {};
 
 	const evolv = window.evolv;
+	const script = currentScript();
 
 	if (!evolv.store) {
 		evolv.store = function (key, value, session) {
+			if (script.dataset.evolvUseCookies && !session) {
+				const domain = script.dataset.evolvUseCookies === 'true' ? "" : script.dataset.evolvUseCookies;
+				return setCookie('evolv:' + key, value, 365, domain);
+			}
 			(session ? window.sessionStorage : window.localStorage).setItem('evolv:' + key, value);
 		}
 	}
 
 	if (!evolv.retrieve) {
 		window.evolv.retrieve = function (key, session) {
+			if (script.dataset.evolvUseCookies && !session) {
+				return getCookie('evolv:' + key);
+			}
 			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
 		}
 	}
-
-	const script = currentScript();
 
 	modes.forEach(function(mode) {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
