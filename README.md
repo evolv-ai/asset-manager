@@ -65,9 +65,17 @@ There are 3 patterns of use that we foresee.
 ```
 
 ### Additional data parameters
-An optional timeout parameter of 'data-evolv-timeout' can be passed in to contaminate participants where we try to render the javascript changes great this time in ms after domContentLoadedEventStart time.
+#### data-evolv-timeout 
+can be passed in to contaminate participants where we try to render the javascript changes great this time in ms after domContentLoadedEventStart time.
 
 Default is 60000ms
+
+#### data-evolv-use-cookies
+Evolv uses local storage by default - this method can only look up data stored in the same subdomain. If the user id is required to be used cross subdomain, this setting can be used.
+
+true - will set the cookie on the current domain
+*.example.com (e.g.) can be used to set the cookie on the apex domain
+
 ```html
 <head>
     <script type="text/javascript" src="https://participants.evolv.ai/v1/<environment_id>/<uid>/assets.js"></script>
@@ -75,6 +83,7 @@ Default is 60000ms
         src="https://media.evolv.ai/asset-manager/releases/latest/webloader.min.js"
         data-evolv-environment="<environment_id>"
         data-evolv-timeout="<timeout-length-in-ms>"
+        data-evolv-use-cookies="<target domain or true>"
     ></script>
 </head>
 ```
