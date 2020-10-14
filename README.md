@@ -88,4 +88,15 @@ true - will set the cookie on the current domain
 </head>
 ```
 
+### Rerunning all variants
+To reapply all active keys, call
+```
+evolv.rerun();
+```
+
+To reapply a subset of active keys, pass in the prefix to apply the keys within
+```
+evolv.rerun('a1b2c3d4.e5f6g7h8');
+```
+
 For more about Evolv and what we do, please visit [here](https://www.evolv.ai).
