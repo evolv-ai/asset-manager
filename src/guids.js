@@ -8,7 +8,7 @@
  */
 export function generate() {
   const prefix = Math.round(Math.random() * 100000000);
-  const date = Date.now();
+  const date = (new Date()).getTime();
 
   return prefix + '_' + date;
 }
