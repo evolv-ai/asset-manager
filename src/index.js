@@ -32,7 +32,7 @@ function main(client, options, _performance) {
 				return;
 			}
 
-			const timeNow = Date.now();
+			const timeNow = (new Date()).getTime();
 			const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
 			var threshold = options.timeoutThreshold || 60000;
 			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
