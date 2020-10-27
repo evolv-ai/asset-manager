@@ -40,7 +40,10 @@ function main(client, options, _performance) {
 					invokeFunctions(subset, functions);
 				}, MAX_TIMEOUT);
 			} else {
-				client.contaminate();
+				client.contaminate({
+					reason: 'timeout-exceeded',
+					details: 'current time: ' + timeNow + ', domContentLoadedEventStart: ' + domContentLoadedEventStart + ', threshold: ' + threshold
+				});
 				applyTimeout = false;
 				console.warn('[Evolv]: Loading of variants timed out.');
 			}
@@ -72,7 +75,10 @@ function main(client, options, _performance) {
 			confirm();
 		})
 		.catch(function(err) {
-			client.contaminate();
+			client.contaminate({
+				reason: 'error-thrown',
+				details: err.message
+			});
 			console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
 		}).finally(function() {
 			applyTimeout = false;
