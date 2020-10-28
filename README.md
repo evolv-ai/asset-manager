@@ -99,4 +99,9 @@ To reapply a subset of active keys, pass in the prefix to apply the keys within
 evolv.rerun('a1b2c3d4.e5f6g7h8');
 ```
 
+### Handling SPA Pushstate
+A only popstate events are defined by browsers, not pushstate. This means Evolv cannot detect forward navigation events that do not change the URL. This is common in SPAs and can prevent Evolv from detecting the change and applying changes.
+Setting Evolv data-evolv-pushstate to true will apply a patch to the history.pushState that will dispatch a pushstate event
+
+
 For more about Evolv and what we do, please visit [here](https://www.evolv.ai).
