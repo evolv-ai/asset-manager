@@ -48,6 +48,18 @@ There are 3 patterns of use that we foresee.
 </head>
 ```
 
+However since it is unlikely that a uid will be entered statically, it is more likely to add this attribute in dynamically via a tag manager:
+
+```javascript
+var evolvScript = document.createElement('script');
+
+evolvScript.setAttribute('src', 'https://media.evolv.ai/asset-manager/releases/latest/webloader.min.js');
+evolvScript.setAttribute('data-evolv-environment', '<environment_id>');
+evolvScript.setAttribute('data-evolv-uid', '<uid>');
+
+document.head.appendChild(evolvScript);
+```
+
 3. Third is a server side rendering approach. The two options above automatically append the needed css and / or js assets on the page for you. In this approach the implementer would render these assets serverside. Placing them on the page along with the asset manager webloader. This approach reduces the round trip calls needed for variant rendering and leads to a faster implementation.
 
 ```html
