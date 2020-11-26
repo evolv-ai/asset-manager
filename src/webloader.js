@@ -54,7 +54,6 @@ function injectStylesheet(endpoint, env, version, uid) {
 
 function main() {
 	window.evolv = window.evolv || {};
-
 	const evolv = window.evolv;
 
 	if (!evolv.store) {
@@ -67,6 +66,18 @@ function main() {
 		window.evolv.retrieve = function (key, session) {
 			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
 		}
+	}
+
+	if (!evolv.instancesCount) {
+		window.evolv.instancesCount = 1;
+	} else {
+		evolv.instancesCount++;
+	}
+
+	// Not works for IE, but it needs only in web-editor (chrome)
+	if (window.CustomEvent) {
+		const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': window.evolv.instancesCount });
+		document.dispatchEvent(webloaderLoadEvent);
 	}
 
 	const script = currentScript();
@@ -99,6 +110,7 @@ function main() {
 	}
 
 	let client = evolv.client;
+
 	if (!client) {
 		let options = {
 			environment: env,
@@ -125,12 +137,18 @@ function main() {
 	client.context.set('webloader.css', css);
 
 	const assetManager = new EvolvAssetManager(client);
-
-	Object.defineProperty(window.evolv, 'assetManager', {
-		get: function () {
-			return assetManager
-		}
-	});
+	
+	if (!evolv.instancesCount) {
+		Object.defineProperty(window.evolv, 'assetManager', {
+			get: function () {
+				return assetManager
+			}
+		});
+	} else {
+		window.evolv.assetManager = assetManager;
+	}
+	
+	
 }
 
 // If the user has requested not to be tracked, or the browser is older than ie11, bail out.
