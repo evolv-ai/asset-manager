@@ -3,6 +3,7 @@ import EvolvClient from '@evolv/javascript-sdk';
 import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
 import { modes } from './modes/index.js';
+import { setCookie, getCookie } from "./cookies.js";
 
 
 function ensureId(evolv, key, session) {
@@ -52,18 +53,54 @@ function injectStylesheet(endpoint, env, version, uid) {
 	document.head.appendChild(stylesheet);
 }
 
+function handlePushstate(client) {
+	const pushStateOrig = history.pushState;
+
+	history.pushState = function() {
+		const args = Array.prototype.slice.call(arguments);
+		pushStateOrig.apply(history, args);
+	
+		let event;
+		const eventType = 'pushstate_evolv';
+	
+		if (Event.prototype.constructor) {
+			event = new CustomEvent(eventType, {});
+		} else { // For IE Compatibility
+			event = document.createEvent('Event');
+			event.initEvent(eventType);
+		}
+	
+		window.dispatchEvent(event);
+	};
+
+	const updateContext = function () {
+		client.context.set('web.url', window.location.href);
+	};
+
+	window.addEventListener('popstate', updateContext);
+	window.addEventListener('pushstate_evolv', updateContext);
+}
+
 function main() {
 	window.evolv = window.evolv || {};
 	const evolv = window.evolv;
+	const script = currentScript();
 
 	if (!evolv.store) {
 		evolv.store = function (key, value, session) {
+			if (script.dataset.evolvUseCookies && !session) {
+				const domain = script.dataset.evolvUseCookies === 'true' ? "" : script.dataset.evolvUseCookies;
+				return setCookie('evolv:' + key, value, 365, domain);
+			}
 			(session ? window.sessionStorage : window.localStorage).setItem('evolv:' + key, value);
 		}
 	}
 
 	if (!evolv.retrieve) {
 		window.evolv.retrieve = function (key, session) {
+			if (script.dataset.evolvUseCookies && !session) {
+				return getCookie('evolv:' + key);
+			}
 			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
 		}
 	}
@@ -80,8 +117,6 @@ function main() {
 		document.dispatchEvent(webloaderLoadEvent);
 	}
 
-	const script = currentScript();
-
 	modes.forEach(function(mode) {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
 	});
@@ -93,6 +128,7 @@ function main() {
 
 	let js = script.dataset.evolvJs;
 	let css = script.dataset.evolvCss;
+	let pushstate = script.dataset.evolvPushstate;
 	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/';
 
 	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
@@ -100,6 +136,7 @@ function main() {
 
 	js = !!candidateToken || !js || js === 'true';
 	css = !!candidateToken || !css || css === 'true';
+	pushstate = pushstate && pushstate === 'true';
 
 	if (js) {
 		injectScript(endpoint, env, version, uid);
@@ -133,11 +170,19 @@ function main() {
 		});
 	}
 
+	if (pushstate) {
+		// Handling for single-page applications
+		handlePushstate(client);
+	}
+
 	client.context.set('webloader.js', js);
 	client.context.set('webloader.css', css);
-
-	const assetManager = new EvolvAssetManager(client);
 	
+	
+	const assetManager = new EvolvAssetManager(client, {
+		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined
+	});
+
 	if (!evolv.instancesCount) {
 		Object.defineProperty(window.evolv, 'assetManager', {
 			get: function () {
@@ -147,8 +192,11 @@ function main() {
 	} else {
 		window.evolv.assetManager = assetManager;
 	}
-	
-	
+
+	window.evolv.rerun = function(prefix) {
+		client.clearActiveKeys(prefix);
+		client.reevaluateContext();
+	}
 }
 
 // If the user has requested not to be tracked, or the browser is older than ie11, bail out.

@@ -1,6 +1,6 @@
 {
   "name": "@evolv/asset-manager",
-  "version": "1.3.0",
+  "version": "1.7.0",
   "description": "Manages Evolv distributed assets",
   "main": "src/index.js",
   "type": "module",
@@ -33,14 +33,14 @@
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
   "dependencies": {
-    "@evolv/javascript-sdk": "1.1.12-alpha-68b68f2"
+    "@evolv/javascript-sdk": "1.6.5-alpha-f3b9528"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.3",
     "browser-sync": "^2.26.10",
     "commander": "^5.1.0",
-    "commitizen": "^4.0.3",
+    "commitizen": "^4.2.1",
     "cz-conventional-changelog": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-plugin-es": "^3.0.1",
@@ -48,7 +48,7 @@
     "mocha": "^7.1.1",
     "npm-run-all": "^4.1.5",
     "rollup": "^2.2.0",
-    "rollup-plugin-terser": "^5.3.0",
+    "rollup-plugin-terser": "^7.0.2",
     "sinon": "^9.0.2",
     "testcafe": "^1.8.7",
     "testcafe-browser-provider-browserstack": "^1.13.0",

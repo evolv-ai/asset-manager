@@ -1,16 +1,14 @@
 import all from './all.js';
 import { MiniPromise } from "@evolv/javascript-sdk";
+import { toContextKey } from './keys.js';
 
 const MAX_TIMEOUT = 100;
-const THRESHOLD = 60000;
 
-
-function main(client) {
+function main(client, options, _performance) {
 	let appliedClasses = [];
-	let functions = new Set();
 	let applyTimeout = true;
-	let timeout = null;
 	let confirmed = false;
+	options = options || {};
 
 	function retrieveEvolvCssAsset(environment) {
 		return document.querySelector('link[href *= "' + environment + '"][href *= "assets.css"]');
@@ -27,24 +25,25 @@ function main(client) {
 		}
 	}
 
-	const invokeFunctions = function () {
-		if (timeout) {
-			clearTimeout(timeout);
-			timeout = null;
-		}
-
+	const invokeFunctions = function(subset, functions) {
 		const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
 			if (!applyTimeout) {
 				return;
 			}
-			
-			const timeNow = Date.now();
-			const domContentLoadedEventStart = performance.timing.domContentLoadedEventStart;
-			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + THRESHOLD) {
-				timeout = setTimeout(invokeFunctions, MAX_TIMEOUT);
+
+			const timeNow = (new Date()).getTime();
+			const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
+			var threshold = options.timeoutThreshold || 60000;
+			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
+				setTimeout(function() {
+					invokeFunctions(subset, functions);
+				}, MAX_TIMEOUT);
 			} else {
-				client.contaminate();
+				client.contaminate({
+					reason: 'timeout-exceeded',
+					details: 'current time: ' + timeNow + ', domContentLoadedEventStart: ' + domContentLoadedEventStart + ', threshold: ' + threshold
+				});
 				applyTimeout = false;
 				console.warn('[Evolv]: Loading of variants timed out.');
 			}
@@ -52,9 +51,14 @@ function main(client) {
 		}
 
 		const promises = [];
+
 		functions.forEach(function (key) {
+			if (subset && subset.indexOf(toContextKey(key)) > -1) {
+				return;
+			}
+
 			if (key in evolv.javascript.variants) {
-				let promise = new MiniPromise(function(resolve,  reject) {
+				let promise = MiniPromise.createPromise(function(resolve, reject) {
 					try {
 						if (!evolv.javascript.variants[key](resolve, reject)) {
 							resolve();
@@ -71,7 +75,10 @@ function main(client) {
 			confirm();
 		})
 		.catch(function(err) {
-			client.contaminate();
+			client.contaminate({
+				reason: 'error-thrown',
+				details: err.message
+			});
 			console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
 		}).finally(function() {
 			applyTimeout = false;
@@ -79,11 +86,12 @@ function main(client) {
 	};
 
 	client.getActiveKeys('web').listen(function (keys) {
+		let functions = new Set();
 		const environment = client.environment;
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
 
-		const liveContexts = keys.map(function (key) {
+		const liveContexts = keys.current.map(function (key) {
 			return 'evolv_'.concat(key.replace(/\./g, '_'));
 		});
 
@@ -102,21 +110,22 @@ function main(client) {
 			liveContexts.forEach(function (key) {
 				functions.add(key);
 			});
-			invokeFunctions();
+
+			invokeFunctions(keys.previous, functions);
 		} else if (cssAsset && liveContexts.length > 0) {
 			confirm();
 		}
 	});
 }
 
-function EvolvAssetManager(client) {
+function EvolvAssetManager(client, options, performance) {
 	client.context.set('web.url', window.location.href);
 
 	// Expose client and context proprties
 	Object.defineProperty(this, 'client', { get: function () { return client }});
 	Object.defineProperty(this, 'context', { get: function () { return client.context }});
 
-	main(client);
+	main(client, options, performance);
 }
 
 export default EvolvAssetManager;

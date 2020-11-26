@@ -48,6 +48,18 @@ There are 3 patterns of use that we foresee.
 </head>
 ```
 
+However since it is unlikely that a uid will be entered statically, it is more likely to add this attribute in dynamically via a tag manager:
+
+```javascript
+var evolvScript = document.createElement('script');
+
+evolvScript.setAttribute('src', 'https://media.evolv.ai/asset-manager/releases/latest/webloader.min.js');
+evolvScript.setAttribute('data-evolv-environment', '<environment_id>');
+evolvScript.setAttribute('data-evolv-uid', '<uid>');
+
+document.head.appendChild(evolvScript);
+```
+
 3. Third is a server side rendering approach. The two options above automatically append the needed css and / or js assets on the page for you. In this approach the implementer would render these assets serverside. Placing them on the page along with the asset manager webloader. This approach reduces the round trip calls needed for variant rendering and leads to a faster implementation.
 
 ```html
@@ -63,5 +75,45 @@ There are 3 patterns of use that we foresee.
     ></script>
 </head>
 ```
+
+### Additional data parameters
+#### data-evolv-timeout 
+can be passed in to contaminate participants where we try to render the javascript changes great this time in ms after domContentLoadedEventStart time.
+
+Default is 60000ms
+
+#### data-evolv-use-cookies
+Evolv uses local storage by default - this method can only look up data stored in the same subdomain. If the user id is required to be used cross subdomain, this setting can be used.
+
+true - will set the cookie on the current domain
+*.example.com (e.g.) can be used to set the cookie on the apex domain
+
+```html
+<head>
+    <script type="text/javascript" src="https://participants.evolv.ai/v1/<environment_id>/<uid>/assets.js"></script>
+    <script
+        src="https://media.evolv.ai/asset-manager/releases/latest/webloader.min.js"
+        data-evolv-environment="<environment_id>"
+        data-evolv-timeout="<timeout-length-in-ms>"
+        data-evolv-use-cookies="<target domain or true>"
+    ></script>
+</head>
+```
+
+### Rerunning all variants
+To reapply all active keys, call
+```
+evolv.rerun();
+```
+
+To reapply a subset of active keys, pass in the prefix to apply the keys within
+```
+evolv.rerun('a1b2c3d4.e5f6g7h8');
+```
+
+### Handling SPA Pushstate
+A only popstate events are defined by browsers, not pushstate. This means Evolv cannot detect forward navigation events that do not change the URL. This is common in SPAs and can prevent Evolv from detecting the change and applying changes.
+Setting Evolv data-evolv-pushstate to true will apply a patch to the history.pushState that will dispatch a pushstate event
+
 
 For more about Evolv and what we do, please visit [here](https://www.evolv.ai).

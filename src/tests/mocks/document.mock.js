@@ -63,6 +63,7 @@ class StorageMock {
 class DocumentMock {
 	constructor(options) {
 		options = options || {};
+		this.cookie = options.cookie || '';
 		this.classList = options.classList || new ClassListMock();
 		this.elements = options.elements || [];
 		this.styleSheets = options.styleSheets || [];

@@ -16,6 +16,15 @@ function generateJsVariants(invokedJavascript) {
 		},
 		'evolv_web_page1_variable2': (resolve, reject) => {
 			invokedJavascript.push('evolv_web_page1_variable2');
+		},
+		'evolv_web_page2': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page2');
+		},
+		'evolv_web_page2_variable1': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page2_variable1');
+		},
+		'evolv_web_page2_variable2': (resolve, reject) => {
+			invokedJavascript.push('evolv_web_page2_variable2');
 		}
 	}
 }
@@ -481,6 +490,61 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
 			});
+
+			it('should not invoke javascript again until the keys are refired and not already matching', () => {
+				const invokedJavascript = [];
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					},
+					evolv: {
+						javascript: {
+							variants: generateJsVariants(invokedJavascript)
+						}
+					}
+				};
+				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client);
+				assert.equal(invokedJavascript.length, 3);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+
+				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2'])
+
+				// The previous matching functions should have been cleared
+				assert.equal(invokedJavascript.length, 6);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
+
+				// The previous matching functions should have been cleared
+				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2'])
+
+				assert.equal(invokedJavascript.length, 6);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
+
+
+				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2', 'web.page1']);
+
+				assert.equal(invokedJavascript.length, 7);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1') === 0);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
+				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
+				assert.ok(invokedJavascript[6] === 'evolv_web_page1');
+			});
 	
 			it('should confirm once', async() => {
 				const invokedJavascript = [];
@@ -594,6 +658,110 @@ describe('asset manager handles correctly', () => {
 				await wait(40);
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 1);
+			});
+		});
+	});
+
+	describe('given only js assets on page', () => {
+		const scripts = [new ScriptMock(evolvJsAssetSrc)];
+
+		describe('given active keys and time delay threshold', () => {
+			let origWindow;
+			beforeEach(function(){
+				origWindow = global.window;
+			});
+
+			afterEach(function(){
+				global.window = origWindow;
+			});
+
+			const keys = ['web.page1', 'web.page1.variable1', 'web.page1.variable2'];
+
+			it('should contaminate once with timeout', async() => {
+				const invokedJavascript = [];
+
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					}
+				};
+
+				global.document = new DocumentMock({elements: scripts, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client, { timeoutThreshold: 10}, {
+					timing: {
+						domContentLoadedEventStart: new Date().getTime() - 20
+					}
+				});
+
+				global.window.evolv = {
+					javascript: {
+						variants: generateJsVariants(invokedJavascript)
+					}
+				};
+
+				await wait(0);
+				assert.equal(invokedJavascript.length, 0);
+				assert.equal(client.confirmations, 0);
+				assert.equal(client.contaminations, 1);
+			});
+
+			it('should no contaminate as run before timeout', async() => {
+				const invokedJavascript = [];
+
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					}
+				};
+
+				global.document = new DocumentMock({elements: scripts, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client, { timeoutThreshold: 30}, {
+					timing: {
+						domContentLoadedEventStart: new Date().getTime() - 20
+					}
+				});
+
+				global.window.evolv = {
+					javascript: {
+						variants: generateJsVariants(invokedJavascript)
+					}
+				};
+
+				await wait(200);
+				assert.equal(invokedJavascript.length, 3);
+				assert.equal(client.confirmations, 1);
+				assert.equal(client.contaminations, 0);
+			});
+
+			it('should no contaminate as no timeout', async() => {
+				const invokedJavascript = [];
+
+				global.window = {
+					location: {
+						href: 'https://test-site.com'
+					}
+				};
+
+				global.document = new DocumentMock({elements: scripts, scripts});
+				const client = new EvolvMock(keys);
+				new EvolvAssetManager(client, {}, {
+					timing: {
+						domContentLoadedEventStart: new Date().getTime() - 2000
+					}
+				});
+
+				global.window.evolv = {
+					javascript: {
+						variants: generateJsVariants(invokedJavascript)
+					}
+				};
+
+				await wait(200);
+				assert.equal(invokedJavascript.length, 3);
+				assert.equal(client.confirmations, 1);
+				assert.equal(client.contaminations, 0);
 			});
 		});
 	});
