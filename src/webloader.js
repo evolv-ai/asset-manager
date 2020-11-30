@@ -83,7 +83,6 @@ function handlePushstate(client) {
 
 function main() {
 	window.evolv = window.evolv || {};
-
 	const evolv = window.evolv;
 	const script = currentScript();
 
@@ -104,6 +103,18 @@ function main() {
 			}
 			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
 		}
+	}
+
+	if (!evolv.instancesCount) {
+		window.evolv.instancesCount = 1;
+	} else {
+		evolv.instancesCount++;
+	}
+
+	// Not works for IE, but it needs only in web-editor (chrome)
+	if (window.CustomEvent) {
+		const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': window.evolv.instancesCount });
+		document.dispatchEvent(webloaderLoadEvent);
 	}
 
 	modes.forEach(function(mode) {
@@ -136,6 +147,7 @@ function main() {
 	}
 
 	let client = evolv.client;
+
 	if (!client) {
 		let options = {
 			environment: env,
@@ -165,16 +177,21 @@ function main() {
 
 	client.context.set('webloader.js', js);
 	client.context.set('webloader.css', css);
-
+	
+	
 	const assetManager = new EvolvAssetManager(client, {
 		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined
 	});
 
-	Object.defineProperty(window.evolv, 'assetManager', {
-		get: function () {
-			return assetManager
-		}
-	});
+	if (!evolv.instancesCount) {
+		Object.defineProperty(window.evolv, 'assetManager', {
+			get: function () {
+				return assetManager
+			}
+		});
+	} else {
+		window.evolv.assetManager = assetManager;
+	}
 
 	window.evolv.rerun = function(prefix) {
 		client.clearActiveKeys(prefix);
