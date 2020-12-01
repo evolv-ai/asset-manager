@@ -91,9 +91,13 @@ function main(client, options, _performance) {
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
 
-		const liveContexts = keys.current.map(function (key) {
-			return 'evolv_'.concat(key.replace(/\./g, '_'));
-		});
+		const liveContexts = keys.current
+			.map(function (key) {
+				return 'evolv_'.concat(key.replace(/\./g, '_'));
+			})
+			.sort(function (a, b) {
+				return a.length - b.length;
+			});
 
 		appliedClasses.forEach(function (c) {
 			document.documentElement.classList.remove(c);
