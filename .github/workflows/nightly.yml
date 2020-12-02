@@ -1,8 +1,8 @@
 name:
   Run Nightly Jobs
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  label:
+    types: [created]
 
 jobs:
   e2e:
@@ -22,14 +22,6 @@ jobs:
         uses: actions/checkout@v1
         with:
           ref: ${{ github.event.push.after }}
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2.0.2
-        env:
-          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
-          SLACK_TITLE: '${{ github.repository }} e2e tests started:'
-          SLACK_MESSAGE: 'Testing <https://github.com/${{ github.repository }}> against multiple browsers'
-          SLACK_COLOR: '#ffff00'
       - name: Run e2e Tests
         run: bash -e ./scripts/e2e-test.sh
         env:
