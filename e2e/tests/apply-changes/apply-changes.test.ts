@@ -42,6 +42,9 @@ fixture `Apply changes`
                                 "web": {
                                     "wki40gf5c": {
                                         "_is_entry_point": true,
+                                        "qzhnnwxj2": {
+                                            "_values": true
+                                        },
                                         "_predicate": {
                                             "combinator": "and",
                                             "rules": [
