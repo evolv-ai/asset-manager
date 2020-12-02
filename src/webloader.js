@@ -113,8 +113,12 @@ function main() {
 
 	// Not works for IE, but it needs only in web-editor (chrome)
 	if (window.CustomEvent) {
-		const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': window.evolv.instancesCount });
-		document.dispatchEvent(webloaderLoadEvent);
+		try {
+			const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': window.evolv.instancesCount });
+			document.dispatchEvent(webloaderLoadEvent);
+		} catch(e) {
+			console.warn('Evolv: Could not fire custom event')
+		}
 	}
 
 	modes.forEach(function(mode) {
