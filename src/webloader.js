@@ -65,13 +65,23 @@ function handlePushState(client) {
 		const args = Array.prototype.slice.call(arguments, 1);
 		orig.apply(history, args);
 
-		updateContext();
+		let event;
+		const eventType = 'stateupdate_evolv';
+		if (Event.prototype.constructor) {
+			event = new CustomEvent(eventType, {});
+		} else { // For IE Compatibility
+			event = document.createEvent('Event');
+			event.initEvent(eventType);
+		}
+
+		window.dispatchEvent(event);
 	}
 
 	history.pushState = handler.bind(this, pushStateOrig);
 	history.replaceState = handler.bind(this, replaceStateOrig);
 
 	window.addEventListener('popstate', updateContext);
+	window.addEventListener('stateupdate_evolv', updateContext);
 }
 
 function main() {
