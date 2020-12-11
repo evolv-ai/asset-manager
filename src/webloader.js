@@ -53,32 +53,25 @@ function injectStylesheet(endpoint, env, version, uid) {
 	document.head.appendChild(stylesheet);
 }
 
-function handlePushstate(client) {
+function handlePushState(client) {
 	const pushStateOrig = history.pushState;
+	const replaceStateOrig = history.replaceState;
 
-	history.pushState = function() {
-		const args = Array.prototype.slice.call(arguments);
-		pushStateOrig.apply(history, args);
-	
-		let event;
-		const eventType = 'pushstate_evolv';
-	
-		if (Event.prototype.constructor) {
-			event = new CustomEvent(eventType, {});
-		} else { // For IE Compatibility
-			event = document.createEvent('Event');
-			event.initEvent(eventType);
-		}
-	
-		window.dispatchEvent(event);
-	};
-
-	const updateContext = function () {
+	function updateContext() {
 		client.context.set('web.url', window.location.href);
-	};
+	}
+
+	function handler(orig) {
+		const args = Array.prototype.slice.call(arguments, 1);
+		orig.apply(history, args);
+
+		updateContext();
+	}
+
+	history.pushState = handler.bind(this, pushStateOrig);
+	history.replaceState = handler.bind(this, replaceStateOrig);
 
 	window.addEventListener('popstate', updateContext);
-	window.addEventListener('pushstate_evolv', updateContext);
 }
 
 function main() {
@@ -160,7 +153,7 @@ function main() {
 
 	if (pushstate) {
 		// Handling for single-page applications
-		handlePushstate(client);
+		handlePushState(client);
 	}
 
 	client.context.set('webloader.js', js);
