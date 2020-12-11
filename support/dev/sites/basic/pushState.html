@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Push State Test</title>
+    <script src="/webloader.js"
+            data-evolv-environment="dac0c777f5"
+            data-evolv-endpoint="http://localhost:10020/"
+            data-evolv-pushstate="true"
+            data-evolv-css="false"
+            data-evolv-js="false">
+    </script>
+    <script>
+        function init() {
+            evolv.client.on('context.changed', () => {
+                document.getElementById('display').innerText = evolv.context.get('web.url');
+                document.getElementById('new_url').value = evolv.context.get('web.url');
+            });
+        }
+
+        function pushState() {
+        	history.pushState({}, '', document.getElementById('new_url').value);
+        }
+
+        function replaceState() {
+            history.replaceState({}, '', document.getElementById('new_url').value);
+        }
+    </script>
+</head>
+<body onload="init()">
+<div>
+    <div>
+        context['web.url'] = <span id="display"></span>
+    </div>
+    <div>
+        New url: <input id="new_url" style="width: 500px"/>
+    </div>
+    <div>
+        <button onclick="pushState()">Push State</button><button onclick="replaceState()">Replace State</button>
+    </div>
+</div>
+</body>
+</html>
