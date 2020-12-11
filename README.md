@@ -1,4 +1,4 @@
-# Evolv Asset Manager
+# Evolv Experience Accelerator
 
 Tool used for managing Evolv created variants.
 
