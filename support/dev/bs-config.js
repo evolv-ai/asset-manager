@@ -47,7 +47,10 @@ server.init({
 	injectChanges: true,
 	minify: true,
 	host: '0.0.0.0',
-	https: false,
+	https: {
+		key: "key.pem",
+		cert: "cert.pem"
+	},
 	localOnly: false,
 	codeSync: true,
 	timestamps: true,
