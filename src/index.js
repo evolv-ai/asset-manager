@@ -34,7 +34,7 @@ function main(client, options, _performance) {
 
 			const timeNow = (new Date()).getTime();
 			const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
-			var threshold = options.timeoutThreshold || 60000;
+			const threshold = options.timeoutThreshold || 60000;
 			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
 				setTimeout(function() {
 					invokeFunctions(subset, functions);
