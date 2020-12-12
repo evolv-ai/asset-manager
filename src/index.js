@@ -53,14 +53,15 @@ function main(client, options, _performance) {
 		const promises = [];
 
 		functions.forEach(function (key) {
-			if (subset && subset.indexOf(toContextKey(key)) > -1) {
+			const contextKey = toContextKey(key);
+			if (subset && subset.indexOf(contextKey) > -1) {
 				return;
 			}
 
 			if (key in evolv.javascript.variants) {
 				let promise = MiniPromise.createPromise(function(resolve, reject) {
 					try {
-						if (!evolv.javascript.variants[key](resolve, reject)) {
+						if (!evolv.javascript.variants[key].call({key: contextKey}, resolve, reject)) {
 							resolve();
 						}
 					} catch(err) {
