@@ -71,7 +71,7 @@ function main(client, options, _performance) {
 			}
 		});
 
-		all(promises).then(function () {
+        promises.length && all(promises).then(function () {
 			confirm();
 		})
 		.catch(function(err) {

@@ -659,6 +659,35 @@ describe('asset manager handles correctly', () => {
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 1);
 			});
+
+            it('should not confirm if we pass the same erroring keys that do not run again', async() => {
+                const invokedJavascript = [];
+                global.window = {
+                    location: {
+                        href: 'https://test-site.com'
+                    },
+                    evolv: {
+                        javascript: {
+                            variants: generateSingleErroringJsVariant(invokedJavascript)
+                        }
+                    }
+                };
+                global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
+                const client = new EvolvMock(keys);
+                new EvolvAssetManager(client);
+                await wait(40);
+                assert.equal(invokedJavascript.length, 1);
+                assert.equal(client.confirmations, 0);
+                assert.equal(client.contaminations, 1);
+
+                client.fireActiveKeyListenerNewKeys(keys);
+
+                await wait(40);
+
+                assert.equal(invokedJavascript.length, 1);
+                assert.equal(client.confirmations, 0);
+                assert.equal(client.contaminations, 1);
+            });
 		});
 	});
 
@@ -706,7 +735,7 @@ describe('asset manager handles correctly', () => {
 				assert.equal(client.contaminations, 1);
 			});
 
-			it('should no contaminate as run before timeout', async() => {
+			it('should not contaminate as run before timeout', async() => {
 				const invokedJavascript = [];
 
 				global.window = {
@@ -735,7 +764,7 @@ describe('asset manager handles correctly', () => {
 				assert.equal(client.contaminations, 0);
 			});
 
-			it('should no contaminate as no timeout', async() => {
+			it('should not contaminate as no timeout', async() => {
 				const invokedJavascript = [];
 
 				global.window = {
