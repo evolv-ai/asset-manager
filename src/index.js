@@ -34,7 +34,7 @@ function main(client, options, _performance) {
 
 			const timeNow = (new Date()).getTime();
 			const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
-			var threshold = options.timeoutThreshold || 60000;
+			const threshold = options.timeoutThreshold || 60000;
 			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
 				setTimeout(function() {
 					invokeFunctions(subset, functions);
@@ -53,14 +53,15 @@ function main(client, options, _performance) {
 		const promises = [];
 
 		functions.forEach(function (key) {
-			if (subset && subset.indexOf(toContextKey(key)) > -1) {
+			const contextKey = toContextKey(key);
+			if (subset && subset.indexOf(contextKey) > -1) {
 				return;
 			}
 
 			if (key in evolv.javascript.variants) {
 				let promise = MiniPromise.createPromise(function(resolve, reject) {
 					try {
-						if (!evolv.javascript.variants[key](resolve, reject)) {
+						if (!evolv.javascript.variants[key].call({key: contextKey}, resolve, reject)) {
 							resolve();
 						}
 					} catch(err) {

@@ -13,7 +13,7 @@ fixture `Apply changes`
                       evolv.javascript.variants = evolv.javascript.variants || {};
                     
                       evolv.javascript.variants["evolv_web_wki40gf5c_qzhnnwxj2"] = function (resolve, reject) {                       
-                          document.querySelector('h1').innerText='Evolved';                     
+                          document.querySelector('h1').innerText=this.key;
                       };                                     
                     })(window.evolv);`, 200, {
                     'content-type': 'application/js',
@@ -108,5 +108,5 @@ test(`should change the button color`, async t => {
 test(`should change the header text`, async t => {
     await t
         .expect(page.header.innerText)
-        .eql('Evolved', 'expected to find the header text updated');
+        .eql('web.wki40gf5c.qzhnnwxj2', 'expected to find the header text updated');
 });
