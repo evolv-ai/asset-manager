@@ -90,6 +90,35 @@ describe('the web loader', () => {
 		assert.strictEqual(window.evolv, undefined,'The evolv object should not have been exposed');
 	});
 
+	it('should only initialize one webloader', async () => {
+		setupGlobal(null);
+
+		webloader = await import('../webloader.js');
+
+		try {
+			var webloader2 = await import('../webloader.js?cachebust=true');
+			assert.strictEqual(1,2, 'An error should be thrown before hitting this line');
+		} catch(e) {
+			assert.ok(true, 'An error is expected');
+		}
+
+		const scripts = document.getElementsByTagName('script');
+		const links = document.getElementsByTagName('link');
+		assert.equal(scripts.length, 1, 'One script should have been added');
+		assert.equal(links.length, 1, 'One stylesheet should have been added');
+		assert.ok(window.localStorage.values['evolv:uid'], 'The user id should have been generated and stored');
+		assert.ok(window.sessionStorage.values['evolv:sid'], 'The session id should have been generated and stored');
+		assert.ok(window.evolv.context, 'The evolv context should have been exposed');
+		assert.ok(window.evolv.client, 'The evolv client should have been exposed');
+		assert.ok(window.evolv.assetManager, 'The evolv assetManager should have been exposed');
+		assert.equal(
+			window.evolv.context.uid, window.localStorage.values['evolv:uid'],
+			'The evolv context should have been initialized with the same uid as stored');
+		assert.equal(
+			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
+			'The evolv context should have been initialized with the same sid as stored');
+	});
+
 	it('should initialize with cookies configured and domain defined', async () => {
 		setupGlobal(null, "*.example.com");
 
