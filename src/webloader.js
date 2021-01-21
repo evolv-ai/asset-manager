@@ -203,15 +203,11 @@ function main() {
 		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined
 	});
 
-	if (!evolv.instancesCount) {
-		Object.defineProperty(window.evolv, 'assetManager', {
-			get: function () {
-				return assetManager
-			}
-		});
-	} else {
-		window.evolv.assetManager = assetManager;
-	}
+	Object.defineProperty(window.evolv, 'assetManager', {
+		get: function () {
+			return assetManager
+		}
+	});
 
 	window.evolv.rerun = function(prefix) {
 		client.clearActiveKeys(prefix);
