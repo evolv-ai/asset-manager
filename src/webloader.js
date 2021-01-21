@@ -84,6 +84,28 @@ function handlePushState(client) {
 	window.addEventListener('stateupdate_evolv', updateContext);
 }
 
+function checkInstanceCount(evolv) {
+	if (!evolv.instancesCount) {
+		evolv.instancesCount = 1;
+	} else {
+		evolv.instancesCount++;
+	}
+
+	// Not works for IE, but it needs only in web-editor (chrome)
+	if (window.CustomEvent) {
+		try {
+			const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': 	evolv.instancesCount });
+			document.dispatchEvent(webloaderLoadEvent);
+		} catch(e) {
+			console.warn('Evolv: Could not fire custom event')
+		}
+	}
+
+	if (evolv.instancesCount > 1) {
+		throw new Error('Multiple Evolv instances - please verify you have only loaded Evolv once');
+	}
+}
+
 function main() {
 	window.evolv = window.evolv || {};
 	const evolv = window.evolv;
@@ -108,21 +130,7 @@ function main() {
 		}
 	}
 
-	if (!evolv.instancesCount) {
-		window.evolv.instancesCount = 1;
-	} else {
-		evolv.instancesCount++;
-	}
-
-	// Not works for IE, but it needs only in web-editor (chrome)
-	if (window.CustomEvent) {
-		try {
-			const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': window.evolv.instancesCount });
-			document.dispatchEvent(webloaderLoadEvent);
-		} catch(e) {
-			console.warn('Evolv: Could not fire custom event')
-		}
-	}
+	checkInstanceCount(evolv);
 
 	modes.forEach(function(mode) {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
