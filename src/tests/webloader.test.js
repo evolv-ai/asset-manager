@@ -93,14 +93,8 @@ describe('the web loader', () => {
 	it('should only initialize one webloader', async () => {
 		setupGlobal(null);
 
-		webloader = await import('../webloader.js');
-
-		try {
-			var webloader2 = await import('../webloader.js?cachebust=true');
-			assert.strictEqual(1,2, 'An error should be thrown before hitting this line');
-		} catch(e) {
-			assert.ok(true, 'An error is expected');
-		}
+		webloader = await import('../webloader.js')
+		var webloader2 = await import('../webloader.js?cachebust=true');
 
 		const scripts = document.getElementsByTagName('script');
 		const links = document.getElementsByTagName('link');
