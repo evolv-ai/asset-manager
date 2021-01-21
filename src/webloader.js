@@ -84,9 +84,38 @@ function handlePushState(client) {
 	window.addEventListener('stateupdate_evolv', updateContext);
 }
 
+function checkInstanceCount(evolv) {
+	if (!evolv.instancesCount) {
+		evolv.instancesCount = 1;
+	} else {
+		evolv.instancesCount++;
+	}
+
+	// Not works for IE, but it needs only in web-editor (chrome)
+	if (window.CustomEvent) {
+		try {
+			const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': 	evolv.instancesCount });
+			document.dispatchEvent(webloaderLoadEvent);
+		} catch(e) {
+			console.warn('Evolv: Could not fire custom event')
+		}
+	}
+
+	if (evolv.instancesCount > 1) {
+		console.warn('Multiple Evolv instances - please verify you have only loaded Evolv once');
+
+		return true;
+	}
+}
+
 function main() {
 	window.evolv = window.evolv || {};
 	const evolv = window.evolv;
+
+	if (checkInstanceCount(evolv)) {
+		return;
+	}
+
 	const script = currentScript();
 
 	if (!evolv.store) {
@@ -105,22 +134,6 @@ function main() {
 				return getCookie('evolv:' + key);
 			}
 			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
-		}
-	}
-
-	if (!evolv.instancesCount) {
-		window.evolv.instancesCount = 1;
-	} else {
-		evolv.instancesCount++;
-	}
-
-	// Not works for IE, but it needs only in web-editor (chrome)
-	if (window.CustomEvent) {
-		try {
-			const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': window.evolv.instancesCount });
-			document.dispatchEvent(webloaderLoadEvent);
-		} catch(e) {
-			console.warn('Evolv: Could not fire custom event')
 		}
 	}
 
