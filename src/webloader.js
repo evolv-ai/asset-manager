@@ -102,13 +102,20 @@ function checkInstanceCount(evolv) {
 	}
 
 	if (evolv.instancesCount > 1) {
-		throw new Error('Multiple Evolv instances - please verify you have only loaded Evolv once');
+		console.warn('Multiple Evolv instances - please verify you have only loaded Evolv once');
+
+		return true;
 	}
 }
 
 function main() {
 	window.evolv = window.evolv || {};
 	const evolv = window.evolv;
+
+	if (checkInstanceCount(evolv)) {
+		return;
+	}
+
 	const script = currentScript();
 
 	if (!evolv.store) {
@@ -129,8 +136,6 @@ function main() {
 			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
 		}
 	}
-
-	checkInstanceCount(evolv);
 
 	modes.forEach(function(mode) {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
