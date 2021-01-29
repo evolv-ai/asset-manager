@@ -1,8 +1,8 @@
-import {Page} from "./page.po";
 import { RequestMock} from 'testcafe';
+import { Page } from './page.po';
 
 fixture `Apply changes`
-    .page `http://localhost:9000/tests/apply-changes/index.html`
+    .page `http://localhost:9090/tests/apply-changes/index.html`
     .requestHooks(
         [
             RequestMock()
@@ -11,20 +11,20 @@ fixture `Apply changes`
                     (function (evolv) {
                       evolv.javascript = evolv.javascript || {};
                       evolv.javascript.variants = evolv.javascript.variants || {};
-                    
-                      evolv.javascript.variants["evolv_web_wki40gf5c_qzhnnwxj2"] = function (resolve, reject) {                       
+
+                      evolv.javascript.variants["evolv_web_wki40gf5c_qzhnnwxj2"] = function (resolve, reject) {
                           document.querySelector('h1').innerText=this.key;
-                      };                                     
+                      };
                     })(window.evolv);`, 200, {
                     'content-type': 'application/js',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 }),
             RequestMock()
                 .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/.*\/assets.css/)
                 .respond('html.evolv_web_wki40gf5c_qzhnnwxj2 button{color:rgb(0, 255, 0)}', 200, {
                     'content-type': 'text/css; charset=utf-8',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 }),
             RequestMock()
@@ -64,7 +64,7 @@ fixture `Apply changes`
                     }
                     , 200, {
                     'content-type': 'application/json',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 }),
             RequestMock()
@@ -91,7 +91,7 @@ fixture `Apply changes`
                     "excluded":false
                 }], 200, {
                     'content-type': 'application/json',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 })
         ]
