@@ -66,7 +66,7 @@ const hooks: RequestFixtures = {
 											}
 										]
 									},
-									_assignment_id: 'red',
+									_predicate_assignment_id: 'red',
 									_value: {
 										id: 'tz6zoo8ys',
 										type: 'compound',
@@ -86,7 +86,7 @@ const hooks: RequestFixtures = {
 											}
 										]
 									},
-									_assignment_id: 'blue',
+									_predicate_assignment_id: 'blue',
 									_value: {
 										id: 'tz6zoo8ys',
 										type: 'compound',
@@ -111,7 +111,7 @@ const hooks: RequestFixtures = {
 											}
 										]
 									},
-									_assignment_id: 'green',
+									_predicate_assignment_id: 'green',
 									_value: {
 										id: 'tz6zoo8ys',
 										type: 'compound',
@@ -122,7 +122,7 @@ const hooks: RequestFixtures = {
 								},
 								{
 									_predicate: null,
-									_assignment_id: 'default',
+									_predicate_assignment_id: 'default',
 									_value: {
 										id: 'tz6zoo8ys',
 										type: 'compound',
