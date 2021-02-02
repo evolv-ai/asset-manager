@@ -1,112 +1,30 @@
-import { RequestMock} from 'testcafe';
+import { buildRequestHooks, getActiveKeys, getActiveVariants } from '../../helpers';
+import hooks from './apply-changes.hooks';
 import { Page } from './page.po';
+
 
 fixture `Apply changes`
     .page `http://localhost:9090/tests/apply-changes/index.html`
     .requestHooks(
-        [
-            RequestMock()
-                .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/.*\/assets.js/)
-                .respond(`window.evolv = window.evolv || {};
-                    (function (evolv) {
-                      evolv.javascript = evolv.javascript || {};
-                      evolv.javascript.variants = evolv.javascript.variants || {};
-
-                      evolv.javascript.variants["evolv_web_wki40gf5c_qzhnnwxj2"] = function (resolve, reject) {
-                          document.querySelector('h1').innerText=this.key;
-                      };
-                    })(window.evolv);`, 200, {
-                    'content-type': 'application/js',
-                    'access-control-allow-credentials': 'true',
-                    'access-control-allow-origin': '*'
-                }),
-            RequestMock()
-                .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/.*\/assets.css/)
-                .respond('html.evolv_web_wki40gf5c_qzhnnwxj2 button{color:rgb(0, 255, 0)}', 200, {
-                    'content-type': 'text/css; charset=utf-8',
-                    'access-control-allow-credentials': 'true',
-                    'access-control-allow-origin': '*'
-                }),
-            RequestMock()
-                .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/.*\/configuration.json/)
-                .respond({
-                        "_published": 1593017688.9582465,
-                        "_client": {
-                            "browser": "chrome",
-                            "device": "desktop",
-                            "location": "US",
-                            "platform": "macos"
-                        },
-                        "_experiments": [
-                            {
-                                "web": {
-                                    "wki40gf5c": {
-                                        "_is_entry_point": true,
-                                        "qzhnnwxj2": {
-                                            "_values": true
-                                        },
-                                        "_predicate": {
-                                            "combinator": "and",
-                                            "rules": [
-                                                {
-                                                    "field": "web.url",
-                                                    "operator": "regex64_match",
-                                                    "value": "Ly4qL2k="
-                                                }
-                                            ]
-                                        }
-                                    }
-                                },
-                                "_predicate": {},
-                                "id": "7c0fc0794a"
-                            }
-                        ]
-                    }
-                    , 200, {
-                    'content-type': 'application/json',
-                    'access-control-allow-credentials': 'true',
-                    'access-control-allow-origin': '*'
-                }),
-            RequestMock()
-                .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/allocations/)
-                .respond([{
-                    "uid":"34732756_1593019090286",
-                    "sid":"43504432_1593017665217",
-                    "eid":"7c0fc0794a",
-                    "cid":"dc627ea98011:7c0fc0794a",
-                    "genome":{
-                        "web":{
-                            "wki40gf5c":{
-                                "qzhnnwxj2":{
-                                    "id":"tz6zoo8ys",
-                                    "type":"compound",
-                                    "_metadata":{},
-                                    "script":"",
-                                    "styles":""
-                                }
-                            }
-                        }
-                    },
-                    "audience_query":{},
-                    "excluded":false
-                }], 200, {
-                    'content-type': 'application/json',
-                    'access-control-allow-credentials': 'true',
-                    'access-control-allow-origin': '*'
-                })
-        ]
+    	buildRequestHooks(hooks)
     );
 
 const page = new Page();
 
-test(`should change the button color`, async t => {
+test(`should apply mutations`, async t => {
+	// Assert
+	const activeKeys1 = await getActiveKeys();
+	const activeVariants1 = await getActiveVariants();
+
     await t
         .expect(page.button.getStyleProperty('color'))
-        .eql('rgb(0, 255, 0)', 'expected to find the button color updated');
-});
-
-test(`should change the header text`, async t => {
-    await t
-        .expect(page.header.innerText)
-        .eql('web.wki40gf5c.qzhnnwxj2', 'expected to find the header text updated');
+        .eql('rgb(0, 255, 0)')
+	    .expect(page.header.innerText)
+	    .eql('web.wki40gf5c.qzhnnwxj2')
+	    .expect(activeKeys1.current).eql([
+		    'web.wki40gf5c.qzhnnwxj2'
+	    ])
+	    .expect(activeVariants1).eql([
+		    'web.wki40gf5c.qzhnnwxj2:-179034463'
+	    ]);
 });

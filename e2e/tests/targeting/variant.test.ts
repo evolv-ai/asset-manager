@@ -1,6 +1,6 @@
 /// <reference path="../../types.d.ts" />
 
-import { getActiveKeys } from '../../helpers';
+import { getActiveKeys, getActiveVariants } from '../../helpers';
 import { buildRequestHooks } from '../../helpers';
 
 import hooks from './variant.hooks';
@@ -26,11 +26,12 @@ test(`should handle predicated variants`, async t => {
 	// Act
 	await t.eval(function() {
 		evolv.context.set('state', 'TX');
-		evolv.context.set('city', 'Dallas')
+		evolv.context.set('city', 'Dallas');
 	});
 
 	// Assert
 	const activeKeys1 = await getActiveKeys();
+	const activeVariants1 = await getActiveVariants();
 
     await t
 	    .expect(page.button.getStyleProperty('color'))
@@ -40,6 +41,9 @@ test(`should handle predicated variants`, async t => {
 	    .expect(activeKeys1.current).eql([
 	    	'web.dcvu1glgo.sr5zokh9h',
 		    'web.dcvu1glgo.sr5zokh9h.red'
+	    ])
+	    .expect(activeVariants1).eql([
+		    'web.dcvu1glgo.sr5zokh9h:-928793511'
 	    ]);
 
 	// Act
@@ -49,6 +53,7 @@ test(`should handle predicated variants`, async t => {
 
 	// Assert
 	const activeKeys2 = await getActiveKeys();
+	const activeVariants2 = await getActiveVariants();
 
     await t
 	    .expect(page.button.getStyleProperty('color'))
@@ -58,6 +63,9 @@ test(`should handle predicated variants`, async t => {
 	    .expect(activeKeys2.current).eql([
 		    'web.dcvu1glgo.sr5zokh9h',
 		    'web.dcvu1glgo.sr5zokh9h.blue'
+	    ])
+	    .expect(activeVariants2).eql([
+		    'web.dcvu1glgo.sr5zokh9h:-1426189982'
 	    ]);
 });
 
