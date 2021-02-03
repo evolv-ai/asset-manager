@@ -3,7 +3,7 @@ import { promisify } from 'util';
 
 
 export function startWebServer(port) {
-	port = port || 9000;
+	port = port || 9090;
 	const server = browsersync.create();
 	const init = promisify(server.init);
 

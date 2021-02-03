@@ -1,24 +1,24 @@
-import {Page} from "./page.po";
-import {ClientFunction, RequestMock} from 'testcafe';
+import { ClientFunction, RequestMock } from 'testcafe';
+import { Page } from './page.po';
 
 const getWindowTopProp = ClientFunction(prop => window.top[prop]);
 
 fixture `Basic Render`
-    .page `http://localhost:9000/tests/basic/index.html`
+    .page `http://localhost:9090/tests/basic/index.html`
     .requestHooks(
         [
             RequestMock()
                 .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/.*\/assets.js/)
                 .respond('', 200, {
                     'content-type': 'application/js',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 }),
             RequestMock()
                 .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/.*\/assets.css/)
                 .respond('', 200, {
                     'content-type': 'application/css',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 }),
             RequestMock()
@@ -29,14 +29,14 @@ fixture `Basic Render`
                         "_published": "1593017688.9582465"
                 }, 200, {
                     'content-type': 'application/json',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 }),
             RequestMock()
                 .onRequestTo(/participants\.evolv\.ai\/v1\/.*\/allocations/)
                 .respond([], 200, {
                     'content-type': 'application/json',
-                    'access-control-allow-credentials': true,
+                    'access-control-allow-credentials': 'true',
                     'access-control-allow-origin': '*'
                 })
         ]
@@ -50,7 +50,7 @@ test(`should not change the button color`, async t => {
         .eql('rgb(0, 0, 0)', 'expected to find the button unchanged');
 });
 
-test(`should not change the  header text`, async t => {
+test(`should not change the header text`, async t => {
     await t
         .expect(page.header.innerText)
         .eql('Evolv', 'expected to find the header text updated');
