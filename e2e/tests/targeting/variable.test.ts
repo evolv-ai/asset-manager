@@ -3,7 +3,7 @@
 import * as sinon from 'sinon';
 import { SinonSpy } from 'sinon';
 import { RequestMock } from 'testcafe';
-import { buildRequestHooks } from '../../helpers';
+import { buildRequestHooks, getDefaultColors } from '../../helpers';
 
 import hooks from './variable.hooks';
 import { Page } from './page.po';
@@ -33,7 +33,7 @@ test(`should apply mutation only after context matches`, async t => {
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 

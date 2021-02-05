@@ -1,6 +1,6 @@
 /// <reference path="../../types.d.ts" />
 
-import { buildRequestHooks } from '../../helpers';
+import { buildRequestHooks, getDefaultColors } from '../../helpers';
 
 import hooks from './multiple.hooks';
 import { Page } from './page.po';
@@ -18,7 +18,7 @@ test(`should apply mutation only after context matches at each level when update
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -29,7 +29,7 @@ test(`should apply mutation only after context matches at each level when update
 
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -39,7 +39,7 @@ test(`should apply mutation only after context matches at each level when update
 
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -60,7 +60,7 @@ test(`should apply mutation only after context matches at each level when update
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 

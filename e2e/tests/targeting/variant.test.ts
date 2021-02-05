@@ -1,6 +1,6 @@
 /// <reference path="../../types.d.ts" />
 
-import { getActiveKeys, getActiveVariants } from '../../helpers';
+import { getActiveKeys, getActiveVariants, getDefaultColors } from '../../helpers';
 import { buildRequestHooks } from '../../helpers';
 
 import hooks from './variant.hooks';
@@ -19,7 +19,7 @@ test(`should handle predicated variants`, async t => {
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -73,7 +73,7 @@ test(`should apply default variant only after all touched keys have been defined
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -104,7 +104,7 @@ test(`should not apply default variant until all touched keys have been defined 
 	// Assert
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -143,7 +143,7 @@ test(`should not apply default variant if not all touched keys have been defined
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -156,7 +156,7 @@ test(`should not apply default variant if not all touched keys have been defined
 	// Assert
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -170,7 +170,7 @@ test(`should not apply default variant if not all touched keys have been defined
 	// Assert
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 });
