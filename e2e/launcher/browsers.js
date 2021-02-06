@@ -12,11 +12,13 @@ export const browsersForCI = [
 ];
 
 export const browsersForBrowserStack = [
-	'browserstack:chrome',
-	'browserstack:edge',
-	'browserstack:firefox',
-	'browserstack:opera',
-	'browserstack:safari',
+  // 'browserstack:chrome',
 
-	'browserstack:ie'
+  // FIXME: Running more than 2 browsers fails
+  // 'browserstack:edge',
+  'browserstack:firefox',
+  // 'browserstack:opera',
+  // 'browserstack:safari',
+
+  'browserstack:ie'
 ];
