@@ -1,9 +1,9 @@
 
 export const browsersForLocal = [
-	'chrome'/*,
-	'firefox',
-	'opera',
-	'safari'*/
+	'chrome',
+	// 'firefox',
+	// 'opera',
+	// 'safari'
 ];
 
 export const browsersForCI = [
@@ -12,13 +12,11 @@ export const browsersForCI = [
 ];
 
 export const browsersForBrowserStack = [
-	// 'browserstack:chrome',
-
-	// FIXME: Running more than 2 browsers fails
-	// 'browserstack:edge',
+	'browserstack:chrome',
+	'browserstack:edge',
 	'browserstack:firefox',
-	// 'browserstack:opera',
-	// 'browserstack:safari',
+	'browserstack:opera',
+	'browserstack:safari',
 
 	'browserstack:ie'
 ];

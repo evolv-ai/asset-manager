@@ -1,30 +1,19 @@
 /// <reference path="../../types.d.ts" />
 
-import * as sinon from 'sinon';
-import { SinonSpy } from 'sinon';
-import { RequestMock } from 'testcafe';
-import { buildRequestHooks } from '../../helpers';
+import { RequestLogger } from 'testcafe';
+import { buildRequestHooks, getDefaultColors } from '../../helpers';
 
 import hooks from './variable.hooks';
 import { Page } from './page.po';
 
 
-let spy: SinonSpy;
+const logger = RequestLogger(/\/v1\/.+\/events/);
 
 fixture `Variable Targeting`
     .page `http://localhost:9090/tests/targeting/index.html`
-	.meta({ spies: true })
-	.beforeEach(async () => {
-		spy = sinon.spy();
-	})
     .requestHooks([
 	    ...buildRequestHooks(hooks),
-	    RequestMock()
-		    .onRequestTo(/\/v1\/.+\/events/)
-		    .respond((req: any, res: any) => {
-			    const body = JSON.parse(req.body.toString());
-			    spy(body);
-		    })
+	    logger
     ]);
 
 const page = new Page();
@@ -33,7 +22,7 @@ test(`should apply mutation only after context matches`, async t => {
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv');
 
@@ -48,5 +37,6 @@ test(`should apply mutation only after context matches`, async t => {
 	    .eql('rgb(0, 255, 0)')
 	    .expect(page.header.innerText)
 	    .eql('Hello world')
-		.expect(spy.called).ok();
+		.expect(logger.count(() => true))
+	    .gt(0);
 });

@@ -1,6 +1,6 @@
 /// <reference path="../../../types.d.ts" />
 
-import { buildRequestHooks, getActiveKeys } from '../../../helpers';
+import { buildRequestHooks, getActiveKeys, getDefaultColors } from '../../../helpers';
 import { Page } from '../page.po';
 import hooks from './multiple-experiments.hooks';
 
@@ -17,11 +17,11 @@ test(`should handle multiple experiments`, async t => {
 	// Preconditions
 	await t
 		.expect(page.button.getStyleProperty('color'))
-		.eql('rgb(0, 0, 0)')
+		.eql(getDefaultColors(t.browser).button)
 		.expect(page.header.innerText)
 		.eql('Evolv')
 		.expect(page.button.getStyleProperty('background-color'))
-		.eql('rgb(239, 239, 239)')
+		.eql(getDefaultColors(t.browser).buttonBackground)
 		.expect(page.button.innerText)
 		.eql('Click');
 
