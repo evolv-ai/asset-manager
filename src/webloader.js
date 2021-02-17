@@ -118,6 +118,19 @@ function setUid(uid) {
 	main();
 }
 
+function checkLazyUid(script) {
+    if (script.dataset.evolvUid) {
+        return false;
+    } else if (script.dataset.evolvLazyUid) {
+        console.warn('Evolv uid is empty - experiment will not run until evolv.setUid() is called. Please use data-evolv-lazy-uid="true" when setting a lazy uid.');
+        return true;
+    } else if ('evolvUid' in script.dataset) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function main() {
 	window.evolv = window.evolv || {};
 	const evolv = window.evolv;
@@ -125,8 +138,7 @@ function main() {
 	const script = currentScript();
 
 	// If uid is empty, or evolvLazyUid is set - don't run the webloader until a uid is set using evolv.setUid().
-	if ((script.dataset.evolvLazyUid && !script.dataset.evolvUid) || ("evolvUid" in script.dataset && !script.dataset.evolvUid)) {
-		script.dataset.evolvLazyUid || console.warn('Evolv uid is empty - experiment will not run until evolv.setUid() is called. Please use data-evolv-lazy-uid="true" when setting a lazy uid.');
+	if (checkLazyUid(script)) {
 		evolv.setUid = setUid;
 
 		return;
