@@ -108,16 +108,6 @@ function checkInstanceCount(evolv) {
 	}
 }
 
-function setUid(uid) {
-	if (!uid) {
-		return;
-	}
-
-	const script = currentScript();
-	script.dataset.evolvUid = uid;
-	main();
-}
-
 function checkLazyUid(script) {
     if (script.dataset.evolvUid) {
         return false;
@@ -137,10 +127,23 @@ function main() {
 
 	const script = currentScript();
 
+	evolv.setUid = function setUid(lazyUid) {
+		if (!lazyUid) {
+			return;
+		}
+	
+		if (script.dataset.evolvUid) {
+			console.warn('Evolv uid already set');
+
+			return;
+		}
+	
+		script.dataset.evolvUid = lazyUid;
+		main();
+	}
+
 	// If uid is empty, or evolvLazyUid is set - don't run the webloader until a uid is set using evolv.setUid().
 	if (checkLazyUid(script)) {
-		evolv.setUid = setUid;
-
 		return;
 	}
 
