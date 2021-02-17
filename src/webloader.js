@@ -108,15 +108,33 @@ function checkInstanceCount(evolv) {
 	}
 }
 
-function main() {
-	window.evolv = window.evolv || {};
-	const evolv = window.evolv;
-
-	if (checkInstanceCount(evolv)) {
+function setUid(uid) {
+	if (!uid) {
 		return;
 	}
 
 	const script = currentScript();
+	script.dataset.evolvUid = uid;
+	main();
+}
+
+function main() {
+	window.evolv = window.evolv || {};
+	const evolv = window.evolv;
+
+	const script = currentScript();
+
+	// If uid is empty, or evolvLazyUid is set - don't run the webloader until a uid is set using evolv.setUid().
+	if ((script.dataset.evolvLazyUid && !script.dataset.evolvUid) || ("evolvUid" in script.dataset && !script.dataset.evolvUid)) {
+		script.dataset.evolvLazyUid || console.warn('Evolv uid is empty - experiment will not run until evolv.setUid() is called. Please use data-evolv-lazy-uid="true" when setting a lazy uid.');
+		evolv.setUid = setUid;
+
+		return;
+	}
+
+	if (checkInstanceCount(evolv)) {
+		return;
+	}
 
 	if (!evolv.store) {
 		evolv.store = function (key, value, session) {

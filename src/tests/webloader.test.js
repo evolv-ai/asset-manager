@@ -9,10 +9,11 @@ describe('the web loader', () => {
 		delete global.document;
 	});
 
-	function setupGlobal(doNotTrack, useCookiesDomain) {
+	function setupGlobal(doNotTrack, useCookiesDomain, datasetMock = {}) {
 		const dataset = {
 			evolvEnvironment: 'testing',
-			evolvUseCookies: useCookiesDomain
+			evolvUseCookies: useCookiesDomain,
+			...datasetMock
 		};
 
 		const document = new DocumentMock({
@@ -147,4 +148,57 @@ describe('the web loader', () => {
 			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
 			'The evolv context should have been initialized with the same sid as stored');
 	});
+
+	it('should lazy load uid if no uid set', async () => {
+        setupGlobal(null, undefined, { evolvUid: '' });
+
+        webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+        let scripts = document.getElementsByTagName('script');
+        let links = document.getElementsByTagName('link');
+        assert.equal(scripts.length, 0, 'The script should not have been added');
+        assert.equal(links.length, 0, 'The stylesheet should not have been added');
+
+        window.evolv.setUid('myUid123');
+
+        scripts = document.getElementsByTagName('script');
+        links = document.getElementsByTagName('link');
+        assert.equal(scripts.length, 1, 'The script should have been added');
+        assert.equal(links.length, 1, 'The stylesheet should have been added');
+    });
+
+    it('should lazy load uid if evolvLazyUid attribute is present', async () => {
+        setupGlobal(null, undefined, { evolvLazyUid: 'true' });
+
+        webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+
+        let scripts = document.getElementsByTagName('script');
+        let links = document.getElementsByTagName('link');
+        assert.equal(scripts.length, 0, 'The script should not have been added');
+        assert.equal(links.length, 0, 'The stylesheet should not have been added');
+
+        window.evolv.setUid('myUid123');
+
+        scripts = document.getElementsByTagName('script');
+        links = document.getElementsByTagName('link');
+        assert.equal(scripts.length, 1, 'The script should have been added');
+        assert.equal(links.length, 1, 'The stylesheet should have been added');
+    });
+
+    it('should lazy load uid if evolvLazyUid attribute is present and uid is empty', async () => {
+        setupGlobal(null, undefined, { evolvLazyUid: 'true', evolvUid: '' });
+
+        webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+
+        let scripts = document.getElementsByTagName('script');
+        let links = document.getElementsByTagName('link');
+        assert.equal(scripts.length, 0, 'The script should not have been added');
+        assert.equal(links.length, 0, 'The stylesheet should not have been added');
+
+        window.evolv.setUid('myUid123');
+
+        scripts = document.getElementsByTagName('script');
+        links = document.getElementsByTagName('link');
+        assert.equal(scripts.length, 1, 'The script should have been added');
+        assert.equal(links.length, 1, 'The stylesheet should have been added');
+    });
 });
