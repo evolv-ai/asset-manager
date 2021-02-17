@@ -108,15 +108,48 @@ function checkInstanceCount(evolv) {
 	}
 }
 
+function checkLazyUid(script) {
+    if (script.dataset.evolvUid) {
+        return false;
+    } else if (script.dataset.evolvLazyUid) {
+        console.warn('Evolv uid is empty - experiment will not run until evolv.setUid() is called. Please use data-evolv-lazy-uid="true" when setting a lazy uid.');
+        return true;
+    } else if ('evolvUid' in script.dataset) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function main() {
 	window.evolv = window.evolv || {};
 	const evolv = window.evolv;
 
-	if (checkInstanceCount(evolv)) {
+	const script = currentScript();
+
+	evolv.setUid = function setUid(lazyUid) {
+		if (!lazyUid) {
+			return;
+		}
+	
+		if (script.dataset.evolvUid) {
+			console.warn('Evolv uid already set');
+
+			return;
+		}
+	
+		script.dataset.evolvUid = lazyUid;
+		main();
+	}
+
+	// If uid is empty, or evolvLazyUid is set - don't run the webloader until a uid is set using evolv.setUid().
+	if (checkLazyUid(script)) {
 		return;
 	}
 
-	const script = currentScript();
+	if (checkInstanceCount(evolv)) {
+		return;
+	}
 
 	if (!evolv.store) {
 		evolv.store = function (key, value, session) {
