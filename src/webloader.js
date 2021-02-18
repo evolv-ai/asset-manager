@@ -131,13 +131,7 @@ function main() {
 		if (!lazyUid) {
 			return;
 		}
-	
-		if (script.dataset.evolvUid) {
-			console.warn('Evolv uid already set');
 
-			return;
-		}
-	
 		script.dataset.evolvUid = lazyUid;
 		main();
 	}
