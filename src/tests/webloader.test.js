@@ -225,6 +225,6 @@ describe('the web loader', () => {
         window.evolv.setUid('myUid321');
 
         // assert that it was called with the correct value
-        assert.ok(spy.calledWith('Evolv uid already set'), 'should display a warning if uid is already set');
+        assert.ok(spy.calledWith('Multiple Evolv instances - please verify you have only loaded Evolv once'), 'should display a warning if uid is already set');
     });
 });

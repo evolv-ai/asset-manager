@@ -6,13 +6,9 @@ import { modes } from './modes/index.js';
 import { setCookie, getCookie } from "./cookies.js";
 
 
-function getId(evolv, key) {
-	return evolv.context && key in evolv.context;
-}
-
 function ensureId(evolv, key, session) {
 	let id;
-	if (getId(evolv, key)) {
+	if (evolv.context && key in evolv.context) {
 		id = evolv[key];
 	} else {
 		id = evolv.retrieve(key, session);
@@ -135,13 +131,7 @@ function main() {
 		if (!lazyUid) {
 			return;
 		}
-	
-		if (getId(evolv, 'uid')) {
-			console.warn('Evolv uid already set');
 
-			return;
-		}
-	
 		script.dataset.evolvUid = lazyUid;
 		main();
 	}
