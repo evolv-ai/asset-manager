@@ -20,14 +20,18 @@ function ensureId(evolv, key, session) {
 	return id;
 }
 
+function isEvolvScript(script) {
+	return script && script.dataset && 'evolvEnvironment' in script.dataset;
+}
+
 function currentScript() {
-	if (document.currentScript) {
+	if (document.currentScript && isEvolvScript(document.currentScript)) {
 		return document.currentScript;
 	}
 
 	for (let i = 0; i < document.scripts.length; i++) {
 		const script = document.scripts[i];
-		if (script && script.dataset && 'evolvEnvironment' in script.dataset) {
+		if (isEvolvScript(script)) {
 			return script;
 		}
 	}
@@ -112,9 +116,9 @@ function checkLazyUid(script) {
     if (script.dataset.evolvUid) {
         return false;
     } else if (script.dataset.evolvLazyUid) {
-        console.warn('Evolv uid is empty - experiment will not run until evolv.setUid() is called. Please use data-evolv-lazy-uid="true" when setting a lazy uid.');
         return true;
     } else if ('evolvUid' in script.dataset) {
+        console.warn('Evolv uid is empty - experiment will not run until evolv.setUid() is called. Please use data-evolv-lazy-uid="true" when setting a lazy uid.');
         return true;
     } else {
         return false;
