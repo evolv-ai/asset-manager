@@ -30,4 +30,8 @@ function setUidFromGaCid() {
     });
 }
 
-export { gaIntegration };
+function isValidGaClientId(cid) {
+    return /^\d+\.\d+$/.test(cid);
+}
+
+export { gaIntegration, isValidGaClientId };
