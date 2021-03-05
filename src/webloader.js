@@ -3,7 +3,8 @@ import EvolvClient from '@evolv/javascript-sdk';
 import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
 import { modes } from './modes/index.js';
-import { setCookie, getCookie } from "./cookies.js";
+import { setCookie, getCookie } from './cookies.js';
+import { gaIntegration } from './integrations/ga.js';
 
 
 function ensureId(evolv, key, session) {
@@ -113,16 +114,13 @@ function checkInstanceCount(evolv) {
 }
 
 function checkLazyUid(script) {
-    if (script.dataset.evolvUid) {
-        return false;
-    } else if (script.dataset.evolvLazyUid) {
-        return true;
-    } else if ('evolvUid' in script.dataset) {
-        console.warn('Evolv uid is empty - experiment will not run until evolv.setUid() is called. Please use data-evolv-lazy-uid="true" when setting a lazy uid.');
-        return true;
-    } else {
-        return false;
-    }
+	if (script.dataset.evolvLazyUid) {
+		if (!script.dataset.evolvUid) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 function main() {
@@ -140,8 +138,10 @@ function main() {
 		main();
 	}
 
-	// If uid is empty, or evolvLazyUid is set - don't run the webloader until a uid is set using evolv.setUid().
+	// If evolvLazyUid is true and no uid is set - get GA client Id and set uid
 	if (checkLazyUid(script)) {
+		// Temporary hotfix for GA Client Id integration
+		gaIntegration();
 		return;
 	}
 
