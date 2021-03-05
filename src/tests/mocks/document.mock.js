@@ -1,3 +1,5 @@
+const MOCK_GA_CLIENT_ID = '1111.2222';
+
 class ClassListMock {
 	constructor(classList=[]) {
     this.classList = classList
@@ -103,11 +105,13 @@ class WindowMock {
 		this.localStorage = options.localStorage || new StorageMock();
 		this.sessionStorage = options.sessionStorage || new StorageMock();
 		this.eventListeners = [];
-		this.navigator = { sendBeacon: () => {} }
+		this.navigator = { sendBeacon: () => {} };
+		this.ga = cb => cb();
+		this.ga.getAll = () => [{ get: () => MOCK_GA_CLIENT_ID }];
 	}
 	addEventListener(event, listener) {
 		this.eventListeners.push(event, listener);
 	}
 }
 
-export { WindowMock, DocumentMock, ElementMock, ClassListMock, StyleSheetMock, ScriptMock, StorageMock };
+export { WindowMock, DocumentMock, ElementMock, ClassListMock, StyleSheetMock, ScriptMock, StorageMock, MOCK_GA_CLIENT_ID };
