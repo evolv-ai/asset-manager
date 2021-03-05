@@ -4,7 +4,7 @@ import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
 import { modes } from './modes/index.js';
 import { setCookie, getCookie } from './cookies.js';
-import { gaIntegration } from './integrations/ga.js';
+import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
 
 
 function ensureId(evolv, key, session) {
@@ -115,7 +115,7 @@ function checkInstanceCount(evolv) {
 
 function checkLazyUid(script) {
 	if (script.dataset.evolvLazyUid) {
-		if (!script.dataset.evolvUid) {
+		if (!script.dataset.evolvUid || !isValidGaClientId(script.dataset.evolvUid)) {
 			return true;
 		}
 	}
