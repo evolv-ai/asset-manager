@@ -175,4 +175,16 @@ describe('the web loader', () => {
 		// assert that it was called with the correct value
 		assert.ok(spy.calledWith('Multiple Evolv instances - please verify you have only loaded Evolv once'), 'should display a warning if uid is already set');
 	});
+
+	it('should set uid from GA if the uid is not the correct format and lazy flag is set', async () => {
+		setupGlobal(null, undefined, { evolvLazyUid: 'true', evolvUid: 'GA1_2_4444444_555555' });
+
+		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+
+		let scripts = document.getElementsByTagName('script');
+		let links = document.getElementsByTagName('link');
+		assert.equal(scripts.length, 1, 'The script should have been added');
+		assert.equal(links.length, 1, 'The stylesheet should have been added');
+		assert.ok(scripts[0].src.indexOf(MOCK_GA_CLIENT_ID) !== 0, 'The uid should have been set.');
+	});
 });
