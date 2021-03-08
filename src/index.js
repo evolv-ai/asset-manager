@@ -87,7 +87,6 @@ function main(client, options, _performance) {
 	};
 
 	client.getActiveKeys('web').listen(function (keys) {
-		let functions = [];
 		const environment = client.environment;
 		const cssAsset = retrieveEvolvCssAsset(environment);
 		const jsAsset = retrieveEvolvJsAsset(environment);
@@ -112,11 +111,7 @@ function main(client, options, _performance) {
 		}
 
 		if (jsAsset && liveContexts.length > 0) {
-        liveContexts.forEach(function (key) {
-          functions.push(key);
-        });
-
-        invokeFunctions(keys.previous, functions);
+        invokeFunctions(keys.previous, liveContexts);
 		} else if (cssAsset && liveContexts.length > 0) {
 			confirm();
 		}
