@@ -135,12 +135,12 @@ function markConsented(evolv) {
   if (consented) return;
   consented = true;
 
-  Object.entries(localConsentStore).forEach(function (entry) {
-    window.evolv.store(entry[0], entry[1].value, false);
+  Object.keys(localConsentStore).forEach(function (key) {
+    window.evolv.store(key, localConsentStore[key].value, false);
   });
 
-  Object.entries(localSessionConsentStore).forEach(function (entry) {
-    window.evolv.store(entry[0], entry[1].value, true);
+  Object.keys(localSessionConsentStore).forEach(function (key) {
+    window.evolv.store(key, localSessionConsentStore[key].value, true);
   });
 
   localConsentStore = {};
