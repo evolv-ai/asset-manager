@@ -2,9 +2,9 @@ import {getCookie, setCookie} from "./cookies.js";
 
 /**
  *
- * @param useCookies - A String - 'true' for the top level domain, otherwise pass in the subdomain. Leave blank to use
+ * @param {string|undefined} useCookies - 'true' for the top level domain, otherwise pass in the subdomain. Leave blank to use
  * local storage
- * @param allowPersistence - true is the most common. This generally false when a user has not accepted cookie tracking
+ * @param {boolean} allowPersistence - true is the most common. This generally false when a user has not accepted cookie tracking
  * @constructor
  */
 function EvolvStorageManager(useCookies, allowPersistence) {
