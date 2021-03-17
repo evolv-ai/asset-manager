@@ -2,8 +2,8 @@ import EvolvClient from '@evolv/javascript-sdk';
 
 import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
+import EvolvStorageManager from './storage.js';
 import { modes } from './modes/index.js';
-import { setCookie, getCookie } from './cookies.js';
 import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
 
 
@@ -127,47 +127,25 @@ function requireConsent(script) {
   return script.dataset.evolvRequireConsent === 'true'
 }
 
-let consented = false;
-let localConsentStore = {};
-let localSessionConsentStore = {};
-
-function markConsented(evolv) {
-  if (consented) return;
-  consented = true;
-
-  Object.keys(localConsentStore).forEach(function (key) {
-    window.evolv.store(key, localConsentStore[key].value, false);
-  });
-
-  Object.keys(localSessionConsentStore).forEach(function (key) {
-    window.evolv.store(key, localSessionConsentStore[key].value, true);
-  });
-
-  localConsentStore = {};
-  localSessionConsentStore = {};
-  evolv.client.allowEvents();
-}
-
-function hasConsented() {
-  return consented;
-}
-
 function main() {
-	window.evolv = window.evolv || {};
-	const evolv = window.evolv;
+  window.evolv = window.evolv || {};
+  const evolv = window.evolv;
 
-	const script = currentScript();
+  const script = currentScript();
 
-	evolv.setUid = function setUid(lazyUid) {
-		if (!lazyUid) {
-			return;
-		}
+  evolv.setUid = function setUid(lazyUid) {
+    if (!lazyUid) {
+      return;
+    }
 
-		script.dataset.evolvUid = lazyUid;
-		main();
-	};
+    script.dataset.evolvUid = lazyUid;
+    main();
+  };
 
-	evolv.markConsented = function(){ markConsented(evolv) };
+  evolv.markConsented = function () {
+    storageManager.allowPersistentStorage();
+    evolv.client.allowEvents();
+  };
 
 	// If evolvLazyUid is true and no uid is set - get GA client Id and set uid
 	if (checkLazyUid(script)) {
@@ -180,41 +158,15 @@ function main() {
 		return;
 	}
 
-  let getConsentStore = function(session) {
-    return session ? localSessionConsentStore : localConsentStore;
-  };
+	let storageManager = new EvolvStorageManager(script.dataset.evolvUseCookies, !requireConsent(script));
 
-	if (!evolv.store) {
-		evolv.store = function (key, value, session) {
-      if (requireConsent(script) && !hasConsented()) {
-        getConsentStore(session)[key] = {
-          value: value,
-          session: session
-        };
-        return;
-      }
+  if (!evolv.store) {
+    evolv.store = storageManager.store;
+  }
 
-			if (script.dataset.evolvUseCookies && !session) {
-				const domain = script.dataset.evolvUseCookies === 'true' ? "" : script.dataset.evolvUseCookies;
-				return setCookie('evolv:' + key, value, 365, domain);
-			}
-			(session ? window.sessionStorage : window.localStorage).setItem('evolv:' + key, value);
-		}
-	}
-
-	if (!evolv.retrieve) {
-		window.evolv.retrieve = function (key, session) {
-      if (requireConsent(script) && !hasConsented()) {
-        let consentStore = getConsentStore(session);
-        return consentStore[key] && consentStore[key].value;
-      }
-
-			if (script.dataset.evolvUseCookies && !session) {
-				return getCookie('evolv:' + key);
-			}
-			return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
-		}
-	}
+  if (!evolv.retrieve) {
+    evolv.retrieve = storageManager.retrieve;
+  }
 
 	modes.forEach(function(mode) {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
