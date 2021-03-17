@@ -187,4 +187,37 @@ describe('the web loader', () => {
 		assert.equal(links.length, 1, 'The stylesheet should have been added');
 		assert.ok(scripts[0].src.indexOf(MOCK_GA_CLIENT_ID) !== 0, 'The uid should have been set.');
 	});
+
+	describe('consent checks', ()  => {
+    it('should initialize properly', async () => {
+      setupGlobal(null, undefined, { evolvRequireConsent: 'true' });
+
+      webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+
+      const scripts = document.getElementsByTagName('script');
+      const links = document.getElementsByTagName('link');
+      assert.equal(scripts.length, 1, 'The script should have been added');
+      assert.equal(links.length, 1, 'The stylesheet should have been added');
+      let uid = window.evolv.retrieve('uid', false);
+      let sid = window.evolv.retrieve('sid', true);
+
+      assert.ok(uid, 'The uid id should have been generated');
+      assert.equal(window.evolv.context.uid, uid,'context uid should be the same as the generated uid');
+
+      assert.ok(sid, 'The session id should have been generated');
+      assert.equal(window.evolv.context.sid, sid,'context uid should be the same as the generated sid');
+
+      assert.strictEqual(window.localStorage.values['evolv:uid'], undefined, 'The user id should not be stored in local storage');
+      assert.strictEqual(document.cookie, "", 'The user id should not be stored in cookie storage');
+      assert.strictEqual(window.sessionStorage.values['evolv:sid'], undefined, 'The session id should not be stored in session storage');
+
+      window.evolv.markConsented();
+
+      assert.strictEqual(window.localStorage.values['evolv:uid'], uid, 'The user id should be stored in local storage, and match the generated uid');
+      assert.strictEqual(document.cookie, "", 'The user id should still not be stored in cookie storage');
+      assert.strictEqual(window.sessionStorage.values['evolv:sid'], sid, 'The session id should not be stored in session storage');
+      assert.equal(window.evolv.context.sid, sid,'context uid should be the same as the generated sid');
+      assert.equal(window.evolv.context.uid, uid,'context uid should be the same as the generated uid');
+    });
+  })
 });
