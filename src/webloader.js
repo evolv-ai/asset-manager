@@ -161,7 +161,7 @@ function main() {
 	let storageManager = new EvolvStorageManager(script.dataset.evolvUseCookies, !requireConsent(script));
 
   if (!evolv.store) {
-    evolv.store = storageManager.store;
+    evolv.store = storageManager.store.bind(storageManager);
   }
 
   if (!evolv.retrieve) {
