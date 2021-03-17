@@ -165,7 +165,7 @@ function main() {
   }
 
   if (!evolv.retrieve) {
-    evolv.retrieve = storageManager.retrieve;
+    evolv.retrieve = storageManager.retrieve.bind(storageManager);
   }
 
 	modes.forEach(function(mode) {
