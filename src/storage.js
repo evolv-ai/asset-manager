@@ -1,6 +1,8 @@
 import {getCookie, setCookie} from "./cookies.js";
 
 /**
+ * @description Storage manager to ensure no data is persisted if consentis required, and has not been given.
+ * The persisted value always takes precedence in retrieval
  *
  * @param useCookies - A String - 'true' for the top level domain, otherwise pass in the subdomain. Leave blank to use
  * local storage
@@ -33,16 +35,24 @@ function EvolvStorageManager(useCookies, allowPersistence) {
     (session ? window.sessionStorage : window.localStorage).setItem('evolv:' + key, value);
   };
 
+  function retrievePersisted(key, session) {
+    if (useCookies && !session) {
+      return getCookie('evolv:' + key);
+    }
+    return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
+  }
+
   this.retrieve = function (key, session) {
+    let persistedValue = retrievePersisted(key, session);
+
+    if (persistedValue !== undefined) return persistedValue;
+
     if (!_allowPersistence) {
       let consentStore = getConsentStore(session);
       return consentStore[key] && consentStore[key].value;
     }
 
-    if (useCookies && !session) {
-      return getCookie('evolv:' + key);
-    }
-    return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
+    return persistedValue;
   };
 
   this.allowPersistentStorage = function() {

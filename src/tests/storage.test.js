@@ -107,4 +107,19 @@ describe('storage checks', ()  => {
     assert.equal(window.document.cookie,  '', 'Not stored in cookie storage');
     assert.equal(window.sessionStorage.getItem('evolv:key2'),  'value2', 'Not stored in session storage');
   });
+
+  it('should retrieve from the persistent store if the data is there', () => {
+    let evolvStorageManager = new EvolvStorageManager(undefined, false);
+
+    window.localStorage.setItem('evolv:key1', 'value1');
+    window.sessionStorage.setItem('evolv:key2', 'value2');
+
+    assert.equal(evolvStorageManager.retrieve('key1', false), 'value1', 'persistent value should be retrieved feom local store');
+    assert.equal(evolvStorageManager.retrieve('key2', true), 'value2', 'persistent value should be retrieved from session store');
+
+    //evolvStorageManager.store('key2', 'value2',  true);
+
+    //evolvStorageManager.allowPersistentStorage();
+
+  });
 });
