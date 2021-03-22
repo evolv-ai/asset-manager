@@ -116,10 +116,5 @@ describe('storage checks', ()  => {
 
     assert.equal(evolvStorageManager.retrieve('key1', false), 'value1', 'persistent value should be retrieved feom local store');
     assert.equal(evolvStorageManager.retrieve('key2', true), 'value2', 'persistent value should be retrieved from session store');
-
-    //evolvStorageManager.store('key2', 'value2',  true);
-
-    //evolvStorageManager.allowPersistentStorage();
-
   });
 });
