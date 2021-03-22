@@ -1,6 +1,8 @@
 import all from './all.js';
-import { MiniPromise } from "@evolv/javascript-sdk";
+import { MiniPromise } from '@evolv/javascript-sdk';
 import { toContextKey } from './keys.js';
+import { isImmediate, isScheduled } from './guards.js';
+import { scheduleOnDOMContentLoaded, scheduleOnLoad } from './schedule.js';
 
 const MAX_TIMEOUT = 100;
 
@@ -26,7 +28,7 @@ function main(client, options, _performance) {
 	}
 
 	const invokeFunctions = function(subset, functions) {
-		const evolv = window.evolv;
+    const evolv = window.evolv;
 		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
 			if (!applyTimeout) {
 				return;
@@ -52,25 +54,56 @@ function main(client, options, _performance) {
 
 		const promises = [];
 
-		functions.forEach(function (key) {
-			const contextKey = toContextKey(key);
-			if (subset && subset.indexOf(contextKey) > -1) {
-				return;
-			}
+    const immediateFunctions = functions.filter(isImmediate(evolv.javascript.variants));
+    const scheduledFunctions = functions.filter(isScheduled(evolv.javascript.variants));
 
-			if (key in evolv.javascript.variants) {
-				let promise = MiniPromise.createPromise(function(resolve, reject) {
-					try {
-						if (!evolv.javascript.variants[key].call({key: contextKey}, resolve, reject)) {
-							resolve();
-						}
-					} catch(err) {
-						reject(err);
-					}
-				});
-				promises.push(promise);
-			}
-		});
+    immediateFunctions
+      .forEach(function (key) {
+        const contextKey = toContextKey(key);
+        if (subset && subset.indexOf(contextKey) > -1) {
+          return;
+        }
+
+        if (key in evolv.javascript.variants) {
+          let promise = MiniPromise.createPromise(function (resolve, reject) {
+            try {
+              if (!evolv.javascript.variants[key].call({key: contextKey}, resolve, reject)) {
+                resolve();
+              }
+            } catch (err) {
+              reject(err);
+            }
+          });
+          promises.push(promise);
+        }
+      });
+
+    scheduledFunctions
+      .forEach(function (key) {
+        const fn = evolv.javascript.variants[key];
+
+        const contextKey = toContextKey(key);
+        const onReject = function (err) {
+          client.contaminate({
+            reason: 'error-thrown',
+            details: err.message
+          });
+
+          console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
+        };
+
+        if (subset && subset.indexOf(contextKey) > -1) {
+          return;
+        }
+
+        if (fn.timing === 'loaded') {
+          scheduleOnLoad(fn, contextKey)
+            .catch(onReject);
+        } else if (fn.timing === 'dom-content-loaded') {
+          scheduleOnDOMContentLoaded(fn, contextKey)
+            .catch(onReject);
+        }
+      });
 
 		all(promises).then(function () {
 			confirm();
