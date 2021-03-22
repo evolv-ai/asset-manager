@@ -1,7 +1,7 @@
 import {getCookie, setCookie} from "./cookies.js";
 
 /**
- * @description Storage manager to ensure no data is persisted if consentis required, and has not been given.
+ * @description Storage manager to ensure no data is persisted if consent is required and has not been given.
  * The persisted value always takes precedence in retrieval
  *
  * @param useCookies - A String - 'true' for the top level domain, otherwise pass in the subdomain. Leave blank to use
