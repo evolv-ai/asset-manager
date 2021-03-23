@@ -6,14 +6,23 @@
 
     <title>Jumbotron Template for Bootstrap</title>
 
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/index.css" rel="stylesheet">
+	<script>
+	  window.addEventListener("load", () => {
+		  performance.mark("load");
+	  });
+	  document.addEventListener("DOMContentLoaded", () => {
+		  performance.mark("DOMContentLoaded");
+	  });
+	</script>
 
     <script src="/webloader.js"
-        data-evolv-environment="dac0c777f5"
+        data-evolv-environment="088f07a6a4"
         data-evolv-endpoint="http://localhost:10020/"
         data-evolv-js="true">
     </script>
+
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="css/index.css?delay=1000" rel="stylesheet">
   </head>
 
   <body>

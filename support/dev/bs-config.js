@@ -1,4 +1,6 @@
 import browserSync from 'browser-sync';
+import * as querystring from 'querystring';
+import * as url from 'url';
 
 const server = browserSync.create();
 
@@ -24,6 +26,18 @@ server.init({
 			'/tests': 'e2e/tests'
 		}
 	},
+    middleware: [
+        function(req, res, next) {
+            const query = url.parse(req.url).query;
+            const params = querystring.parse(query);
+
+            if (!query || !params.delay) {
+                next();
+            } else {
+                setTimeout(next, parseInt(params.delay));
+            }
+        }
+    ],
 	proxy: false,
 	port: 9090,
 	serveStatic: [],
