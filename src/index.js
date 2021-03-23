@@ -1,14 +1,13 @@
 import all from './all.js';
 import { MiniPromise } from '@evolv/javascript-sdk';
 import { toContextKey } from './keys.js';
-import { isImmediate, isScheduled } from './guards.js';
+import { isImmediate, isOnDomContentLoaded, isOnPageLoaded, isLegacy } from './guards.js';
 import { scheduleOnDOMContentLoaded, scheduleOnLoad } from './schedule.js';
 
 const MAX_TIMEOUT = 100;
 
 function main(client, options, _performance) {
 	let appliedClasses = [];
-	let applyTimeout = true;
 	let confirmed = false;
 	options = options || {};
 
@@ -27,47 +26,19 @@ function main(client, options, _performance) {
 		}
 	}
 
-	const invokeFunctions = function(subset, functions) {
-    const evolv = window.evolv;
-		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
-			if (!applyTimeout) {
-				return;
-			}
-
-			const timeNow = (new Date()).getTime();
-			const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
-			const threshold = options.timeoutThreshold || 60000;
-			if (domContentLoadedEventStart === 0 || timeNow < domContentLoadedEventStart + threshold) {
-				setTimeout(function() {
-					invokeFunctions(subset, functions);
-				}, MAX_TIMEOUT);
-			} else {
-				client.contaminate({
-					reason: 'timeout-exceeded',
-					details: 'current time: ' + timeNow + ', domContentLoadedEventStart: ' + domContentLoadedEventStart + ', threshold: ' + threshold
-				});
-				applyTimeout = false;
-				console.warn('[Evolv]: Loading of variants timed out.');
-			}
-			return;
-		}
-
-		const promises = [];
-
-    const immediateFunctions = functions.filter(isImmediate(evolv.javascript.variants));
-    const scheduledFunctions = functions.filter(isScheduled(evolv.javascript.variants));
-
-    immediateFunctions
+  function runImmediately(variants, functions, subset) {
+    let promises = [];
+    functions
       .forEach(function (key) {
         const contextKey = toContextKey(key);
         if (subset && subset.indexOf(contextKey) > -1) {
           return;
         }
 
-        if (key in evolv.javascript.variants) {
+        if (key in variants) {
           let promise = MiniPromise.createPromise(function (resolve, reject) {
             try {
-              if (!evolv.javascript.variants[key].call({key: contextKey}, resolve, reject)) {
+              if (!variants[key].call({key: contextKey}, resolve, reject)) {
                 resolve();
               }
             } catch (err) {
@@ -78,45 +49,139 @@ function main(client, options, _performance) {
         }
       });
 
-    scheduledFunctions
+    return promises;
+  }
+
+  const onReject = function (err) {
+    client.contaminate({
+      reason: 'error-thrown',
+      details: err.message
+    });
+
+    console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
+  };
+
+  const invokeFunctions = function(subset, functions, script) {
+    _invokeFunctionsLegacy(subset, functions);
+
+    _invokeFunctions(subset, functions, script);
+  };
+
+  const checkTimeout = function() {
+    const timeNow = (new Date()).getTime();
+    const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
+    const threshold = options.timeoutThreshold || 60000;
+    if (domContentLoadedEventStart > 0 && timeNow > domContentLoadedEventStart + threshold) {
+      client.contaminate({
+        reason: 'timeout-exceeded',
+        details: 'current time: ' + timeNow + ', domContentLoadedEventStart: ' + domContentLoadedEventStart + ', threshold: ' + threshold
+      });
+      console.warn('[Evolv]: Loading of variants timed out.');
+
+      return true;
+    }
+  };
+
+  let applyTimeout = true;
+  let onloadFunctionCalls = [];
+  const _invokeFunctions = function(subset, functions, script) {
+    let evolv = window.evolv;
+
+    if (!evolv || !evolv.javascript || !evolv.javascript.variants) {
+      onloadFunctionCalls.push({
+        subset: subset,
+        functions: functions,
+        script: script
+      });
+
+      script.onload = function () {
+        for (let i = 0; i < onloadFunctionCalls.length; i++) {
+          const onloadFunctionCall = onloadFunctionCalls[i];
+          _invokeFunctions(onloadFunctionCall.subset, onloadFunctionCall.functions, onloadFunctionCall.script);
+        }
+        onloadFunctionCalls = [];
+      };
+
+      return;
+    }
+
+    if (applyTimeout && checkTimeout()) {
+      applyTimeout = false;
+      return;
+    }
+
+    const immediateFunctions = functions.filter(isImmediate(evolv.javascript.variants));
+    const domContentLoadedFunctions = functions.filter(isOnDomContentLoaded(evolv.javascript.variants));
+    const pageLoadedFunctions = functions.filter(isOnPageLoaded(evolv.javascript.variants));
+
+    const promises = runImmediately(evolv.javascript.variants, immediateFunctions, subset);
+
+    domContentLoadedFunctions // TODO move the listener outside the loop
       .forEach(function (key) {
         const fn = evolv.javascript.variants[key];
 
         const contextKey = toContextKey(key);
-        const onReject = function (err) {
-          client.contaminate({
-            reason: 'error-thrown',
-            details: err.message
-          });
-
-          console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
-        };
 
         if (subset && subset.indexOf(contextKey) > -1) {
           return;
         }
 
-        if (fn.timing === 'loaded') {
-          scheduleOnLoad(fn, contextKey)
-            .catch(onReject);
-        } else if (fn.timing === 'dom-content-loaded') {
-          scheduleOnDOMContentLoaded(fn, contextKey)
-            .catch(onReject);
-        }
+        scheduleOnDOMContentLoaded(fn, contextKey)
+          .catch(onReject);
       });
 
-		all(promises).then(function () {
-			confirm();
+    pageLoadedFunctions // TODO move the listener outside the loop
+      .forEach(function (key) {
+        const fn = evolv.javascript.variants[key];
+
+        const contextKey = toContextKey(key);
+
+        if (subset && subset.indexOf(contextKey) > -1) {
+          return;
+        }
+
+        scheduleOnLoad(fn, contextKey)
+          .catch(onReject);
+      });
+
+    all(promises).then(function () {
+      promises.length > 0 && confirm(); // TODO problems if all the functions are not immediate -- will not confirm
+    })
+      .catch(onReject)
+      .finally(function() {
+        applyTimeout = false;
+      });
+  };
+
+  let applyTimeoutLegacy = true;
+	const _invokeFunctionsLegacy = function(subset, functions) {
+    const evolv = window.evolv;
+		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
+      const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
+			if (domContentLoadedEventStart > 0) {
+        if (applyTimeoutLegacy && checkTimeout()) {
+          applyTimeoutLegacy = false;
+          return;
+        }
+      }
+
+      setTimeout(function () {
+        _invokeFunctionsLegacy(subset, functions);
+      }, MAX_TIMEOUT);
+
+			return;
+		}
+
+    const legacyFunctions = functions.filter(isLegacy(evolv.javascript.variants));
+    const promises = runImmediately(evolv.javascript.variants, legacyFunctions, subset);
+
+    all(promises).then(function () {
+      promises.length > 0 && confirm();
 		})
-		.catch(function(err) {
-			client.contaminate({
-				reason: 'error-thrown',
-				details: err.message
-			});
-			console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
-		}).finally(function() {
-			applyTimeout = false;
-		});
+      .catch(onReject)
+      .finally(function() {
+        applyTimeout = false;
+      });
 	};
 
 	client.getActiveKeys('web').listen(function (keys) {
@@ -144,7 +209,7 @@ function main(client, options, _performance) {
 		}
 
 		if (jsAsset && liveContexts.length > 0) {
-        invokeFunctions(keys.previous, liveContexts);
+        invokeFunctions(keys.previous, liveContexts, jsAsset);
 		} else if (cssAsset && liveContexts.length > 0) {
 			confirm();
 		}
