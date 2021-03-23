@@ -1,3 +1,11 @@
+export function isLegacy(functionMap) {
+  return function(key) {
+    return key in functionMap
+      && functionMap[key] !== undefined
+      && (functionMap[key].timing === undefined);
+  };
+}
+
 export function isImmediate(functionMap) {
   return function(key) {
     return key in functionMap
@@ -5,10 +13,18 @@ export function isImmediate(functionMap) {
   };
 }
 
-export function isScheduled(functionMap) {
+export function isOnDomContentLoaded(functionMap) {
   return function(key) {
     return key in functionMap
       && functionMap[key] !== undefined
-      && functionMap[key].timing !== 'immediate';
+      && functionMap[key].timing === 'dom-content-loaded';
+  };
+}
+
+export function isOnPageLoaded(functionMap) {
+  return function(key) {
+    return key in functionMap
+      && functionMap[key] !== undefined
+      && functionMap[key].timing === 'loaded';
   };
 }
