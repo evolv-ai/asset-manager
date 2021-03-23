@@ -9,7 +9,8 @@ export function isLegacy(functionMap) {
 export function isImmediate(functionMap) {
   return function(key) {
     return key in functionMap
-      && (functionMap[key] === undefined || functionMap[key].timing === 'immediate');
+      && functionMap[key] !== undefined
+      && functionMap[key].timing === 'immediate';
   };
 }
 
