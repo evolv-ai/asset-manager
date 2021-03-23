@@ -115,6 +115,7 @@ function main(client, options, _performance) {
     const pageLoadedFunctions = functions.filter(isOnPageLoaded(evolv.javascript.variants));
 
     const promises = runImmediately(evolv.javascript.variants, immediateFunctions, subset);
+    let invokableFunctions = promises.length;
 
     domContentLoadedFunctions // TODO move the listener outside the loop
       .forEach(function (key) {
@@ -126,6 +127,7 @@ function main(client, options, _performance) {
           return;
         }
 
+        invokableFunctions++;
         scheduleOnDOMContentLoaded(fn, contextKey)
           .catch(onReject);
       });
@@ -140,12 +142,13 @@ function main(client, options, _performance) {
           return;
         }
 
+        invokableFunctions++;
         scheduleOnLoad(fn, contextKey)
           .catch(onReject);
       });
 
     all(promises).then(function () {
-      promises.length > 0 && confirm(); // TODO problems if all the functions are not immediate -- will not confirm
+      (invokableFunctions > 0) && confirm();
     })
       .catch(onReject)
       .finally(function() {
