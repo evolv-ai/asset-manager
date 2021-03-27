@@ -70,9 +70,6 @@ const Runner = /** @class */ (function () {
         this.initialized = false;
 
         /** @type {boolean} */
-        this.confirmed = false;
-
-        /** @type {boolean} */
         this.timedOut = false;
 
         /** @type {RunLevel} */
@@ -117,7 +114,9 @@ const Runner = /** @class */ (function () {
      */
     Runner.prototype.setRunLevel = function (level) {
         const previous = this.runLevel;
+
         this.runLevel = Math.max(previous, level);
+
         if (this.runLevel !== previous) {
             this.execute();
         }
@@ -139,15 +138,19 @@ const Runner = /** @class */ (function () {
         if (!this.areVariantsDefined() || this.initialized) {
             return;
         }
+
         this.initialized = true;
+
         if (this.hasTimeoutElapsed()) {
             return;
         }
+
         const variants = evolv.javascript.variants;
         const entries = Object.keys(variants)
             .sort(function (a, b) {
                 return a.length - b.length;
             });
+
         entries.forEach(function (key) {
             const fn = variants[key];
             this.functions.push({
@@ -158,6 +161,7 @@ const Runner = /** @class */ (function () {
                 handler: fn
             });
         }.bind(this));
+
         if (this.deferred) {
             this.updateFunctionsToRun(this.deferred);
         }
@@ -172,14 +176,17 @@ const Runner = /** @class */ (function () {
             this.deferred = keys;
             return;
         }
+
         this.functions.forEach(function (def) {
             if (keys.indexOf(def.key) === -1) {
                 this.unschedule(def.key);
             }
         }.bind(this));
+
         keys.forEach(function (key) {
             this.schedule(key);
         }.bind(this));
+
         this.execute();
     };
 
@@ -188,11 +195,14 @@ const Runner = /** @class */ (function () {
      */
     Runner.prototype.schedule = function (key) {
         const def = this.functions.find(function (def) { return def.key === key; });
+
         if (!def || def.status !== 'not-runnable') {
             return;
         }
+
         def.status = 'runnable';
     };
+
     /**
      * @param {string} key
      */
@@ -204,6 +214,7 @@ const Runner = /** @class */ (function () {
         // TODO: Devise way to deal with in-flight promises
         def.status = 'not-runnable';
     };
+
     /**
      * @returns void
      * @private
@@ -273,8 +284,7 @@ const Runner = /** @class */ (function () {
             return this.functions
                 .filter(function (def) { return def.timing === 'legacy'; })
                 .filter(hasNotRun);
-        }
-        else if (this.runLevel === levelMap['legacy']) {
+        } else if (this.runLevel === levelMap['legacy']) {
             return this.functions
                 .filter(function (def) { return def.timing === 'immediate'; })
                 .filter(hasNotCompleted);
@@ -298,13 +308,10 @@ const Runner = /** @class */ (function () {
             .every(function (def) {
                 return def.status === 'resolved';
             });
+
         if (allResolved) {
             this.confirm();
         }
-    };
-
-    Runner.prototype.print = function () {
-        console.table(this.functions);
     };
 
     /**
@@ -312,12 +319,7 @@ const Runner = /** @class */ (function () {
      * @private
      */
     Runner.prototype.confirm = function () {
-        const client = this.container.client;
-        // Q: Could have been a bug? Only confirming on first occurrence, not subsequent context entries
-        if (!this.confirmed) {
-            client.confirm();
-            this.confirmed = true;
-        }
+        this.container.client.confirm();
     };
 
     /**
@@ -369,6 +371,7 @@ const Runner = /** @class */ (function () {
 
         doTiming();
     };
+
     return Runner;
 }());
 
