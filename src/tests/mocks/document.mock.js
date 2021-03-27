@@ -1,3 +1,5 @@
+import EventEmitter from 'events';
+
 const MOCK_GA_CLIENT_ID = '1111.2222';
 
 class ClassListMock {
@@ -65,6 +67,7 @@ class StorageMock {
 class DocumentMock {
 	constructor(options) {
 		options = options || {};
+		this.emitter = options.emitter || new EventEmitter();
 		this.cookie = options.cookie || '';
 		this.classList = options.classList || new ClassListMock();
 		this.elements = options.elements || [];
@@ -96,6 +99,14 @@ class DocumentMock {
 	getElementsByTagName(tagName) {
 		return this.elements.filter(element => element.tagName === tagName);
 	}
+
+	addEventListener(name, listener) {
+        this.emitter.on(name, listener);
+    }
+
+    removeEventListener(name, listener) {
+	    this.emitter.off(name, listener);
+    }
 }
 
 class WindowMock {
