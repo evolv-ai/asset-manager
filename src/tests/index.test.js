@@ -491,7 +491,7 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
 			});
 
-			it('should not invoke javascript again until the keys are refired and not already matching', () => {
+			it('should not invoke javascript again until the keys are refired and not already matching', async() => {
 				const invokedJavascript = [];
 				global.window = {
 					location: {
@@ -511,6 +511,7 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
 
+        await wait(0);
 				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2'])
 
 				// The previous matching functions should have been cleared
@@ -522,6 +523,7 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
 
+        await wait(0);
 				// The previous matching functions should have been cleared
 				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2'])
 
@@ -533,16 +535,10 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
 
-
+        await wait(0);
+        // should refire web.page1
 				client.fireActiveKeyListenerNewKeys(['web.page2', 'web.page2.variable1', 'web.page2.variable2', 'web.page1']);
-
 				assert.equal(invokedJavascript.length, 7);
-				assert.ok(invokedJavascript.indexOf('evolv_web_page1') === 0);
-				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
-				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
-				assert.ok(invokedJavascript.indexOf('evolv_web_page2') > -1);
-				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable1') > -1);
-				assert.ok(invokedJavascript.indexOf('evolv_web_page2_variable2') > -1);
 				assert.ok(invokedJavascript[6] === 'evolv_web_page1');
 			});
 
