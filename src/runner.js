@@ -129,6 +129,11 @@ const Runner = /** @class */ (function () {
      * @private
      */
     Runner.prototype.areVariantsDefined = function () {
+        // Needed to prevent test failures when window is disposed
+        if (typeof window === 'undefined') {
+            return false;
+        }
+
         const evolv = (window || {}).evolv;
         return (typeof evolv !== 'undefined' && evolv.javascript && evolv.javascript.variants);
     };
@@ -370,6 +375,11 @@ const Runner = /** @class */ (function () {
             if (this.initialized && !elapsed) {
                 this.setRunLevel(levelMap.legacy);
             } else if (!elapsed) {
+                // Needed to prevent test failures when window is disposed
+                if (typeof window === 'undefined') {
+                    return;
+                }
+
                 setTimeout(doTiming, legacyPollingInterval || 100);
             }
         }.bind(this);
