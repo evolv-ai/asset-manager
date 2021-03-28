@@ -212,7 +212,7 @@ const Runner = /** @class */ (function () {
      */
     Runner.prototype.unschedule = function (key) {
         const def = this.functions.find(function (def) { return def.key === key; });
-        if (!def || def.status !== 'runnable') {
+        if (!def || def.status === 'running') {
             return;
         }
         // TODO: Devise way to deal with in-flight promises
