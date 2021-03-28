@@ -100,10 +100,12 @@ const Runner = /** @class */ (function () {
         document.addEventListener('readystatechange', this.onReadyStateChange);
         this.doLegacyTiming();
 
-        container.options.variantsLoaded
-            .then(function () {
-                this.loadFunctions();
-            }.bind(this));
+        if (container.options.variantsLoaded) {
+            container.options.variantsLoaded
+                .then(function () {
+                    this.loadFunctions();
+                }.bind(this));
+        }
 
         this.loadFunctions();
     }
@@ -127,6 +129,7 @@ const Runner = /** @class */ (function () {
      * @private
      */
     Runner.prototype.areVariantsDefined = function () {
+        const evolv = (window || {}).evolv;
         return (typeof evolv !== 'undefined' && evolv.javascript && evolv.javascript.variants);
     };
 
@@ -145,6 +148,7 @@ const Runner = /** @class */ (function () {
             return;
         }
 
+        const evolv = window.evolv;
         const variants = evolv.javascript.variants;
         const entries = Object.keys(variants)
             .sort(function (a, b) {
@@ -361,8 +365,9 @@ const Runner = /** @class */ (function () {
 
         const doTiming = function () {
             const elapsed = this.hasTimeoutElapsed();
+            this.loadFunctions();
 
-            if (this.areVariantsDefined() && !elapsed) {
+            if (this.initialized && !elapsed) {
                 this.setRunLevel(levelMap.legacy);
             } else if (!elapsed) {
                 setTimeout(doTiming, legacyPollingInterval || 100);
