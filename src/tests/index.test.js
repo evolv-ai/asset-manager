@@ -344,7 +344,7 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable2') > -1);
 			});
 
-			it('should confirm once', async() => {
+			it('should confirm at least once', async() => {
 				const invokedJavascript = [];
 				global.window = {
 					location: {
@@ -361,7 +361,7 @@ describe('asset manager handles correctly', () => {
 				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
 
 				await wait(0);
-				assert.equal(client.confirmations, 1);
+				assert.ok(client.confirmations >= 1);
 				assert.equal(client.contaminations, 0);
 			});
 		});
@@ -546,7 +546,7 @@ describe('asset manager handles correctly', () => {
 				assert.ok(invokedJavascript[6] === 'evolv_web_page1');
 			});
 
-			it('should confirm once', async() => {
+			it('should confirm at least once', async() => {
 				const invokedJavascript = [];
 				global.window = {
 					location: {
@@ -562,7 +562,7 @@ describe('asset manager handles correctly', () => {
 				const client = new EvolvMock(keys);
 				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
 				await wait(0);
-				assert.equal(client.confirmations, 1);
+				assert.ok(client.confirmations >= 1);
 				assert.equal(client.contaminations, 0);
 			});
 		});
@@ -637,7 +637,7 @@ describe('asset manager handles correctly', () => {
 				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
 				await wait(40);
 				assert.equal(client.confirmations, 0);
-				assert.equal(client.contaminations, 1);
+				assert.ok(client.contaminations >= 1);
 			});
 
 			it('should contaminate once - single error', async() => {
@@ -706,7 +706,7 @@ describe('asset manager handles correctly', () => {
 				assert.equal(client.contaminations, 1);
 			});
 
-			it('should no contaminate as run before timeout', async() => {
+			it('should not contaminate as run before timeout', async() => {
 				const invokedJavascript = [];
 
 				global.window = {
@@ -717,7 +717,7 @@ describe('asset manager handles correctly', () => {
 
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, { timeoutThreshold: 30}, {
+				new EvolvAssetManager(client, { legacyPollingInterval: 5, timeoutThreshold: 30 }, {
 					timing: {
 						domContentLoadedEventStart: new Date().getTime() - 20
 					}
@@ -731,11 +731,11 @@ describe('asset manager handles correctly', () => {
 
 				await wait(200);
 				assert.equal(invokedJavascript.length, 3);
-				assert.equal(client.confirmations, 1);
+				assert.ok(client.confirmations >= 1);
 				assert.equal(client.contaminations, 0);
 			});
 
-			it('should no contaminate as no timeout', async() => {
+			it('should not contaminate as no timeout', async() => {
 				const invokedJavascript = [];
 
 				global.window = {
@@ -760,7 +760,7 @@ describe('asset manager handles correctly', () => {
 
 				await wait(200);
 				assert.equal(invokedJavascript.length, 3);
-				assert.equal(client.confirmations, 1);
+				assert.ok(client.confirmations >= 1);
 				assert.equal(client.contaminations, 0);
 			});
 
