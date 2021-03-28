@@ -1,4 +1,4 @@
-import EvolvClient from '@evolv/javascript-sdk';
+import EvolvClient, {MiniPromise} from '@evolv/javascript-sdk';
 
 import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
@@ -41,12 +41,17 @@ function currentScript() {
 }
 
 function injectScript(endpoint, env, version, uid) {
-	const script = document.createElement('script');
-	script.type = 'text/javascript';
-	script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js';
-	script.defer = true;
+    return MiniPromise.createPromise(function (resolve, reject) {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js';
+        script.defer = true;
 
-	document.head.appendChild(script);
+        script.onload = resolve;
+        script.onerror = reject;
+
+        document.head.appendChild(script);
+    });
 }
 
 function injectStylesheet(endpoint, env, version, uid) {
@@ -189,9 +194,9 @@ function main() {
 	css = !!candidateToken || !css || css === 'true';
 	pushstate = pushstate && pushstate === 'true';
 
-	if (js) {
-		injectScript(endpoint, env, version, uid);
-	}
+	const scriptPromise = (js)
+        ? injectScript(endpoint, env, version, uid)
+        : MiniPromise.createPromise(function (resolve) { resolve(); });
 
 	if (css) {
 		injectStylesheet(endpoint, env, version, uid);
@@ -230,9 +235,9 @@ function main() {
 	client.context.set('webloader.js', js);
 	client.context.set('webloader.css', css);
 
-
 	const assetManager = new EvolvAssetManager(client, {
-		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined
+		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined,
+        variantsLoaded: scriptPromise
 	});
 
 	Object.defineProperty(window.evolv, 'assetManager', {

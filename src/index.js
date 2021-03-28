@@ -1,15 +1,27 @@
-import all from './all.js';
-import { MiniPromise } from '@evolv/javascript-sdk';
-import { toContextKey } from './keys.js';
-import { isImmediate, isOnDomContentLoaded, isOnPageLoaded, isLegacy } from './guards.js';
-import { scheduleOnDOMContentLoaded, scheduleOnLoad } from './schedule.js';
+import { Runner } from './runner.js';
 
-const MAX_TIMEOUT = 100;
+/**
+ * @typedef Options
+ * @property {number} timeoutThreshold
+ * @property {number} legacyPollingInterval
+ * @property {Promise} scriptPromise
+ */
 
-function main(client, options, _performance) {
+/**
+ * @typedef Container
+ * @property client
+ * @property {Options} options
+ * @property {Performance} _performance
+ */
+
+/**
+ * @param {Container} container
+ */
+function main(container) {
 	let appliedClasses = [];
 	let confirmed = false;
-	options = options || {};
+
+	const client = container.client;
 
 	function retrieveEvolvCssAsset(environment) {
 		return document.querySelector('link[href *= "' + environment + '"][href *= "assets.css"]');
@@ -26,172 +38,13 @@ function main(client, options, _performance) {
 		}
 	}
 
-  function runImmediately(variants, functions, subset) {
-    let promises = [];
-    functions
-      .forEach(function (key) {
-        const contextKey = toContextKey(key);
-        if (subset && subset.indexOf(contextKey) > -1) {
-          return;
-        }
+    const environment = client.environment;
+    const cssAsset = retrieveEvolvCssAsset(environment);
+    const jsAsset = retrieveEvolvJsAsset(environment);
 
-        if (key in variants) {
-          let promise = MiniPromise.createPromise(function (resolve, reject) {
-            try {
-              if (!variants[key].call({key: contextKey}, resolve, reject)) {
-                resolve();
-              }
-            } catch (err) {
-              reject(err);
-            }
-          });
-          promises.push(promise);
-        }
-      });
-
-    return promises;
-  }
-
-  const onReject = function (err) {
-    client.contaminate({
-      reason: 'error-thrown',
-      details: err.message
-    });
-
-    console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
-  };
-
-  const invokeFunctions = function(subset, functions, script) {
-    _invokeFunctionsLegacy(subset, functions);
-
-    _invokeFunctions(subset, functions, script);
-  };
-
-  const checkTimeout = function() {
-    const timeNow = (new Date()).getTime();
-    const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
-    const threshold = options.timeoutThreshold || 60000;
-    if (domContentLoadedEventStart > 0 && timeNow > domContentLoadedEventStart + threshold) {
-      client.contaminate({
-        reason: 'timeout-exceeded',
-        details: 'current time: ' + timeNow + ', domContentLoadedEventStart: ' + domContentLoadedEventStart + ', threshold: ' + threshold
-      });
-      console.warn('[Evolv]: Loading of variants timed out.');
-
-      return true;
-    }
-  };
-
-  let applyTimeout = true;
-  let onloadFunctionCalls = [];
-  const _invokeFunctions = function(subset, functions, script) {
-    let evolv = window.evolv;
-
-    if (!evolv || !evolv.javascript || !evolv.javascript.variants) {
-      onloadFunctionCalls.push({
-        subset: subset,
-        functions: functions,
-        script: script
-      });
-
-      script.onload = function () {
-        for (let i = 0; i < onloadFunctionCalls.length; i++) {
-          const onloadFunctionCall = onloadFunctionCalls[i];
-          _invokeFunctions(onloadFunctionCall.subset, onloadFunctionCall.functions, onloadFunctionCall.script);
-        }
-        onloadFunctionCalls = [];
-      };
-
-      return;
-    }
-
-    if (applyTimeout && checkTimeout()) {
-      applyTimeout = false;
-      return;
-    }
-
-    const immediateFunctions = functions.filter(isImmediate(evolv.javascript.variants));
-    const domContentLoadedFunctions = functions.filter(isOnDomContentLoaded(evolv.javascript.variants));
-    const pageLoadedFunctions = functions.filter(isOnPageLoaded(evolv.javascript.variants));
-
-    const promises = runImmediately(evolv.javascript.variants, immediateFunctions, subset);
-    let invokableFunctions = promises.length;
-
-    domContentLoadedFunctions // TODO move the listener outside the loop
-      .forEach(function (key) {
-        const fn = evolv.javascript.variants[key];
-
-        const contextKey = toContextKey(key);
-
-        if (subset && subset.indexOf(contextKey) > -1) {
-          return;
-        }
-
-        invokableFunctions++;
-        scheduleOnDOMContentLoaded(fn, contextKey)
-          .catch(onReject);
-      });
-
-    pageLoadedFunctions // TODO move the listener outside the loop
-      .forEach(function (key) {
-        const fn = evolv.javascript.variants[key];
-
-        const contextKey = toContextKey(key);
-
-        if (subset && subset.indexOf(contextKey) > -1) {
-          return;
-        }
-
-        invokableFunctions++;
-        scheduleOnLoad(fn, contextKey)
-          .catch(onReject);
-      });
-
-    all(promises).then(function () {
-      (invokableFunctions > 0) && confirm();
-    })
-      .catch(onReject)
-      .finally(function() {
-        applyTimeout = false;
-      });
-  };
-
-  let applyTimeoutLegacy = true;
-	const _invokeFunctionsLegacy = function(subset, functions) {
-    const evolv = window.evolv;
-		if (typeof evolv === 'undefined' || !evolv.javascript || !evolv.javascript.variants) {
-      const domContentLoadedEventStart = (_performance || performance).timing.domContentLoadedEventStart;
-			if (domContentLoadedEventStart > 0) {
-        if (applyTimeoutLegacy && checkTimeout()) {
-          applyTimeoutLegacy = false;
-          return;
-        }
-      }
-
-      setTimeout(function () {
-        _invokeFunctionsLegacy(subset, functions);
-      }, MAX_TIMEOUT);
-
-			return;
-		}
-
-    const legacyFunctions = functions.filter(isLegacy(evolv.javascript.variants));
-    const promises = runImmediately(evolv.javascript.variants, legacyFunctions, subset);
-
-    all(promises).then(function () {
-      promises.length > 0 && confirm();
-		})
-      .catch(onReject)
-      .finally(function() {
-        applyTimeout = false;
-      });
-	};
+    const runner = new Runner(container);
 
 	client.getActiveKeys('web').listen(function (keys) {
-		const environment = client.environment;
-		const cssAsset = retrieveEvolvCssAsset(environment);
-		const jsAsset = retrieveEvolvJsAsset(environment);
-
 		const liveContexts = keys.current
 			.map(function (key) {
 				return 'evolv_'.concat(key.replace(/\./g, '_'));
@@ -212,21 +65,34 @@ function main(client, options, _performance) {
 		}
 
 		if (jsAsset && liveContexts.length > 0) {
-        invokeFunctions(keys.previous, liveContexts, jsAsset);
+            runner.updateFunctionsToRun(liveContexts);
 		} else if (cssAsset && liveContexts.length > 0) {
 			confirm();
 		}
 	});
 }
 
-function EvolvAssetManager(client, options, performance) {
+/**
+ * @param client
+ * @param {Options} [options]
+ * @param {Performance} [_performance]
+ * @constructor
+ */
+function EvolvAssetManager(client, options, _performance) {
 	client.context.set('web.url', window.location.href);
 
 	// Expose client and context proprties
 	Object.defineProperty(this, 'client', { get: function () { return client }});
 	Object.defineProperty(this, 'context', { get: function () { return client.context }});
 
-	main(client, options, performance);
+	/** @type {Container} */
+	const container = {
+		client: client,
+		options: options || {},
+		_performance: _performance || performance
+	};
+
+	main(container);
 }
 
 export default EvolvAssetManager;
