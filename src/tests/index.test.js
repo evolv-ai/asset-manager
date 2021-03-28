@@ -6,6 +6,10 @@ import { DocumentMock, StyleSheetMock, ScriptMock } from './mocks/document.mock.
 import EvolvMock from './mocks/evolv.mock.js';
 import wait from './wait.js';
 
+function mockTiming(offset) {
+  return { timing: { domContentLoadedEventStart: (new Date()).getTime() -  offset }};
+}
+
 function generateJsVariants(invokedJavascript) {
 	return {
 		'evolv_web_page1': (resolve, reject) => {
@@ -96,14 +100,14 @@ describe('asset manager handles correctly', () => {
 			it('should not add to the classlist', () => {
 				global.document = new DocumentMock();
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 0)
 			});
 
 			it('should not confirm', () => {
 				global.document = new DocumentMock();
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 0);
 			});
@@ -125,7 +129,7 @@ describe('asset manager handles correctly', () => {
                 global.window = {location: {href: 'https://test-site.com'}, evolv: {}};
 				global.document = new DocumentMock();
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 0)
 			});
 
@@ -143,7 +147,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock();
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming())
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 0);
 			});
@@ -167,14 +171,14 @@ describe('asset manager handles correctly', () => {
 			it('should not add to the classlist', () => {
 				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 0)
 			});
 
 			it('should not confirm', () => {
 				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 0);
 			});
@@ -194,7 +198,7 @@ describe('asset manager handles correctly', () => {
 			it('should add class names to the document classlist', () => {
 				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 3);
 				assert.deepEqual(document.classList.classList, [
 					'evolv_web_page1',
@@ -216,7 +220,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets, styleSheets});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(client.confirmations, 1);
 				assert.equal(client.contaminations, 0);
 			});
@@ -250,7 +254,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 0);
 			});
 
@@ -268,7 +272,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(invokedJavascript.length, 0);
 			});
 
@@ -286,7 +290,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming());
 				await wait(0);
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 0);
@@ -319,7 +323,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 0)
 			});
 
@@ -337,7 +341,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(invokedJavascript.length, 3);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
@@ -358,7 +362,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 
 				await wait(0);
 				assert.ok(client.confirmations >= 1);
@@ -395,7 +399,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming())
 				assert.equal(document.classList.classList.length, 0)
 			});
 
@@ -413,7 +417,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming())
 				assert.equal(invokedJavascript.length, 0);
 			});
 
@@ -431,7 +435,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock();
-				new EvolvAssetManager(client);
+				new EvolvAssetManager(client, undefined, mockTiming())
 				await wait(0);
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 0);
@@ -464,7 +468,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 3);
 				assert.deepEqual(document.classList.classList, [
 					'evolv_web_page1', 'evolv_web_page1_variable1', 'evolv_web_page1_variable2'])
@@ -484,7 +488,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(invokedJavascript.length, 3);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
@@ -505,7 +509,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(invokedJavascript.length, 3);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
@@ -556,7 +560,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				await wait(0);
 				assert.ok(client.confirmations >= 1);
 				assert.equal(client.contaminations, 0);
@@ -589,7 +593,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(document.classList.classList.length, 3);
 				assert.deepEqual(document.classList.classList, [
 					'evolv_web_page1', 'evolv_web_page1_variable1', 'evolv_web_page1_variable2'])
@@ -609,7 +613,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(invokedJavascript.length, 3);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1') > -1);
 				assert.ok(invokedJavascript.indexOf('evolv_web_page1_variable1') > -1);
@@ -630,7 +634,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				await wait(40);
 				assert.equal(client.confirmations, 0);
 				assert.ok(client.contaminations >= 1);
@@ -650,7 +654,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				await wait(40);
 				assert.equal(client.confirmations, 0);
 				assert.equal(client.contaminations, 1);
@@ -684,11 +688,7 @@ describe('asset manager handles correctly', () => {
 
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, { timeoutThreshold: 10}, {
-					timing: {
-						domContentLoadedEventStart: new Date().getTime() - 20
-					}
-				});
+				new EvolvAssetManager(client, { timeoutThreshold: 10}, mockTiming(20));
 
 				global.window.evolv = {
 					javascript: {
@@ -713,11 +713,7 @@ describe('asset manager handles correctly', () => {
 
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, { legacyPollingInterval: 5, timeoutThreshold: 30 }, {
-					timing: {
-						domContentLoadedEventStart: new Date().getTime() - 20
-					}
-				});
+				new EvolvAssetManager(client, { legacyPollingInterval: 5, timeoutThreshold: 30 }, mockTiming(20));
 
 				global.window.evolv = {
 					javascript: {
@@ -742,11 +738,7 @@ describe('asset manager handles correctly', () => {
 
 				global.document = new DocumentMock({elements: scripts, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, {}, {
-					timing: {
-						domContentLoadedEventStart: new Date().getTime() - 2000
-					}
-				});
+				new EvolvAssetManager(client, {}, mockTiming(2000));
 
 				global.window.evolv = {
 					javascript: {
@@ -776,7 +768,7 @@ describe('asset manager handles correctly', () => {
 				};
 				global.document = new DocumentMock({elements: styleSheets.concat(scripts), styleSheets, scripts});
 				const client = new EvolvMock(keys);
-				new EvolvAssetManager(client, undefined, { timing: { domContentLoadedEventStart: (new Date()).getTime() }});
+				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(invokedJavascript.length, 3);
 				assert.strictEqual(invokedJavascript.indexOf('evolv_web_page1'), 0);
 				assert.strictEqual(invokedJavascript.indexOf('evolv_web_page1_variable1'), 1);
