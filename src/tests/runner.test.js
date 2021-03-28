@@ -9,6 +9,7 @@ import { DocumentMock } from './mocks/document.mock.js';
 import wait from './wait.js';
 
 const PollingInterval = 100;
+let origWindow;
 
 describe('Runner', () => {
     const sandbox = sinon.createSandbox();
@@ -18,6 +19,8 @@ describe('Runner', () => {
     let container;
 
     beforeEach(() => {
+        origWindow = global.window;
+
         const client = new EvolvMock();
         sandbox.spy(client);
 
@@ -28,6 +31,8 @@ describe('Runner', () => {
                 variants: undefined
             }
         };
+
+        global.window = { location: {}, evolv: global.evolv };
 
         container = {
             client: global.evolv.client,
@@ -44,19 +49,21 @@ describe('Runner', () => {
 
         delete global.window;
         delete global.document;
+
+        global.window = origWindow;
     });
 
     describe('loadFunctions()', () => {
         let variants;
 
         beforeEach(() => {
-            const immediateFn = function() {};
+            const immediateFn = sinon.spy(function() {});
             immediateFn.timing = 'immediate';
 
-            const legacyFn = function(resolve) {
+            const legacyFn = sinon.spy(function(resolve) {
                 setTimeout(resolve, 100);
                 return true;
-            };
+            });
             legacyFn.timing = 'legacy';
 
             variants = {
@@ -84,10 +91,10 @@ describe('Runner', () => {
             });
         });
 
-        describe('when variants are loaded manually', () => {
+        describe('when variants are loaded manually (present before instantiation)', () => {
             it('should have functions loaded after instantiating runner', () => {
                 // Arrange
-                evolv.javascript.variants = variants;
+                window.evolv.javascript.variants = variants;
 
                 // Act
                 const runner = new Runner(container);
@@ -97,8 +104,25 @@ describe('Runner', () => {
             });
         });
 
+        describe('when variants are loaded manually (present after instantiation)', () => {
+            it('should have functions loaded after next tick of polling interval', async () => {
+                // Arrange
+                const runner = new Runner(container);
+
+                // Act
+                evolv.javascript.variants = variants;
+
+                // Assert
+                assert.equal(runner.functions.length, 0);
+
+                await wait(PollingInterval);
+                assert.equal(runner.functions.length, 2);
+            });
+        });
+
         it('should call contaminate() if variants are populated after timeout has elapsed', async () => {
             // Arrange
+            const { client } = container;
             container.options.timeoutThreshold = 1;
 
             const runner = new Runner(container);
@@ -107,13 +131,17 @@ describe('Runner', () => {
             // Act
             await wait(10);
 
-            evolv.javascript.variants = variants;
+            window.evolv.javascript.variants = variants;
             container.options.variantsLoaded.resolve();
 
             await wait(0);
 
             // Assert
             assert.ok(contaminateSpy.called);
+
+            assert.ok(Object.values(window.evolv.javascript.variants).every(fn => !fn.called));
+            assert.equal(client.confirmations, 0);
+            assert.equal(client.contaminations, 1);
         });
 
         it('should not call contaminate() if variants are populated before timeout has elapsed', async () => {
