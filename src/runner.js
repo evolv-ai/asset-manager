@@ -272,10 +272,12 @@ const Runner = /** @class */ (function () {
             promise
                 .then(function () { return def.status = 'resolved'; })
                 .catch(function (err) {
+                    const message = (err && err.message) ? err.message : '';
+
                     def.status = 'rejected';
                     client.contaminate({
                         reason: 'error-thrown',
-                        details: err.message
+                        details: message
                     });
                     console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
                 })
