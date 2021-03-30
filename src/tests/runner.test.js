@@ -208,6 +208,245 @@ describe('Runner', () => {
         });
     });
 
+    describe('when invocation succeeds', () => {
+        let confirmSpy;
+        let contaminateSpy;
+        let runner;
+
+        beforeEach(() => {
+            confirmSpy = sinon.spy(container.client, 'confirm');
+            contaminateSpy = sinon.spy(container.client, 'contaminate');
+
+            const immediateFn = function() {};
+            immediateFn.timing = 'immediate';
+
+            const immediateAsyncFn = function(resolve) {
+                setTimeout(resolve, 0);
+                return true;
+            };
+            immediateAsyncFn.timing = 'immediate';
+
+            const legacyFn = function() {};
+            legacyFn.timing = 'legacy';
+
+            const legacyAsyncFn = function(resolve) {
+                setTimeout(resolve, 0);
+                return true;
+            };
+            legacyAsyncFn.timing = 'legacy';
+
+            const domContentLoadedFn = function() {};
+            domContentLoadedFn.timing = 'dom-content-loaded';
+
+            const domContentLoadedAsyncFn = function(resolve) {
+                setTimeout(resolve, 0);
+                return true;
+            };
+            domContentLoadedAsyncFn.timing = 'dom-content-loaded';
+
+            const loadedFn = function() {};
+            loadedFn.timing = 'loaded';
+
+            const loadedAsyncFn = function(resolve) {
+                setTimeout(resolve, 0);
+                return true;
+            };
+            loadedAsyncFn.timing = 'loaded';
+
+            evolv.javascript.variants = {
+                evolv_web_abc_immediate: immediateFn,
+                evolv_web_abc_immediateAsync: immediateAsyncFn,
+                evolv_web_abc_legacy: legacyFn,
+                evolv_web_abc_legacyAsync: legacyAsyncFn,
+                evolv_web_abc_dom: domContentLoadedFn,
+                evolv_web_abc_domAsync: domContentLoadedAsyncFn,
+                evolv_web_abc_loaded: loadedFn,
+                evolv_web_abc_loadedAsync: loadedAsyncFn
+            };
+
+            runner = new Runner(container);
+        });
+
+        describe('for an immediate synchronous function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_immediate'
+                ]);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(0);
+
+                // Assert
+                assert.equal(confirmSpy.called, true);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for an immediate async function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_immediateAsync'
+                ]);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(10);
+
+                // Assert
+                assert.equal(confirmSpy.called, true);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for a legacy synchronous function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_legacy'
+                ]);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(10);
+
+                // Assert
+                assert.equal(confirmSpy.called, true);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for a legacy async function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_legacyAsync'
+                ]);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(0);
+
+                // Assert
+                assert.equal(confirmSpy.called, true);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+
+        // describe.only('for a dom-content-loaded synchronous function', () => {
+        describe('for a dom-content-loaded synchronous function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_dom'
+                ]);
+
+                await wait(0);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(0);
+
+                // Assert
+                assert.equal(confirmSpy.callCount, 1);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for a dom-content-loaded async function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_domAsync'
+                ]);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(10);
+
+                // Assert
+                assert.equal(confirmSpy.callCount, 1);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for a loaded synchronous function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_loaded'
+                ]);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(0);
+
+                // Assert
+                assert.equal(confirmSpy.callCount, 1);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for a loaded async function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_loadedAsync'
+                ]);
+
+                // Act
+                document.readyState = 'interactive';
+                emitter.emit('readystatechange');
+
+                document.readyState = 'complete';
+                emitter.emit('readystatechange');
+
+                await wait(0);
+
+                // Assert
+                assert.equal(confirmSpy.callCount, 1);
+                assert.equal(contaminateSpy.called, false);
+            });
+        });
+    });
+
     describe('when invocation fails', () => {
         let confirmSpy;
         let contaminateSpy;
@@ -356,7 +595,7 @@ describe('Runner', () => {
         });
 
         describe('for a dom-content-loaded synchronous function', () => {
-            it('should call contaminate() and not confirm()', async () => {
+            it('should call confirm() once and contaminate() once', async () => {
                 // Arrange
                 runner.updateFunctionsToRun([
                     'evolv_web_abc_dom'
@@ -378,7 +617,7 @@ describe('Runner', () => {
         });
 
         describe('for a dom-content-loaded async function', () => {
-            it('should call contaminate() and not confirm()', async () => {
+            it('should call confirm() once and contaminate() once', async () => {
                 // Arrange
                 runner.updateFunctionsToRun([
                     'evolv_web_abc_domAsync'
@@ -400,7 +639,7 @@ describe('Runner', () => {
         });
 
         describe('for a loaded synchronous function', () => {
-            it('should call contaminate() and not confirm()', async () => {
+            it('should call confirm() once and contaminate() once', async () => {
                 // Arrange
                 runner.updateFunctionsToRun([
                     'evolv_web_abc_loaded'
@@ -422,7 +661,7 @@ describe('Runner', () => {
         });
 
         describe('for a loaded async function', () => {
-            it('should call contaminate() and not confirm()', async () => {
+            it('should call confirm() once and contaminate() once', async () => {
                 // Arrange
                 runner.updateFunctionsToRun([
                     'evolv_web_abc_loadedAsync'
@@ -568,6 +807,56 @@ describe('Runner', () => {
             await wait(1000);
 
             assert.ok(confirmSpy.called);
+        });
+    });
+
+    describe('with 1 immediate and 1 loaded function', () => {
+        let variants;
+
+        beforeEach(() => {
+            const immediateFn = function(resolve) {};
+            immediateFn.timing = 'immediate';
+
+            const onloadFn = function(resolve) {
+                setTimeout(resolve, 200);
+                return true;
+            };
+            onloadFn.timing = 'loaded';
+
+            variants = {
+                evolv_web_abc_immediate: immediateFn,
+                evolv_web_abc_onload: onloadFn
+            };
+        });
+
+        it('should call confirm() twice', async () => {
+            // Arrange
+            const spy = sinon.spy(container.client, 'confirm');
+            const runner = new Runner(container);
+
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_immediate',
+                'evolv_web_abc_onload',
+            ]);
+
+            // Act
+            evolv.javascript.variants = variants;
+            container.options.variantsLoaded.resolve();
+
+            await wait(0);
+
+            assert.equal(spy.callCount, 1);
+
+            document.readyState = 'interactive';
+            emitter.emit('readystatechange');
+
+            document.readyState = 'complete';
+            emitter.emit('readystatechange');
+
+            // Assert
+            await wait(300);
+
+            assert.equal(spy.callCount, 2);
         });
     });
 });
