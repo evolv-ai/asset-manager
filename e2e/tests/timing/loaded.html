@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Timing: Loaded</title>
+	<script>
+		document.addEventListener('readystatechange', () => {
+			if (document.readyState === 'interactive') {
+				console.log('DOMContentLoaded');
+			} else if (document.readyState === 'complete') {
+				console.log('load');
+			}
+		});
+	</script>
+    <script
+            src="/webloader.js"
+            data-evolv-environment="1a2b3c4d"
+    ></script>
+
+	<script src="/tests/timing/delayed.js?delay=200"></script>
+</head>
+<body>
+<h1>Evolv</h1>
+<button style="color: rgb(0, 0, 0)">Click</button>
+</body>
+</html>
