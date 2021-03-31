@@ -55,7 +55,7 @@ const RunLevel = {
 const levelMap = {
     immediate: RunLevel.Immediate,
     legacy: RunLevel.Legacy,
-    'dom-content-loaded': RunLevel.Immediate,
+    'dom-content-loaded': RunLevel.Interactive,
     loaded: RunLevel.Complete
 };
 

@@ -208,6 +208,71 @@ describe('Runner', () => {
         });
     });
 
+    describe('execute()', () => {
+        let variants;
+
+        beforeEach(() => {
+            const immediateFn = sinon.spy(function() {});
+            immediateFn.timing = 'immediate';
+
+            const legacyFn = sinon.spy(function(resolve) {});
+            legacyFn.timing = 'legacy';
+
+            const domFn = sinon.spy(function(resolve) {});
+            domFn.timing = 'dom-content-loaded';
+
+            const onloadFn = sinon.spy(function(resolve) {});
+            onloadFn.timing = 'loaded';
+
+            variants = {
+                evolv_web_abc_immediate: immediateFn,
+                evolv_web_abc_legacy: legacyFn,
+                evolv_web_abc_dom: domFn,
+                evolv_web_abc_onload: onloadFn,
+            };
+        });
+
+        it('should not invoke functions until appropriate run level', async () => {
+            // Arrange
+            const runner = new Runner(container);
+
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_immediate',
+                'evolv_web_abc_legacy',
+                'evolv_web_abc_dom',
+                'evolv_web_abc_onload',
+            ]);
+
+            evolv.javascript.variants = variants;
+            container.options.variantsLoaded.resolve();
+
+            // Act & Assert
+            await wait(0);
+
+            assert.equal(variants.evolv_web_abc_immediate.called, true);
+            assert.equal(variants.evolv_web_abc_legacy.called, false);
+            assert.equal(variants.evolv_web_abc_dom.called, false);
+            assert.equal(variants.evolv_web_abc_onload.called, false);
+
+            await wait(PollingInterval); // Enough to let legacy timer finish
+
+            assert.equal(variants.evolv_web_abc_legacy.called, true);
+            assert.equal(variants.evolv_web_abc_dom.called, false);
+            assert.equal(variants.evolv_web_abc_onload.called, false);
+
+            document.readyState = 'interactive';
+            emitter.emit('readystatechange');
+
+            assert.equal(variants.evolv_web_abc_dom.called, true);
+            assert.equal(variants.evolv_web_abc_onload.called, false);
+
+            document.readyState = 'complete';
+            emitter.emit('readystatechange');
+
+            assert.equal(variants.evolv_web_abc_onload.called, true);
+        });
+    });
+
     describe('when invocation succeeds', () => {
         let confirmSpy;
         let contaminateSpy;
