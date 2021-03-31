@@ -203,7 +203,7 @@ const Runner = /** @class */ (function () {
      * @param {string} key
      */
     Runner.prototype.schedule = function (key) {
-        const def = this.functions.find(function (def) { return def.key === key; });
+        const def = this.functions.filter(function (fn) { return fn.key === key; })[0];
 
         if (!def || def.status !== 'not-runnable') {
             return;
@@ -216,7 +216,8 @@ const Runner = /** @class */ (function () {
      * @param {string} key
      */
     Runner.prototype.unschedule = function (key) {
-        const def = this.functions.find(function (def) { return def.key === key; });
+        const def = this.functions.filter(function (fn) { return fn.key === key; })[0];
+
         if (!def || def.status === 'running') {
             return;
         }
@@ -271,10 +272,12 @@ const Runner = /** @class */ (function () {
             promise
                 .then(function () { return def.status = 'resolved'; })
                 .catch(function (err) {
+                    const message = (err && err.message) ? err.message : '';
+
                     def.status = 'rejected';
                     client.contaminate({
                         reason: 'error-thrown',
-                        details: err.message
+                        details: message
                     });
                     console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
                 })
