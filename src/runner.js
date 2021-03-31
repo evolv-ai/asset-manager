@@ -203,7 +203,7 @@ const Runner = /** @class */ (function () {
      * @param {string} key
      */
     Runner.prototype.schedule = function (key) {
-        const def = this.functions.find(function (fn) { return fn.key === key; });
+        const def = this.functions.filter(function (fn) { return fn.key === key; })[0];
 
         if (!def || def.status !== 'not-runnable') {
             return;
@@ -216,7 +216,7 @@ const Runner = /** @class */ (function () {
      * @param {string} key
      */
     Runner.prototype.unschedule = function (key) {
-        const def = this.functions.find(function (fn) { return fn.key === key; });
+        const def = this.functions.filter(function (fn) { return fn.key === key; })[0];
 
         if (!def || def.status === 'running') {
             return;
