@@ -23,12 +23,12 @@ function main(container) {
 
 	const client = container.client;
 
-	function retrieveEvolvCssAsset(environment) {
-		return document.querySelector('link[href *= "' + environment + '"][href *= "assets.css"]');
+	function retrieveEvolvCssAsset(environmentId) {
+		return document.querySelector('link[href *= "' + environmentId + '"][href *= "assets.css"]');
 	}
 
-	function retrieveEvolvJsAsset(environment) {
-		return document.querySelector('script[src *= "' + environment + '"][src *= "assets.js"]');
+	function retrieveEvolvJsAsset(environmentId) {
+		return document.querySelector('script[src *= "' + environmentId + '"][src *= "assets.js"]');
 	}
 
 	function confirm() {
