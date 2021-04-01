@@ -240,8 +240,11 @@ const Runner = /** @class */ (function () {
             .filter(runnableAtCurrentLevel)
             .filter(hasNotRun);
 
-        const neededToConfirm = functionsToRun
-            .concat(this.getConcurrent())
+        const functionsOutstanding = this.functions
+            .filter(runnableAtCurrentLevel)
+            .filter(hasNotCompleted);
+
+        const neededToConfirm = functionsOutstanding
             .filter(isImmediateOrLegacy)
             .map(function (def) { return def.key; });
 
@@ -285,25 +288,6 @@ const Runner = /** @class */ (function () {
                     this.checkForConfirmation(runNumber);
                 }.bind(this));
         }.bind(this));
-    };
-
-    /**
-     * @return FunctionDef[]
-     * @private
-     */
-    Runner.prototype.getConcurrent = function () {
-        if (this.runLevel === levelMap['immediate']) {
-            return this.functions
-                .filter(function (def) { return def.timing === 'legacy'; })
-                .filter(hasNotRun);
-        } else if (this.runLevel === levelMap['legacy']) {
-            return this.functions
-                .filter(function (def) { return def.timing === 'immediate'; })
-                .filter(hasNotCompleted);
-        }
-        else {
-            return [];
-        }
     };
 
     /**

@@ -859,4 +859,69 @@ describe('Runner', () => {
             assert.equal(spy.callCount, 2);
         });
     });
+
+    describe('with 2 immediate/legacy late-resolving functions and 1 synchronous loaded function', () => {
+        let variants;
+
+        beforeEach(() => {
+            const immediateFn = sinon.spy(function(resolve) {
+                setTimeout(resolve, 1000);
+                return true;
+            });
+            immediateFn.timing = 'immediate';
+
+            const legacyFn = sinon.spy(function(resolve) {
+                setTimeout(resolve, 1000);
+                return true;
+            });
+            legacyFn.timing = 'legacy';
+
+            const onloadFn = sinon.spy(function(resolve) {});
+            onloadFn.timing = 'loaded';
+
+            variants = {
+                evolv_web_abc_immediate: immediateFn,
+                evolv_web_abc_legacy: legacyFn,
+                evolv_web_abc_onload: onloadFn
+            };
+        });
+
+        it('should call confirm() only after immediate and legacy functions resolve', async () => {
+            // Arrange
+            const confirmSpy = sinon.spy(container.client, 'confirm');
+            const runner = new Runner(container);
+
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_immediate',
+                'evolv_web_abc_legacy',
+                'evolv_web_abc_onload',
+            ]);
+
+            // Act & Assert
+            evolv.javascript.variants = variants;
+            container.options.variantsLoaded.resolve();
+
+            await wait(0);
+
+            document.readyState = 'interactive';
+            emitter.emit('readystatechange');
+
+            await wait(0);
+
+            assert.equal(confirmSpy.called, false);
+            assert.equal(variants.evolv_web_abc_onload.called, false);
+
+            document.readyState = 'complete';
+            emitter.emit('readystatechange');
+
+            await wait(0);
+
+            assert.equal(confirmSpy.called, false);
+            assert.equal(variants.evolv_web_abc_onload.called, true);
+
+            await wait(1000);
+
+            assert.equal(confirmSpy.called, true);
+        });
+    });
 });
