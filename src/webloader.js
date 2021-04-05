@@ -246,10 +246,7 @@ function main() {
 		}
 	});
 
-	window.evolv.rerun = function(prefix) {
-		client.clearActiveKeys(prefix);
-		client.reevaluateContext();
-	}
+	window.evolv.rerun = assetManager.rerun.bind(assetManager);
 }
 
 // If the user has requested not to be tracked, or the browser is older than ie11, bail out.
