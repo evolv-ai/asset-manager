@@ -1,4 +1,5 @@
 import { Runner } from './runner.js';
+import { toUnderscoreKey } from './utils.js';
 
 /**
  * @typedef Options
@@ -16,6 +17,7 @@ import { Runner } from './runner.js';
 
 /**
  * @param {Container} container
+ * @this {EvolvAssetManager}
  */
 function main(container) {
 	let appliedClasses = [];
@@ -44,11 +46,21 @@ function main(container) {
 
     const runner = new Runner(container);
 
+    /**
+     * @param {string} [prefixDotSeparated=web]
+     */
+    this.rerun = function(prefixDotSeparated) {
+        prefixDotSeparated = prefixDotSeparated || 'web';
+
+        runner.unscheduleByPrefix(prefixDotSeparated);
+
+        client.clearActiveKeys(prefixDotSeparated);
+        client.reevaluateContext();
+    };
+
 	client.getActiveKeys('web').listen(function (keys) {
 		const liveContexts = keys.current
-			.map(function (key) {
-				return 'evolv_'.concat(key.replace(/\./g, '_'));
-			})
+			.map(toUnderscoreKey)
 			.sort(function (a, b) {
 				return a.length - b.length;
 			});
@@ -92,7 +104,7 @@ function EvolvAssetManager(client, options, _performance) {
 		_performance: _performance || performance
 	};
 
-	main(container);
+	main.call(this, container);
 }
 
 export default EvolvAssetManager;
