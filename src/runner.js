@@ -1,5 +1,6 @@
 import { MiniPromise } from '@evolv/javascript-sdk';
 import { toContextKey } from './keys.js';
+import { toUnderscoreKey } from './utils.js';
 
 /** @typedef {'immediate' | 'legacy' | 'dom-content-loaded' | 'loaded'} Timing */
 /** @typedef {'not-runnable' | 'runnable' | 'running' | 'resolved' | 'rejected'} Status */
@@ -22,7 +23,7 @@ import { toContextKey } from './keys.js';
  * @param {FunctionDef} def
  * @returns boolean
  */
-const isImmediateOrLegacy = function (def) {
+const isImmediateOrLegacy = function(def) {
     return ['immediate', 'legacy'].indexOf(def.timing) !== -1;
 };
 
@@ -30,7 +31,7 @@ const isImmediateOrLegacy = function (def) {
  * @param {FunctionDef} def
  * @returns boolean
  */
-const hasNotRun = function (def) {
+const hasNotRun = function(def) {
     return def.status === 'runnable';
 };
 
@@ -38,7 +39,7 @@ const hasNotRun = function (def) {
  * @param {FunctionDef} def
  * @returns boolean
  */
-const hasNotCompleted = function (def) {
+const hasNotCompleted = function(def) {
     return ['runnable', 'running'].indexOf(def.status) !== -1;
 };
 
@@ -223,6 +224,19 @@ const Runner = /** @class */ (function () {
         }
         // TODO: Devise way to deal with in-flight promises
         def.status = 'not-runnable';
+    };
+
+    /**
+     * @param {string} prefix Dot-separated prefix
+     */
+    Runner.prototype.unscheduleByPrefix = function(prefix) {
+        this.functions
+            .filter(function(def) {
+                return def.key.startsWith(toUnderscoreKey(prefix));
+            })
+            .forEach(function(def) {
+                this.unschedule(def.key);
+            }.bind(this));
     };
 
     /**
