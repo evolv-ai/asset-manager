@@ -7,11 +7,12 @@
     <title>Jumbotron Template for Bootstrap</title>
 
 	<script>
-	  window.addEventListener("load", () => {
-		  performance.mark("load");
-	  });
-	  document.addEventListener("DOMContentLoaded", () => {
-		  performance.mark("DOMContentLoaded");
+	  document.addEventListener('readystatechange', () => {
+        if (document.readyState === 'interactive') {
+          console.log('DOMContentLoaded');
+        } else if (document.readyState === 'complete') {
+          console.log('load');
+        }
 	  });
 	</script>
 
@@ -22,7 +23,7 @@
     </script>
 
 	<link href="css/bootstrap.css" rel="stylesheet">
-	<link href="css/index.css?delay=1000" rel="stylesheet">
+	<link href="css/index.css" rel="stylesheet">
   </head>
 
   <body>
