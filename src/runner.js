@@ -182,7 +182,7 @@ const Runner = /** @class */ (function () {
      * @returns void
      */
     Runner.prototype.updateFunctionsToRun = function (keys) {
-        if (!this.areVariantsDefined()) {
+        if (!this.initialized) {
             this.deferred = keys;
             return;
         }
