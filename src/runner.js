@@ -1,8 +1,9 @@
 import { MiniPromise } from '@evolv/javascript-sdk';
+import { Helpers } from './helpers.js';
 import { toContextKey } from './keys.js';
 import { toUnderscoreKey } from './utils.js';
 
-/** @typedef {'immediate' | 'legacy' | 'dom-content-loaded' | 'loaded'} Timing */
+/** @typedef {'immediate' | 'legacy' | 'dom-content-loaded' | 'loaded' | 'wait-for-elements'} Timing */
 /** @typedef {'not-runnable' | 'runnable' | 'running' | 'resolved' | 'rejected'} Status */
 
 /**
@@ -13,6 +14,7 @@ import { toUnderscoreKey } from './utils.js';
  * @property {number|null} runNumber
  * @property {number} calls
  * @property {Function} handler
+ * @property {function():void|null} disposer
  */
 
 /**
@@ -58,6 +60,7 @@ const levelMap = {
     immediate: RunLevel.Immediate,
     legacy: RunLevel.Legacy,
     'dom-content-loaded': RunLevel.Interactive,
+    'wait-for-elements': RunLevel.Interactive,
     loaded: RunLevel.Complete
 };
 
@@ -171,7 +174,8 @@ const Runner = /** @class */ (function () {
                 status: 'not-runnable',
                 runNumber: null,
                 calls: 0,
-                handler: fn
+                handler: fn,
+                disposer: null
             });
         }.bind(this));
 
@@ -224,6 +228,7 @@ const Runner = /** @class */ (function () {
 
         // TODO: Devise way to deal with in-flight promises
         def.status = 'not-runnable';
+        def.disposer && def.disposer();
     };
 
     /**
@@ -273,21 +278,10 @@ const Runner = /** @class */ (function () {
             def.runNumber = runNumber;
             def.calls += 1;
 
-            const promise = MiniPromise.createPromise(function (resolve, reject) {
-                try {
-                    const thisArg = { key: toContextKey(def.key) };
-                    const result = def.handler.call(thisArg, resolve, reject);
+            const executor = this.getExecutor(def);
+            def.disposer = executor.disposer;
 
-                    if (result !== true) {
-                        resolve();
-                    }
-                }
-                catch (err) {
-                    reject(err);
-                }
-            });
-
-            promise
+            executor.promise
                 .then(function () {
                     if (def.status === 'running') {
                         def.status = 'resolved';
@@ -301,12 +295,53 @@ const Runner = /** @class */ (function () {
                         reason: 'error-thrown',
                         details: message
                     });
+
                     console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
                 })
                 .finally(function () {
                     this.checkForConfirmation(runNumber);
                 }.bind(this));
         }.bind(this));
+    };
+
+    /**
+     * @param {FunctionDef} def
+     * @return {{ promise:Promise.<void>, disposer: function():void }}
+     */
+    Runner.prototype.getExecutor = function(def) {
+        const fn = def.handler;
+        const helpers = new Helpers();
+
+        const promise = MiniPromise.createPromise(function(resolve, reject) {
+            const callback = function(err) {
+                if (err) {
+                    reject(err);
+                }
+
+                try {
+                    const thisArg = { key: toContextKey(def.key) };
+                    const result = def.handler.call(thisArg, resolve, reject);
+
+                    if (result !== true) {
+                        resolve();
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            };
+
+            if (fn.timing === 'wait-for-elements') {
+                const selectors = fn.timingSelectors || [];
+                helpers.waitFor(selectors, callback);
+            } else {
+                callback();
+            }
+        });
+
+        return {
+            promise: promise,
+            disposer: helpers.dispose.bind(helpers)
+        };
     };
 
     /**
