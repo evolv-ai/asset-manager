@@ -14,6 +14,16 @@
           console.log('load');
         }
 	  });
+
+	  setTimeout(function() {
+	  	const elem = document.createElement('a');
+	  	elem.setAttribute('id', 'button');
+	  	elem.setAttribute('href', '#');
+	  	elem.classList.add('btn', 'btn-warning', 'btn-lg');
+	  	elem.innerText = 'Delayed Button';
+
+	  	document.querySelector('#checkout').insertAdjacentElement('afterend', elem);
+	  }, 10000);
 	</script>
 
     <script src="/webloader.js"
@@ -116,10 +126,5 @@
     <script src="../lib/js/jquery.js"></script>
     <script src="../lib/js/popper.min.js"></script>
     <script src="../lib/js/bootstrap.bundle.js"></script>
-  	<script>
-      $('#dropdown01').click(async function() {
-        (await evolv.runtime).activate('4');
-      });
-	</script>
   </body>
 </html>
