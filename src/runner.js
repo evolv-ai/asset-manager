@@ -11,6 +11,7 @@ import { toUnderscoreKey } from './utils.js';
  * @property {Timing} timing
  * @property {Status} status
  * @property {number|null} runNumber
+ * @property {number} calls
  * @property {Function} handler
  */
 
@@ -163,11 +164,13 @@ const Runner = /** @class */ (function () {
 
         entries.forEach(function (key) {
             const fn = variants[key];
+
             this.functions.push({
                 key: key,
                 timing: fn.timing || 'legacy',
                 status: 'not-runnable',
                 runNumber: null,
+                calls: 0,
                 handler: fn
             });
         }.bind(this));
@@ -219,9 +222,6 @@ const Runner = /** @class */ (function () {
     Runner.prototype.unschedule = function (key) {
         const def = this.functions.filter(function (fn) { return fn.key === key; })[0];
 
-        if (!def || def.status === 'running') {
-            return;
-        }
         // TODO: Devise way to deal with in-flight promises
         def.status = 'not-runnable';
     };
@@ -271,6 +271,7 @@ const Runner = /** @class */ (function () {
         functionsToRun.forEach(function (def) {
             def.status = 'running';
             def.runNumber = runNumber;
+            def.calls += 1;
 
             const promise = MiniPromise.createPromise(function (resolve, reject) {
                 try {
@@ -287,7 +288,11 @@ const Runner = /** @class */ (function () {
             });
 
             promise
-                .then(function () { return def.status = 'resolved'; })
+                .then(function () {
+                    if (def.status === 'running') {
+                        def.status = 'resolved';
+                    }
+                })
                 .catch(function (err) {
                     const message = (err && err.message) ? err.message : '';
 
@@ -311,15 +316,16 @@ const Runner = /** @class */ (function () {
      */
     Runner.prototype.checkForConfirmation = function (runNumber) {
         const run = this.runs[runNumber - 1];
-        const allResolved = this.functions
+
+        const allResolvedOrNotRunnable = this.functions
             .filter(function (def) {
                 return run.neededToConfirm.indexOf(def.key) !== -1;
             })
             .every(function (def) {
-                return def.status === 'resolved';
+                return ['resolved', 'not-runnable'].indexOf(def.status) !== -1;
             });
 
-        if (allResolved) {
+        if (allResolvedOrNotRunnable) {
             this.confirm();
         }
     };
