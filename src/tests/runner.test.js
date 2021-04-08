@@ -142,8 +142,6 @@ describe('Runner', () => {
             await wait(0);
 
             // Assert
-            assert.ok(contaminateSpy.called);
-
             assert.ok(Object.values(window.evolv.javascript.variants).every(fn => !fn.called));
             assert.equal(client.confirmations, 0);
             assert.equal(client.contaminations, 1);
