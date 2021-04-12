@@ -14,7 +14,7 @@ const Helpers = /** @class */ (function() {
 
         const predicate = function() {
             return selectors.every(function(selector) {
-                return document.querySelectorAll(selector).length !== 0;
+                return document.querySelector(selector) !== null;
             });
         };
 
