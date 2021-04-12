@@ -74,7 +74,7 @@ describe('Runner', () => {
                 const runner = new Runner(container);
 
                 // Preconditions
-                assert.equal(runner.functions.length, 0);
+                assert.strictEqual(runner.functions.length, 0);
 
                 // Act
                 evolv.javascript.variants = variants;
@@ -83,7 +83,7 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(runner.functions.length, 2);
+                assert.strictEqual(runner.functions.length, 2);
             });
         });
 
@@ -96,7 +96,7 @@ describe('Runner', () => {
                 const runner = new Runner(container);
 
                 // Assert
-                assert.equal(runner.functions.length, 2);
+                assert.strictEqual(runner.functions.length, 2);
             });
         });
 
@@ -109,10 +109,10 @@ describe('Runner', () => {
                 evolv.javascript.variants = variants;
 
                 // Assert
-                assert.equal(runner.functions.length, 0);
+                assert.strictEqual(runner.functions.length, 0);
 
                 await wait(PollingInterval);
-                assert.equal(runner.functions.length, 2);
+                assert.strictEqual(runner.functions.length, 2);
             });
         });
 
@@ -136,8 +136,8 @@ describe('Runner', () => {
             assert.ok(contaminateSpy.called);
 
             assert.ok(Object.values(window.evolv.javascript.variants).every(fn => !fn.called));
-            assert.equal(client.confirmations, 0);
-            assert.equal(client.contaminations, 1);
+            assert.strictEqual(client.confirmations, 0);
+            assert.strictEqual(client.contaminations, 1);
         });
 
         it('should not call contaminate() if variants are populated before timeout has elapsed', async () => {
@@ -156,7 +156,7 @@ describe('Runner', () => {
             await wait(0);
 
             // Assert
-            assert.equal(contaminateSpy.called, false);
+            assert.strictEqual(contaminateSpy.called, false);
         });
     });
 
@@ -186,7 +186,7 @@ describe('Runner', () => {
             runner.updateFunctionsToRun(['evolv_web_abc_immediate']);
 
             // Preconditions
-            assert.equal(spy.called, false);
+            assert.strictEqual(spy.called, false);
 
             // Act
             evolv.javascript.variants = variants;
@@ -195,7 +195,7 @@ describe('Runner', () => {
             await wait(0);
 
             // Assert
-            assert.equal(spy.called, true);
+            assert.strictEqual(spy.called, true);
         });
     });
 
@@ -240,25 +240,25 @@ describe('Runner', () => {
             // Act & Assert
             await wait(0);
 
-            assert.equal(variants.evolv_web_abc_immediate.called, true);
-            assert.equal(variants.evolv_web_abc_legacy.called, false);
-            assert.equal(variants.evolv_web_abc_dom.called, false);
-            assert.equal(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(variants.evolv_web_abc_immediate.called, true);
+            assert.strictEqual(variants.evolv_web_abc_legacy.called, false);
+            assert.strictEqual(variants.evolv_web_abc_dom.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
 
             await wait(PollingInterval); // Enough to let legacy timer finish
 
-            assert.equal(variants.evolv_web_abc_legacy.called, true);
-            assert.equal(variants.evolv_web_abc_dom.called, false);
-            assert.equal(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(variants.evolv_web_abc_legacy.called, true);
+            assert.strictEqual(variants.evolv_web_abc_dom.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
 
             global.advanceReadyState('interactive');
 
-            assert.equal(variants.evolv_web_abc_dom.called, true);
-            assert.equal(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(variants.evolv_web_abc_dom.called, true);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
 
             global.advanceReadyState('complete');
 
-            assert.equal(variants.evolv_web_abc_onload.called, true);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, true);
         });
     });
 
@@ -335,8 +335,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -354,8 +354,8 @@ describe('Runner', () => {
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -373,8 +373,8 @@ describe('Runner', () => {
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -392,8 +392,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -414,8 +414,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -433,8 +433,8 @@ describe('Runner', () => {
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -452,8 +452,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -471,8 +471,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
     });
@@ -550,8 +550,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -569,8 +569,8 @@ describe('Runner', () => {
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -588,8 +588,8 @@ describe('Runner', () => {
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -607,8 +607,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -626,8 +626,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -645,8 +645,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -664,8 +664,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -845,7 +845,7 @@ describe('Runner', () => {
 
             await wait(0);
 
-            assert.equal(spy.callCount, 1);
+            assert.strictEqual(spy.callCount, 1);
 
             global.advanceReadyState('interactive');
             global.advanceReadyState('complete');
@@ -853,7 +853,7 @@ describe('Runner', () => {
             // Assert
             await wait(300);
 
-            assert.equal(spy.callCount, 2);
+            assert.strictEqual(spy.callCount, 2);
         });
     });
 
@@ -904,19 +904,19 @@ describe('Runner', () => {
 
             await wait(0);
 
-            assert.equal(confirmSpy.called, false);
-            assert.equal(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(confirmSpy.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
 
             global.advanceReadyState('complete');
 
             await wait(0);
 
-            assert.equal(confirmSpy.called, false);
-            assert.equal(variants.evolv_web_abc_onload.called, true);
+            assert.strictEqual(confirmSpy.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, true);
 
             await wait(1000);
 
-            assert.equal(confirmSpy.called, true);
+            assert.strictEqual(confirmSpy.called, true);
         });
     });
 });
