@@ -1,43 +1,39 @@
 import * as assert from 'assert';
-import EventEmitter from 'events';
 import sinon from 'sinon';
 
+import jsdom from './mocks/jsdom.js';
+import EvolvMock from './mocks/evolv.mock.js';
 import { Runner } from '../runner.js';
 import { DeferredPromise } from './deferred-promise.js';
-import EvolvMock from './mocks/evolv.mock.js';
-import { DocumentMock } from './mocks/document.mock.js';
 import wait from './wait.js';
 
+
 const PollingInterval = 100;
-let origWindow;
 
 describe('Runner', () => {
+    let cleanup;
     const sandbox = sinon.createSandbox();
-    const emitter = new EventEmitter();
 
     /** @type Container */
     let container;
 
     beforeEach(() => {
-        origWindow = global.window;
+        cleanup = jsdom();
 
         const client = new EvolvMock();
         sandbox.spy(client);
 
-        // noinspection JSConstantReassignment
-        global.document = new DocumentMock({ emitter });
-        global.evolv = {
-            client: new EvolvMock(),
+        window.evolv = {
+            client: client,
             javascript: {
                 variants: undefined
             }
         };
 
-        // noinspection JSConstantReassignment
-        global.window = { location: {}, evolv: global.evolv };
+        global.evolv = window.evolv;
 
         container = {
-            client: global.evolv.client,
+            client: window.evolv.client,
             options: {
                 legacyPollingInterval: PollingInterval,
                 variantsLoaded: new DeferredPromise()
@@ -47,15 +43,10 @@ describe('Runner', () => {
     });
 
     afterEach(() => {
+        window.close();
         sandbox.restore();
 
-        // noinspection JSConstantReassignment
-        delete global.window;
-        // noinspection JSConstantReassignment
-        delete global.document;
-
-        // noinspection JSConstantReassignment
-        global.window = origWindow;
+        cleanup();
     });
 
     describe('loadFunctions()', () => {
@@ -131,7 +122,7 @@ describe('Runner', () => {
             container.options.timeoutThreshold = 1;
 
             const runner = new Runner(container);
-            const contaminateSpy = sinon.spy(container.client, 'contaminate');
+            const contaminateSpy = container.client.contaminate;
 
             // Act
             await wait(10);
@@ -142,6 +133,8 @@ describe('Runner', () => {
             await wait(0);
 
             // Assert
+            assert.ok(contaminateSpy.called);
+
             assert.ok(Object.values(window.evolv.javascript.variants).every(fn => !fn.called));
             assert.equal(client.confirmations, 0);
             assert.equal(client.contaminations, 1);
@@ -152,7 +145,7 @@ describe('Runner', () => {
             container.options.timeoutThreshold = 100;
 
             const runner = new Runner(container);
-            const contaminateSpy = sinon.spy(container.client, 'contaminate');
+            const contaminateSpy = container.client.contaminate;
 
             // Act
             await wait(10);
@@ -258,14 +251,12 @@ describe('Runner', () => {
             assert.equal(variants.evolv_web_abc_dom.called, false);
             assert.equal(variants.evolv_web_abc_onload.called, false);
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
 
             assert.equal(variants.evolv_web_abc_dom.called, true);
             assert.equal(variants.evolv_web_abc_onload.called, false);
 
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('complete');
 
             assert.equal(variants.evolv_web_abc_onload.called, true);
         });
@@ -277,8 +268,8 @@ describe('Runner', () => {
         let runner;
 
         beforeEach(() => {
-            confirmSpy = sinon.spy(container.client, 'confirm');
-            contaminateSpy = sinon.spy(container.client, 'contaminate');
+            confirmSpy = container.client.confirm;
+            contaminateSpy = container.client.contaminate;
 
             const immediateFn = function() {};
             immediateFn.timing = 'immediate';
@@ -338,11 +329,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -360,11 +348,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
@@ -382,11 +367,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
@@ -404,11 +386,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -429,11 +408,8 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -451,11 +427,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
@@ -473,11 +446,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -495,11 +465,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -516,8 +483,8 @@ describe('Runner', () => {
         let runner;
 
         beforeEach(() => {
-            confirmSpy = sinon.spy(container.client, 'confirm');
-            contaminateSpy = sinon.spy(container.client, 'contaminate');
+            confirmSpy = container.client.confirm;
+            contaminateSpy = container.client.contaminate;
 
             const immediateFn = function() { throw new Error(); };
             immediateFn.timing = 'immediate';
@@ -577,11 +544,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -599,11 +563,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
@@ -621,11 +582,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
@@ -643,11 +601,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -665,11 +620,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -687,11 +639,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -709,11 +658,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -731,11 +677,8 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
@@ -778,7 +721,7 @@ describe('Runner', () => {
 
         it('should call confirm()', async () => {
             // Arrange
-            const spy = sinon.spy(container.client, 'confirm');
+            const spy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -794,11 +737,8 @@ describe('Runner', () => {
 
             await wait(PollingInterval); // Enough to let legacy timer finish
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
-
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
 
             // Assert
             await wait(1000);
@@ -835,7 +775,7 @@ describe('Runner', () => {
 
         it('should call confirm()', async () => {
             // Arrange
-            const confirmSpy = sinon.spy(container.client, 'confirm');
+            const confirmSpy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -852,11 +792,8 @@ describe('Runner', () => {
 
             await wait(PollingInterval); // Enough to let legacy timer finish
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
-
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
 
             await wait(200);
 
@@ -894,7 +831,7 @@ describe('Runner', () => {
 
         it('should call confirm() twice', async () => {
             // Arrange
-            const spy = sinon.spy(container.client, 'confirm');
+            const spy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -910,11 +847,8 @@ describe('Runner', () => {
 
             assert.equal(spy.callCount, 1);
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
-
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
 
             // Assert
             await wait(300);
@@ -951,7 +885,7 @@ describe('Runner', () => {
 
         it('should call confirm() only after immediate and legacy functions resolve', async () => {
             // Arrange
-            const confirmSpy = sinon.spy(container.client, 'confirm');
+            const confirmSpy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -966,16 +900,14 @@ describe('Runner', () => {
 
             await wait(0);
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
 
             await wait(0);
 
             assert.equal(confirmSpy.called, false);
             assert.equal(variants.evolv_web_abc_onload.called, false);
 
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('complete');
 
             await wait(0);
 
