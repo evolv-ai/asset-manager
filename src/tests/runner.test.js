@@ -1,43 +1,39 @@
 import * as assert from 'assert';
-import EventEmitter from 'events';
 import sinon from 'sinon';
 
+import jsdom from './mocks/jsdom.js';
+import EvolvMock from './mocks/evolv.mock.js';
 import { Runner } from '../runner.js';
 import { DeferredPromise } from './deferred-promise.js';
-import EvolvMock from './mocks/evolv.mock.js';
-import { DocumentMock } from './mocks/document.mock.js';
 import wait from './wait.js';
 
+
 const PollingInterval = 100;
-let origWindow;
 
 describe('Runner', () => {
+    let cleanup;
     const sandbox = sinon.createSandbox();
-    const emitter = new EventEmitter();
 
     /** @type Container */
     let container;
 
     beforeEach(() => {
-        origWindow = global.window;
+        cleanup = jsdom();
 
         const client = new EvolvMock();
         sandbox.spy(client);
 
-        // noinspection JSConstantReassignment
-        global.document = new DocumentMock({ emitter });
-        global.evolv = {
-            client: new EvolvMock(),
+        window.evolv = {
+            client: client,
             javascript: {
                 variants: undefined
             }
         };
 
-        // noinspection JSConstantReassignment
-        global.window = { location: {}, evolv: global.evolv };
+        global.evolv = window.evolv;
 
         container = {
-            client: global.evolv.client,
+            client: window.evolv.client,
             options: {
                 legacyPollingInterval: PollingInterval,
                 variantsLoaded: new DeferredPromise()
@@ -47,15 +43,10 @@ describe('Runner', () => {
     });
 
     afterEach(() => {
+        window.close();
         sandbox.restore();
 
-        // noinspection JSConstantReassignment
-        delete global.window;
-        // noinspection JSConstantReassignment
-        delete global.document;
-
-        // noinspection JSConstantReassignment
-        global.window = origWindow;
+        cleanup();
     });
 
     describe('loadFunctions()', () => {
@@ -83,7 +74,7 @@ describe('Runner', () => {
                 const runner = new Runner(container);
 
                 // Preconditions
-                assert.equal(runner.functions.length, 0);
+                assert.strictEqual(runner.functions.length, 0);
 
                 // Act
                 evolv.javascript.variants = variants;
@@ -92,7 +83,7 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Assert
-                assert.equal(runner.functions.length, 2);
+                assert.strictEqual(runner.functions.length, 2);
             });
         });
 
@@ -105,7 +96,7 @@ describe('Runner', () => {
                 const runner = new Runner(container);
 
                 // Assert
-                assert.equal(runner.functions.length, 2);
+                assert.strictEqual(runner.functions.length, 2);
             });
         });
 
@@ -118,10 +109,10 @@ describe('Runner', () => {
                 evolv.javascript.variants = variants;
 
                 // Assert
-                assert.equal(runner.functions.length, 0);
+                assert.strictEqual(runner.functions.length, 0);
 
                 await wait(PollingInterval);
-                assert.equal(runner.functions.length, 2);
+                assert.strictEqual(runner.functions.length, 2);
             });
         });
 
@@ -131,7 +122,7 @@ describe('Runner', () => {
             container.options.timeoutThreshold = 1;
 
             const runner = new Runner(container);
-            const contaminateSpy = sinon.spy(container.client, 'contaminate');
+            const contaminateSpy = container.client.contaminate;
 
             // Act
             await wait(10);
@@ -142,9 +133,11 @@ describe('Runner', () => {
             await wait(0);
 
             // Assert
+            assert.ok(contaminateSpy.called);
+
             assert.ok(Object.values(window.evolv.javascript.variants).every(fn => !fn.called));
-            assert.equal(client.confirmations, 0);
-            assert.equal(client.contaminations, 1);
+            assert.strictEqual(client.confirmations, 0);
+            assert.strictEqual(client.contaminations, 1);
         });
 
         it('should not call contaminate() if variants are populated before timeout has elapsed', async () => {
@@ -152,7 +145,7 @@ describe('Runner', () => {
             container.options.timeoutThreshold = 100;
 
             const runner = new Runner(container);
-            const contaminateSpy = sinon.spy(container.client, 'contaminate');
+            const contaminateSpy = container.client.contaminate;
 
             // Act
             await wait(10);
@@ -163,7 +156,7 @@ describe('Runner', () => {
             await wait(0);
 
             // Assert
-            assert.equal(contaminateSpy.called, false);
+            assert.strictEqual(contaminateSpy.called, false);
         });
     });
 
@@ -193,7 +186,7 @@ describe('Runner', () => {
             runner.updateFunctionsToRun(['evolv_web_abc_immediate']);
 
             // Preconditions
-            assert.equal(spy.called, false);
+            assert.strictEqual(spy.called, false);
 
             // Act
             evolv.javascript.variants = variants;
@@ -202,7 +195,79 @@ describe('Runner', () => {
             await wait(0);
 
             // Assert
-            assert.equal(spy.called, true);
+            assert.strictEqual(spy.called, true);
+        });
+    });
+
+    describe('execute()', () => {
+        let variants;
+
+        beforeEach(() => {
+            const immediateFn = sinon.spy(function() {});
+            immediateFn.timing = 'immediate';
+
+            const legacyFn = sinon.spy(function(resolve) {});
+            legacyFn.timing = 'legacy';
+
+            const domFn = sinon.spy(function(resolve) {});
+            domFn.timing = 'dom-content-loaded';
+
+            const onloadFn = sinon.spy(function(resolve) {});
+            onloadFn.timing = 'loaded';
+
+            const waitForElementsFn = sinon.spy(function(resolve) {});
+            waitForElementsFn.timing = 'wait-for-elements';
+            waitForElementsFn.timingSelectors = [];
+
+            variants = {
+                evolv_web_abc_immediate: immediateFn,
+                evolv_web_abc_legacy: legacyFn,
+                evolv_web_abc_dom: domFn,
+                evolv_web_abc_onload: onloadFn,
+                evolv_web_abc_waitForElements: waitForElementsFn,
+            };
+        });
+
+        it('should not invoke functions until appropriate run level', async () => {
+            // Arrange
+            const runner = new Runner(container);
+
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_immediate',
+                'evolv_web_abc_legacy',
+                'evolv_web_abc_dom',
+                'evolv_web_abc_onload',
+                'evolv_web_abc_waitForElements'
+            ]);
+
+            evolv.javascript.variants = variants;
+            container.options.variantsLoaded.resolve();
+
+            // Act & Assert
+            await wait(0);
+
+            assert.strictEqual(variants.evolv_web_abc_immediate.called, true);
+            assert.strictEqual(variants.evolv_web_abc_legacy.called, false);
+            assert.strictEqual(variants.evolv_web_abc_dom.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, false);
+
+            await wait(PollingInterval); // Enough to let legacy timer finish
+
+            assert.strictEqual(variants.evolv_web_abc_legacy.called, true);
+            assert.strictEqual(variants.evolv_web_abc_dom.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, false);
+
+            global.advanceReadyState('interactive');
+
+            assert.strictEqual(variants.evolv_web_abc_dom.called, true);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, true);
+
+            global.advanceReadyState('complete');
+
+            assert.strictEqual(variants.evolv_web_abc_onload.called, true);
         });
     });
 
@@ -212,8 +277,8 @@ describe('Runner', () => {
         let runner;
 
         beforeEach(() => {
-            confirmSpy = sinon.spy(container.client, 'confirm');
-            contaminateSpy = sinon.spy(container.client, 'contaminate');
+            confirmSpy = container.client.confirm;
+            contaminateSpy = container.client.contaminate;
 
             const immediateFn = function() {};
             immediateFn.timing = 'immediate';
@@ -251,6 +316,17 @@ describe('Runner', () => {
             };
             loadedAsyncFn.timing = 'loaded';
 
+            const waitForElementsFn = function() {};
+            waitForElementsFn.timing = 'wait-for-elements';
+            waitForElementsFn.timingSelectors = ['#element'];
+
+            const waitForElementsAsyncFn = function(resolve) {
+                setTimeout(resolve, 0);
+                return true;
+            };
+            waitForElementsAsyncFn.timing = 'wait-for-elements';
+            waitForElementsAsyncFn.timingSelectors = ['#element'];
+
             evolv.javascript.variants = {
                 evolv_web_abc_immediate: immediateFn,
                 evolv_web_abc_immediateAsync: immediateAsyncFn,
@@ -259,7 +335,9 @@ describe('Runner', () => {
                 evolv_web_abc_dom: domContentLoadedFn,
                 evolv_web_abc_domAsync: domContentLoadedAsyncFn,
                 evolv_web_abc_loaded: loadedFn,
-                evolv_web_abc_loadedAsync: loadedAsyncFn
+                evolv_web_abc_loadedAsync: loadedAsyncFn,
+                evolv_web_abc_waitForElements: waitForElementsFn,
+                evolv_web_abc_waitForElementsAsync: waitForElementsAsyncFn
             };
 
             runner = new Runner(container);
@@ -273,17 +351,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -295,17 +370,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -317,17 +389,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -339,21 +408,17 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, true);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.called, true);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
-        // describe.only('for a dom-content-loaded synchronous function', () => {
         describe('for a dom-content-loaded synchronous function', () => {
             it('should call confirm() and not contaminate()', async () => {
                 // Arrange
@@ -364,17 +429,14 @@ describe('Runner', () => {
                 await wait(0);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -386,17 +448,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -408,17 +467,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
 
@@ -430,17 +486,70 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, false);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for a wait-for-elements synchronous function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                const elem = document.createElement('div');
+                document.body.appendChild(elem);
+
+                window.eval( `
+                    setTimeout(function() {
+                        document.querySelector('div').setAttribute('id', 'element');
+                    }, 0);
+                `);
+
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_waitForElements'
+                ]);
+
+                // Act
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
+
+                await wait(20); // Enough time for next animation frame to tick
+
+                // Assert
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
+            });
+        });
+
+        describe('for a wait-for-elements asynchronous function', () => {
+            it('should call confirm() and not contaminate()', async () => {
+                // Arrange
+                const elem = document.createElement('div');
+                document.body.appendChild(elem);
+
+                window.eval( `
+                    setTimeout(function() {
+                        document.querySelector('div').setAttribute('id', 'element');
+                    }, 0);
+                `);
+
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_waitForElements'
+                ]);
+
+                // Act
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
+
+                await wait(20); // Enough time for next animation frame to tick
+
+                // Assert
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, false);
             });
         });
     });
@@ -451,8 +560,8 @@ describe('Runner', () => {
         let runner;
 
         beforeEach(() => {
-            confirmSpy = sinon.spy(container.client, 'confirm');
-            contaminateSpy = sinon.spy(container.client, 'contaminate');
+            confirmSpy = container.client.confirm;
+            contaminateSpy = container.client.contaminate;
 
             const immediateFn = function() { throw new Error(); };
             immediateFn.timing = 'immediate';
@@ -490,6 +599,17 @@ describe('Runner', () => {
             };
             loadedAsyncFn.timing = 'loaded';
 
+            const waitForElementsFn = function() { throw new Error(); };
+            waitForElementsFn.timing = 'wait-for-elements';
+            waitForElementsFn.timingSelectors = ['#element'];
+
+            const waitForElementsAsyncFn = function(_, reject) {
+                setTimeout(reject, 0);
+                return true;
+            };
+            waitForElementsAsyncFn.timing = 'wait-for-elements';
+            waitForElementsAsyncFn.timingSelectors = ['#element'];
+
             evolv.javascript.variants = {
                 evolv_web_abc_immediate: immediateFn,
                 evolv_web_abc_immediateAsync: immediateAsyncFn,
@@ -498,7 +618,9 @@ describe('Runner', () => {
                 evolv_web_abc_dom: domContentLoadedFn,
                 evolv_web_abc_domAsync: domContentLoadedAsyncFn,
                 evolv_web_abc_loaded: loadedFn,
-                evolv_web_abc_loadedAsync: loadedAsyncFn
+                evolv_web_abc_loadedAsync: loadedAsyncFn,
+                evolv_web_abc_waitForElements: waitForElementsFn,
+                evolv_web_abc_waitForElementsAsync: waitForElementsAsyncFn
             };
 
             runner = new Runner(container);
@@ -512,17 +634,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -534,17 +653,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -556,17 +672,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(10);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -578,17 +691,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.called, false);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.called, false);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -600,17 +710,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -622,17 +729,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -644,17 +748,14 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
             });
         });
 
@@ -666,17 +767,256 @@ describe('Runner', () => {
                 ]);
 
                 // Act
-                document.readyState = 'interactive';
-                emitter.emit('readystatechange');
-
-                document.readyState = 'complete';
-                emitter.emit('readystatechange');
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
 
                 await wait(0);
 
                 // Assert
-                assert.equal(confirmSpy.callCount, 1);
-                assert.equal(contaminateSpy.called, true);
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
+            });
+        });
+
+        describe('for a wait-for-elements synchronous function', () => {
+            it('should call confirm() once and contaminate() once', async () => {
+                // Arrange
+                const elem = document.createElement('div');
+                document.body.appendChild(elem);
+
+                window.eval( `
+                    setTimeout(function() {
+                        document.querySelector('div').setAttribute('id', 'element');
+                    }, 0);
+                `);
+
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_waitForElements'
+                ]);
+
+                // Act
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
+
+                await wait(20); // Enough time for next animation frame to tick
+
+                // Assert
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
+            });
+        });
+
+        describe('for a wait-for-elements asynchronous function', () => {
+            it('should call confirm() once and contaminate() once', async () => {
+                // Arrange
+                const elem = document.createElement('div');
+                document.body.appendChild(elem);
+
+                window.eval( `
+                    setTimeout(function() {
+                        document.querySelector('div').setAttribute('id', 'element');
+                    }, 100);
+                `);
+
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_waitForElementsAsync'
+                ]);
+
+                // Act
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
+
+                await wait(200);
+
+                // Assert
+                assert.strictEqual(confirmSpy.callCount, 1);
+                assert.strictEqual(contaminateSpy.called, true);
+            });
+        });
+    });
+
+    describe('wait-for-elements function', () => {
+        let variants;
+        let runner;
+
+        beforeEach(() => {
+            const immediateFn = sinon.spy(function() {});
+            immediateFn.timing = 'immediate';
+
+            const waitForElementsFn = sinon.spy(function() {});
+            waitForElementsFn.timing = 'wait-for-elements';
+            waitForElementsFn.timingSelectors = ['#element'];
+
+            const waitForMultipleElementsFn = sinon.spy(function() {});
+            waitForMultipleElementsFn.timing = 'wait-for-elements';
+            waitForMultipleElementsFn.timingSelectors = ['#element', '#element2'];
+
+            variants = {
+                evolv_web_abc_immediate: immediateFn,
+                evolv_web_abc_waitForElements: waitForElementsFn,
+                evolv_web_abc_waitForMultipleElements: waitForMultipleElementsFn
+            };
+
+            evolv.javascript.variants = variants;
+
+            runner = new Runner(container);
+        });
+
+        it('should not apply function until element is inserted', async () => {
+            // Arrange
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_waitForElements'
+            ]);
+
+            const elem = document.createElement('div');
+            document.body.appendChild(elem);
+
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
+
+            // Preconditions
+            await wait(0);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, false);
+
+            // Act
+            window.eval( `
+                setTimeout(function() {
+                    document.querySelector('div').setAttribute('id', 'element');
+                }, 100);
+            `);
+
+            // Assert
+            await wait(200); // Enough time for next animation frame to tick
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, true);
+        });
+
+        it('should not apply function until element is inserted asynchronously', async () => {
+            // Arrange
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_waitForElements'
+            ]);
+
+            const elem = document.createElement('div');
+            document.body.appendChild(elem);
+
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
+
+            // Preconditions
+            await wait(0);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, false);
+
+            // Act
+            window.eval( `
+                setTimeout(function() {
+                    document.querySelector('div').setAttribute('id', 'element');
+                }, 100);
+            `);
+
+            // Assert
+            await wait(200);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, true);
+        });
+
+        it('should not apply function until all elements are present', async () => {
+            // Arrange
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_waitForMultipleElements'
+            ]);
+
+            const div = document.createElement('div');
+            document.body.appendChild(div);
+
+            const span = document.createElement('span');
+            document.body.appendChild(span);
+
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
+
+            // Preconditions
+            await wait(0);
+            assert.strictEqual(variants.evolv_web_abc_waitForMultipleElements.called, false);
+
+            // Act
+            window.eval( `
+                setTimeout(function() {
+                    document.querySelector('div').setAttribute('id', 'element');
+                }, 100);
+
+                setTimeout(function() {
+                    document.querySelector('span').setAttribute('id', 'element2');
+                }, 300);
+            `);
+
+            // Assert
+            await wait(200);
+            assert.strictEqual(variants.evolv_web_abc_waitForMultipleElements.called, false);
+
+            await wait(400);
+            assert.strictEqual(variants.evolv_web_abc_waitForMultipleElements.called, true);
+        });
+
+        it('should dispose of timers when function is removed', async () => {
+            // Arrange
+            runner.updateFunctionsToRun([
+                'evolv_web_abc_waitForElements'
+            ]);
+
+            const elem = document.createElement('div');
+            document.body.appendChild(elem);
+
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
+
+            window.eval( `
+                setTimeout(function() {
+                    document.querySelector('div').setAttribute('id', 'element');
+                    console.log('here');
+                }, 100);
+            `);
+
+            // Preconditions
+            await wait(0);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, false);
+
+            // Act
+            runner.updateFunctionsToRun([]);
+
+            // Assert
+            await wait(200);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, false);
+        });
+
+        describe('with 1 immediate and 1 wait-for-elements function', () => {
+            it('should call confirm() twice', async () => {
+                // Arrange
+                const spy = container.client.confirm;
+
+                const elem = document.createElement('div');
+                document.body.appendChild(elem);
+
+                runner.updateFunctionsToRun([
+                    'evolv_web_abc_immediate',
+                    'evolv_web_abc_waitForElements'
+                ]);
+
+                global.advanceReadyState('interactive');
+                global.advanceReadyState('complete');
+
+                window.eval( `
+                    setTimeout(function() {
+                        document.querySelector('div').setAttribute('id', 'element');
+                    }, 100);
+                `);
+
+                // Act
+                await wait(0);
+                assert.strictEqual(spy.callCount, 1);
+
+                // Assert
+                await wait(200);
+
+                assert.strictEqual(spy.callCount, 2);
             });
         });
     });
@@ -713,7 +1053,7 @@ describe('Runner', () => {
 
         it('should call confirm()', async () => {
             // Arrange
-            const spy = sinon.spy(container.client, 'confirm');
+            const spy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -729,11 +1069,8 @@ describe('Runner', () => {
 
             await wait(PollingInterval); // Enough to let legacy timer finish
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
-
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
 
             // Assert
             await wait(1000);
@@ -770,7 +1107,7 @@ describe('Runner', () => {
 
         it('should call confirm()', async () => {
             // Arrange
-            const confirmSpy = sinon.spy(container.client, 'confirm');
+            const confirmSpy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -787,11 +1124,8 @@ describe('Runner', () => {
 
             await wait(PollingInterval); // Enough to let legacy timer finish
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
-
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
 
             await wait(200);
 
@@ -829,7 +1163,7 @@ describe('Runner', () => {
 
         it('should call confirm() twice', async () => {
             // Arrange
-            const spy = sinon.spy(container.client, 'confirm');
+            const spy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -843,18 +1177,15 @@ describe('Runner', () => {
 
             await wait(0);
 
-            assert.equal(spy.callCount, 1);
+            assert.strictEqual(spy.callCount, 1);
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
-
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
+            global.advanceReadyState('complete');
 
             // Assert
             await wait(300);
 
-            assert.equal(spy.callCount, 2);
+            assert.strictEqual(spy.callCount, 2);
         });
     });
 
@@ -886,7 +1217,7 @@ describe('Runner', () => {
 
         it('should call confirm() only after immediate and legacy functions resolve', async () => {
             // Arrange
-            const confirmSpy = sinon.spy(container.client, 'confirm');
+            const confirmSpy = container.client.confirm;
             const runner = new Runner(container);
 
             runner.updateFunctionsToRun([
@@ -901,25 +1232,23 @@ describe('Runner', () => {
 
             await wait(0);
 
-            document.readyState = 'interactive';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('interactive');
 
             await wait(0);
 
-            assert.equal(confirmSpy.called, false);
-            assert.equal(variants.evolv_web_abc_onload.called, false);
+            assert.strictEqual(confirmSpy.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, false);
 
-            document.readyState = 'complete';
-            emitter.emit('readystatechange');
+            global.advanceReadyState('complete');
 
             await wait(0);
 
-            assert.equal(confirmSpy.called, false);
-            assert.equal(variants.evolv_web_abc_onload.called, true);
+            assert.strictEqual(confirmSpy.called, false);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, true);
 
             await wait(1000);
 
-            assert.equal(confirmSpy.called, true);
+            assert.strictEqual(confirmSpy.called, true);
         });
     });
 });
