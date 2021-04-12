@@ -3,6 +3,7 @@ import JSDOM from 'jsdom-global';
 export function jsdom(html = ``, options = {}) {
     return JSDOM(html, {
         ...options,
+        runScripts: 'outside-only',
         pretendToBeVisual: true,
         beforeParse(window) {
             global.requestAnimationFrame = window.requestAnimationFrame;
