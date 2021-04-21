@@ -147,11 +147,6 @@ function main() {
     main();
   };
 
-  evolv.markConsented = function () {
-    storageManager.allowPersistentStorage();
-    evolv.client.allowEvents();
-  };
-
 	// If evolvLazyUid is true and no uid is set - get GA client Id and set uid
 	if (checkLazyUid(script)) {
 		// Temporary hotfix for GA Client Id integration
@@ -162,6 +157,11 @@ function main() {
 	if (checkInstanceCount(evolv)) {
 		return;
 	}
+
+	evolv.markConsented = function () {
+		storageManager.allowPersistentStorage();
+		evolv.client.allowEvents();
+	};
 
 	let storageManager = new EvolvStorageManager(script.dataset.evolvUseCookies, !requireConsent(script));
 
