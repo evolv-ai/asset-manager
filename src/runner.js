@@ -1,7 +1,7 @@
-import {MiniPromise} from '@evolv/javascript-sdk';
-import {Helpers} from './helpers.js';
-import {toContextKey} from './keys.js';
-import {toUnderscoreKey} from './utils.js';
+import { MiniPromise } from '@evolv/javascript-sdk';
+import { Helpers } from './helpers.js';
+import { toContextKey } from './keys.js';
+import { toUnderscoreKey } from './utils.js';
 
 /** @typedef {'immediate' | 'legacy' | 'dom-content-loaded' | 'loaded' | 'wait-for-elements'} Timing */
 /** @typedef {'not-runnable' | 'runnable' | 'running' | 'resolved' | 'rejected'} Status */
@@ -26,7 +26,7 @@ import {toUnderscoreKey} from './utils.js';
  * @param {FunctionDef} def
  * @returns boolean
  */
-const isImmediateOrLegacy = function (def) {
+const isImmediateOrLegacy = function(def) {
     return ['immediate', 'legacy'].indexOf(def.timing) !== -1;
 };
 
@@ -34,7 +34,7 @@ const isImmediateOrLegacy = function (def) {
  * @param {FunctionDef} def
  * @returns boolean
  */
-const hasNotRun = function (def) {
+const hasNotRun = function(def) {
     return def.status === 'runnable';
 };
 
@@ -42,7 +42,7 @@ const hasNotRun = function (def) {
  * @param {FunctionDef} def
  * @returns boolean
  */
-const hasNotCompleted = function (def) {
+const hasNotCompleted = function(def) {
     return ['runnable', 'running'].indexOf(def.status) !== -1;
 };
 
@@ -212,7 +212,7 @@ const Runner = /** @class */ (function () {
      * @param {string} key
      */
     Runner.prototype.schedule = function (key) {
-        const def = this.functions.filter(function (fn) {return fn.key === key;})[0];
+        const def = this.functions.filter(function (fn) { return fn.key === key; })[0];
 
         if (!def || def.status !== 'not-runnable') {
             return;
@@ -225,7 +225,7 @@ const Runner = /** @class */ (function () {
      * @param {string} key
      */
     Runner.prototype.unschedule = function (key) {
-        const def = this.functions.filter(function (fn) {return fn.key === key;})[0];
+        const def = this.functions.filter(function (fn) { return fn.key === key; })[0];
 
         // TODO: Devise way to deal with in-flight promises
         def.status = 'not-runnable';
@@ -235,12 +235,12 @@ const Runner = /** @class */ (function () {
     /**
      * @param {string} prefix Dot-separated prefix
      */
-    Runner.prototype.unscheduleByPrefix = function (prefix) {
+    Runner.prototype.unscheduleByPrefix = function(prefix) {
         this.functions
-            .filter(function (def) {
+            .filter(function(def) {
                 return def.key.startsWith(toUnderscoreKey(prefix));
             })
-            .forEach(function (def) {
+            .forEach(function(def) {
                 this.unschedule(def.key);
             }.bind(this));
     };
@@ -266,7 +266,7 @@ const Runner = /** @class */ (function () {
 
         const neededToConfirm = functionsOutstanding
             .filter(isImmediateOrLegacy)
-            .map(function (def) {return def.key;});
+            .map(function (def) { return def.key; });
 
         this.runs.push(Object.freeze({
             neededToConfirm: neededToConfirm
@@ -309,18 +309,18 @@ const Runner = /** @class */ (function () {
      * @param {FunctionDef} def
      * @return {{ promise:Promise.<void>, disposer: function():void }}
      */
-    Runner.prototype.getExecutor = function (def) {
+    Runner.prototype.getExecutor = function(def) {
         const fn = def.handler;
         const helpers = new Helpers();
 
-        const promise = MiniPromise.createPromise(function (resolve, reject) {
-            const callback = function (err) {
+        const promise = MiniPromise.createPromise(function(resolve, reject) {
+            const callback = function(err) {
                 if (err) {
                     reject(err);
                 }
 
                 try {
-                    const thisArg = {key: toContextKey(def.key)};
+                    const thisArg = { key: toContextKey(def.key) };
                     const result = def.handler.call(thisArg, resolve, reject);
 
                     if (result !== true) {
@@ -433,4 +433,4 @@ const Runner = /** @class */ (function () {
     return Runner;
 }());
 
-export {Runner};
+export { Runner };
