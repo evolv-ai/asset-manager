@@ -271,7 +271,7 @@ describe('Runner', () => {
         });
 
       it('should handle readystates running before load', async () => {
-        global.advanceReadyState('complete');
+        document.readyState = 'complete';
         // Arrange
         const runner = new Runner(container);
 
@@ -279,8 +279,7 @@ describe('Runner', () => {
           'evolv_web_abc_immediate',
           'evolv_web_abc_legacy',
           'evolv_web_abc_dom',
-          'evolv_web_abc_onload',
-          'evolv_web_abc_waitForElements'
+          'evolv_web_abc_onload'
         ]);
 
         evolv.javascript.variants = variants;
@@ -292,7 +291,6 @@ describe('Runner', () => {
         assert.strictEqual(variants.evolv_web_abc_immediate.called, true);
         assert.strictEqual(variants.evolv_web_abc_legacy.called, true);
         assert.strictEqual(variants.evolv_web_abc_dom.called, true);
-        assert.strictEqual(variants.evolv_web_abc_waitForElements.called, true);
         assert.strictEqual(variants.evolv_web_abc_onload.called, true);
       });
     });
