@@ -64,10 +64,12 @@ class StorageMock {
 	}
 }
 
+// TODO: Replace usages with jsdom
 class DocumentMock {
 	constructor(options) {
 		options = options || {};
 		this.emitter = options.emitter || new EventEmitter();
+		this.readyState = 'loading';
 		this.cookie = options.cookie || '';
 		this.classList = options.classList || new ClassListMock();
 		this.elements = options.elements || [];

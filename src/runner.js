@@ -57,6 +57,12 @@ const RunLevel = {
 };
 
 const levelMap = {
+    // Ready States
+    loading: RunLevel.Immediate,
+    interactive: RunLevel.Interactive,
+    complete: RunLevel.Complete,
+
+    // Timing Options
     immediate: RunLevel.Immediate,
     legacy: RunLevel.Legacy,
     'dom-content-loaded': RunLevel.Interactive,
@@ -77,8 +83,9 @@ const Runner = /** @class */ (function () {
         /** @type {boolean} */
         this.timedOut = false;
 
+
         /** @type {RunLevel} */
-        this.runLevel = RunLevel.Immediate;
+        this.runLevel = levelMap[document.readyState];
 
         /** @type {RunHistory[]} */
         this.runs = [];
@@ -89,7 +96,7 @@ const Runner = /** @class */ (function () {
         /** @type {string[]|null} */
         this.deferred = null;
 
-        this.checkReadyState = function () {
+        this.onReadyStateChange = function () {
             switch (document.readyState) {
                 case 'interactive':
                     this.setRunLevel(RunLevel.Interactive);
@@ -102,9 +109,8 @@ const Runner = /** @class */ (function () {
             }
         }.bind(this);
 
-        document.addEventListener('readystatechange', this.checkReadyState);
+        document.addEventListener('readystatechange', this.onReadyStateChange);
         this.doLegacyTiming();
-        this.checkReadyState();
 
         if (container.options.variantsLoaded) {
             container.options.variantsLoaded

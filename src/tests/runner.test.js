@@ -270,31 +270,33 @@ describe('Runner', () => {
             assert.strictEqual(variants.evolv_web_abc_onload.called, true);
         });
 
-      it('should handle readystates running before load', async () => {
-        global.advanceReadyState('complete');
-        // Arrange
-        const runner = new Runner(container);
+        it('should handle readystates running before load', async () => {
+            // Arrange
+            global.advanceReadyState('complete');
 
-        runner.updateFunctionsToRun([
-          'evolv_web_abc_immediate',
-          'evolv_web_abc_legacy',
-          'evolv_web_abc_dom',
-          'evolv_web_abc_onload',
-          'evolv_web_abc_waitForElements'
-        ]);
+            // Act
+            const runner = new Runner(container);
 
-        evolv.javascript.variants = variants;
-        container.options.variantsLoaded.resolve();
+            runner.updateFunctionsToRun([
+              'evolv_web_abc_immediate',
+              'evolv_web_abc_legacy',
+              'evolv_web_abc_dom',
+              'evolv_web_abc_onload',
+              'evolv_web_abc_waitForElements'
+            ]);
 
-        // Act & Assert
-        await wait(0);
+            evolv.javascript.variants = variants;
+            container.options.variantsLoaded.resolve();
 
-        assert.strictEqual(variants.evolv_web_abc_immediate.called, true);
-        assert.strictEqual(variants.evolv_web_abc_legacy.called, true);
-        assert.strictEqual(variants.evolv_web_abc_dom.called, true);
-        assert.strictEqual(variants.evolv_web_abc_waitForElements.called, true);
-        assert.strictEqual(variants.evolv_web_abc_onload.called, true);
-      });
+            // Assert
+            await wait(0);
+
+            assert.strictEqual(variants.evolv_web_abc_immediate.called, true);
+            assert.strictEqual(variants.evolv_web_abc_legacy.called, true);
+            assert.strictEqual(variants.evolv_web_abc_dom.called, true);
+            assert.strictEqual(variants.evolv_web_abc_waitForElements.called, true);
+            assert.strictEqual(variants.evolv_web_abc_onload.called, true);
+        });
     });
 
     describe('when invocation succeeds', () => {
