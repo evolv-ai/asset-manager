@@ -89,7 +89,7 @@ const Runner = /** @class */ (function () {
         /** @type {string[]|null} */
         this.deferred = null;
 
-        this.onReadyStateChange = function () {
+        this.checkReadyState = function () {
             switch (document.readyState) {
                 case 'interactive':
                     this.setRunLevel(RunLevel.Interactive);
@@ -102,8 +102,9 @@ const Runner = /** @class */ (function () {
             }
         }.bind(this);
 
-        document.addEventListener('readystatechange', this.onReadyStateChange);
+        document.addEventListener('readystatechange', this.checkReadyState);
         this.doLegacyTiming();
+		this.checkReadyState();
 
         if (container.options.variantsLoaded) {
             container.options.variantsLoaded
