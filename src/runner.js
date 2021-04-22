@@ -57,6 +57,12 @@ const RunLevel = {
 };
 
 const levelMap = {
+    // Ready States
+    loading: RunLevel.Immediate,
+    interactive: RunLevel.Interactive,
+    complete: RunLevel.Complete,
+
+    // Timing Options
     immediate: RunLevel.Immediate,
     legacy: RunLevel.Legacy,
     'dom-content-loaded': RunLevel.Interactive,
@@ -77,8 +83,9 @@ const Runner = /** @class */ (function () {
         /** @type {boolean} */
         this.timedOut = false;
 
+
         /** @type {RunLevel} */
-        this.runLevel = RunLevel.Immediate;
+        this.runLevel = levelMap[document.readyState];
 
         /** @type {RunHistory[]} */
         this.runs = [];
