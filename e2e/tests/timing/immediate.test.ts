@@ -1,4 +1,4 @@
-import { buildRequestHooks } from '../../helpers';
+import { buildRequestHooks, skipIfIE, waitUntilLoaded } from '../../helpers';
 import hooks from './immediate.hooks';
 
 
@@ -8,7 +8,10 @@ fixture `Timing: Immediate`
 		buildRequestHooks(hooks)
 	);
 
-test(`should apply variants immediately`, async t => {
+test(`should apply variants immediately`, skipIfIE(async t => {
+	console.log('\x1b[90m%s\x1b[0m', ' ◽️ [IE] Skipping tests because test is flaky in Internet Explorer');
+	await waitUntilLoaded();
+
 	const { log } = await t.getBrowserConsoleMessages();
 
 	await t
@@ -18,4 +21,4 @@ test(`should apply variants immediately`, async t => {
 		.expect(log[2]).match(/^Delay/)
 		.expect(log[3]).match(/^DOMContentLoaded/)
 		.expect(log[4]).match(/^load/);
-});
+}));
