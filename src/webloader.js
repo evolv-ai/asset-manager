@@ -113,6 +113,7 @@ function checkInstanceCount(evolv) {
 
 	if (evolv.instancesCount > 1) {
 		console.warn('Multiple Evolv instances - please verify you have only loaded Evolv once');
+		window.evolv.rerun()
 
 		return true;
 	}
