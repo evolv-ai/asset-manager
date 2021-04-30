@@ -76,7 +76,7 @@ function main(container) {
 			appliedClasses = liveContexts.slice();
 		}
 
-		if (jsAsset && liveContexts.length > 0) {
+		if (jsAsset) {
             runner.updateFunctionsToRun(liveContexts);
 		} else if (cssAsset && liveContexts.length > 0) {
 			confirm();
