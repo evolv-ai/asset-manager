@@ -17,9 +17,10 @@ import { toUnderscoreKey } from './utils.js';
 
 /**
  * @param {Container} container
+ * @param {Runner} _runner
  * @this {EvolvAssetManager}
  */
-function main(container) {
+function main(container, _runner) {
 	let appliedClasses = [];
 	let confirmed = false;
 
@@ -44,7 +45,7 @@ function main(container) {
     const cssAsset = retrieveEvolvCssAsset(environment);
     const jsAsset = retrieveEvolvJsAsset(environment);
 
-    const runner = new Runner(container);
+    const runner = _runner || new Runner(container);
 
     /**
      * @param {string} [prefixDotSeparated=web]
@@ -76,9 +77,9 @@ function main(container) {
 			appliedClasses = liveContexts.slice();
 		}
 
-		if (jsAsset && liveContexts.length > 0) {
-            runner.updateFunctionsToRun(liveContexts);
-		} else if (cssAsset && liveContexts.length > 0) {
+		if (jsAsset) {
+      runner.updateFunctionsToRun(liveContexts);
+		} else if (cssAsset) {
 			confirm();
 		}
 	});
@@ -88,9 +89,10 @@ function main(container) {
  * @param client
  * @param {Options} [options]
  * @param {Performance} [_performance]
+ * @param {Runner} [_runner]
  * @constructor
  */
-function EvolvAssetManager(client, options, _performance) {
+function EvolvAssetManager(client, options, _performance, _runner) {
 	client.context.set('web.url', window.location.href);
 
 	// Expose client and context proprties
@@ -104,7 +106,7 @@ function EvolvAssetManager(client, options, _performance) {
 		_performance: _performance || performance
 	};
 
-	main.call(this, container);
+	main.call(this, container, _runner);
 }
 
 export default EvolvAssetManager;
