@@ -1,4 +1,4 @@
-import { buildRequestHooks } from '../../helpers';
+import { buildRequestHooks, skipIfIE, waitUntilLoaded } from '../../helpers';
 import hooks from './loaded.hooks';
 
 
@@ -8,10 +8,10 @@ fixture `Timing: Loaded`
 		buildRequestHooks(hooks)
 	);
 
-test(`should apply variants after the window.load event has fired`, async t => {
-	const { log } = await t.getBrowserConsoleMessages();
+test(`should apply variants after the window.load event has fired`, skipIfIE(async t => {
+	await waitUntilLoaded();
 
-	await t.wait(200);
+	const { log } = await t.getBrowserConsoleMessages();
 
 	await t
 		.expect(log.length).eql(5)
@@ -20,4 +20,4 @@ test(`should apply variants after the window.load event has fired`, async t => {
 		.expect(log[2]).match(/^DOMContentLoaded/)
 		.expect(log[3]).match(/^load/)
 		.expect(log[4]).match(/^Variant applied/);
-});
+}));

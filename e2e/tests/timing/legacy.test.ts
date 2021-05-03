@@ -1,4 +1,4 @@
-import { buildRequestHooks } from '../../helpers';
+import { buildRequestHooks, skipIfIE, waitUntilLoaded } from '../../helpers';
 import hooks from './legacy.hooks';
 
 
@@ -8,7 +8,9 @@ fixture `Timing: Legacy`
 		buildRequestHooks(hooks)
 	);
 
-test(`should apply variants respecting the legacy behavior`, async t => {
+test(`should apply variants respecting the legacy behavior`, skipIfIE(async t => {
+	await waitUntilLoaded();
+
 	const { log } = await t.getBrowserConsoleMessages();
 
 	await t
@@ -18,4 +20,4 @@ test(`should apply variants respecting the legacy behavior`, async t => {
 		.expect(log[2]).match(/^Delay/)
 		.expect(log[3]).match(/^DOMContentLoaded/)
 		.expect(log[4]).match(/^load/);
-});
+}));

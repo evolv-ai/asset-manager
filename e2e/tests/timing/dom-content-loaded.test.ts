@@ -1,5 +1,4 @@
-import { buildRequestHooks } from '../../helpers';
-
+import { buildRequestHooks, skipIfIE, waitUntilLoaded } from '../../helpers';
 import hooks from './dom-content-loaded.hooks';
 
 
@@ -9,7 +8,9 @@ fixture `Timing: DOMContentLoaded`
 		buildRequestHooks(hooks)
 	);
 
-test(`should apply variants after DOMContentLoaded has fired`, async t => {
+test(`should apply variants after DOMContentLoaded has fired`, skipIfIE(async t => {
+	await waitUntilLoaded();
+
 	const { log } = await t.getBrowserConsoleMessages();
 
 	await t
@@ -19,4 +20,4 @@ test(`should apply variants after DOMContentLoaded has fired`, async t => {
 		.expect(log[2]).match(/^DOMContentLoaded/)
 		.expect(log[3]).match(/^Variant applied/)
 		.expect(log[4]).match(/^load/);
-});
+}));

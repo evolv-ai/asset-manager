@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Timing: Legacy</title>
 	<script>
-		document.addEventListener('readystatechange', () => {
+		document.addEventListener('readystatechange', function() {
 			if (document.readyState === 'interactive') {
 				console.log('DOMContentLoaded');
 			} else if (document.readyState === 'complete') {
@@ -17,7 +17,7 @@
             data-evolv-environment="1a2b3c4d"
     ></script>
 
-	<script src="/tests/timing/delayed.js?delay=200"></script>
+	<script src="/tests/timing/delayed.js?delay=1000"></script>
 </head>
 <body>
 <h1>Evolv</h1>
