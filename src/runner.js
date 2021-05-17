@@ -392,7 +392,7 @@ const Runner = /** @class */ (function () {
         const _a = this.container, client = _a.client, options = _a.options, _performance = _a._performance;
 
         const timeNow = (new Date()).getTime();
-        const domContentLoadedEventStart = _performance.timing.domContentLoadedEventStart;
+        const domContentLoadedEventStart = _performance ? _performance.timing.domContentLoadedEventStart : 0;
         const threshold = options.timeoutThreshold || 60000;
 
         if (domContentLoadedEventStart > 0 && timeNow > domContentLoadedEventStart + threshold) {

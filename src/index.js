@@ -103,7 +103,7 @@ function EvolvAssetManager(client, options, _performance, _runner) {
 	const container = {
 		client: client,
 		options: options || {},
-		_performance: _performance || performance
+		_performance: _performance || window['performance']
 	};
 
 	main.call(this, container, _runner);
