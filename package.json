@@ -9,7 +9,7 @@
     "start:watch": "rollup --config --watch",
     "start:browser-sync": "node support/dev/bs-config.js",
     "test": "mocha --file src/tests/setup.js",
-		"coverage": "npx nyc mocha --experimental-loader=@istanbuljs/esm-loader-hook npm run test",
+    "coverage": "npx nyc mocha --experimental-loader=@istanbuljs/esm-loader-hook npm run test",
     "test:debug": "node --inspect node_modules/.bin/mocha",
     "lint": "eslint src",
     "build": "rollup --config",
