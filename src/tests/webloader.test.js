@@ -188,6 +188,35 @@ describe('the web loader', () => {
 		assert.ok(scripts[0].src.indexOf(MOCK_GA_CLIENT_ID) !== 0, 'The uid should have been set.');
 	});
 
+	it('should use generated uid if GA integration times out', async () => {
+		setupGlobal(null, undefined, { evolvLazyUid: 'true' });
+
+		// overwrite ga.getAll to force integration polling method to time out
+		window.ga.getAll = () => [];
+
+		const prefix = '11';
+		const ticks = 60;
+		const MOCK_GENERATE_UID = `${prefix}_${ticks}`;
+
+		// used to mock the prefix of the generated uid
+		let mathRoundStub = sinon.stub(Math, 'round').returns(prefix);
+		let clock = sinon.useFakeTimers();
+
+		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+
+		// run timers to poll for GA until timing out
+		clock.tick(ticks);
+
+		let scripts = document.getElementsByTagName('script');
+		let links = document.getElementsByTagName('link');
+		assert.equal(scripts.length, 1, 'The script should have been added');
+		assert.equal(links.length, 1, 'The stylesheet should have been added');
+		assert.ok(scripts[0].src.indexOf(MOCK_GENERATE_UID) > -1, 'The uid should have been set to generated uid.');
+
+		clock.restore();
+		mathRoundStub.restore();
+	});
+
 	describe('consent checks', ()  => {
     it('should initialize properly', async () => {
       setupGlobal(null, undefined, { evolvRequireConsent: 'true' });
