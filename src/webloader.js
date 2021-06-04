@@ -147,6 +147,13 @@ function main() {
     main();
   };
 
+	evolv.generateUid = function generateUid() {
+		if (script.dataset.evolvLazyUid) {
+			delete script.dataset.evolvLazyUid;
+		}
+		main();
+	};
+
 	// If evolvLazyUid is true and no uid is set - get GA client Id and set uid
 	if (checkLazyUid(script)) {
 		// Temporary hotfix for GA Client Id integration
