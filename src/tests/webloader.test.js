@@ -217,6 +217,24 @@ describe('the web loader', () => {
 		mathRoundStub.restore();
 	});
 
+	it('should use UID from local storage instead if one exists and ignore lazy-uid', async () => {
+		setupGlobal(null, undefined, { evolvLazyUid: 'true' });
+
+		const MOCK_GENERATE_UID = `123_456`;
+
+		let localStub = sinon.stub(global.window.localStorage, 'getItem').returns(MOCK_GENERATE_UID);
+
+		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+
+		let scripts = document.getElementsByTagName('script');
+		let links = document.getElementsByTagName('link');
+		assert.equal(scripts.length, 1, 'The script should have been added');
+		assert.equal(links.length, 1, 'The stylesheet should have been added');
+		assert.ok(scripts[0].src.indexOf(MOCK_GENERATE_UID) > -1, 'The uid should match the uid from localStorage.');
+
+		localStub.restore();
+	});
+
 	describe('consent checks', ()  => {
     it('should initialize properly', async () => {
       setupGlobal(null, undefined, { evolvRequireConsent: 'true' });

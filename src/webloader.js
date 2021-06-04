@@ -119,7 +119,8 @@ function checkInstanceCount(evolv) {
 }
 
 function checkLazyUid(script) {
-	if (script.dataset.evolvLazyUid) {
+	const existingUid = window.localStorage.getItem('evolv:uid');
+	if (script.dataset.evolvLazyUid && !existingUid) {
 		if (!script.dataset.evolvUid || !isValidGaClientId(script.dataset.evolvUid)) {
 			return true;
 		}
