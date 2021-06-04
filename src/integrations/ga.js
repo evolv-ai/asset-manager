@@ -1,11 +1,21 @@
+import { generate } from '../guids.js';
+
 let pollAttempt = 0;
 const maxPollAttempts = 60;
 
 function gaIntegration() {
+    const existingUid = window.localStorage.getItem('evolv:uid');
+    if (existingUid) {
+        window.evolv.setUid(existingUid);
+        return;
+    }
+
     if (pollAttempt > maxPollAttempts) {
         console.warn('Evolv: GA clientId not found, using generated UID');
+        const id = generate();
 
-        window.evolv.generateUid();
+        window.localStorage.setItem('evolv:uid', id);
+        window.evolv.setUid(id);
         window.evolv.client.emit('evolv-uid.generated');
         return;
     }
