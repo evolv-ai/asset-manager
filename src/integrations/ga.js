@@ -1,9 +1,15 @@
+import { generate } from '../guids.js';
+
 let pollAttempt = 0;
 const maxPollAttempts = 60;
 
 function gaIntegration() {
     if (pollAttempt > maxPollAttempts) {
-        console.log('Evolv: unable to set uid');
+        console.warn('Evolv: GA clientId not found, using generated UID');
+        const id = generate();
+
+        window.evolv.setUid(id);
+        window.evolv.client.emit('evolv-uid.generated');
         return;
     }
 
@@ -31,7 +37,7 @@ function setUidFromGaCid() {
 }
 
 function isValidGaClientId(cid) {
-    return /^\d+\.\d+$/.test(cid);
+    return /^\d+[.|_]\d+$/.test(cid);
 }
 
 export { gaIntegration, isValidGaClientId };
