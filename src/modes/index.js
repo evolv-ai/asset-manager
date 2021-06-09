@@ -1,5 +1,7 @@
-import QAMode from './qa.mode.js';
+import qaMode from './qa.mode.js';
+import blockMode from './block.mode.js';
 
 export const modes = [
-	QAMode
+	qaMode,
+  blockMode
 ];
