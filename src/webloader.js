@@ -1,4 +1,4 @@
-import EvolvClient, {MiniPromise} from '@evolv/javascript-sdk';
+import EvolvClient, { MiniPromise } from '@evolv/javascript-sdk';
 
 import { generate } from './guids.js';
 import EvolvAssetManager from './index.js';
@@ -176,6 +176,11 @@ function main() {
 	modes.forEach(function(mode) {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
 	});
+
+  const blockExecution = evolv.retrieve('blockExecution', true);
+  if (blockExecution == 'true') {
+    return;
+  }
 
 	const candidateToken = evolv.retrieve('candidateToken', true);
 	const env = candidateToken || script.dataset.evolvEnvironment;
