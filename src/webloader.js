@@ -177,12 +177,12 @@ function main() {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
 	});
 
-  const blockExecution = evolv.retrieve('blockExecution', true);
-  if (blockExecution == 'true') {
+  const blockExecution = window.sessionStorage.getItem('evolv:blockExecution');
+  if (blockExecution === 'true') {
     return;
   }
 
-	const candidateToken = evolv.retrieve('candidateToken', true);
+  const candidateToken = window.sessionStorage.getItem('evolv:candidateToken');
 	const env = candidateToken || script.dataset.evolvEnvironment;
 
 	const version = 1;

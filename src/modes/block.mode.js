@@ -12,7 +12,7 @@ export default {
     const regex = new RegExp(BLOCK_RE);
     const match = window.location.hash.match(regex) || window.location.search.match(regex);
     if (match) {
-      window.evolv.store('blockExecution', match[1], true);
+      window.sessionStorage.setItem('evolv:blockExecution', match[1]);
       window.location.href = window.location.href.replace(new RegExp(BLOCK_RE_REPLACE), '');
     }
   }
