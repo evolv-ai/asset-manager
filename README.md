@@ -124,7 +124,7 @@ or
 
 ```#evolvBlockExecution=true```
 
-to you URL.
+to your URL.
 
 To allow Evolv to run again just reload the page with this value set to false. Alternatively, this block will clear when the session storage for the site is cleared.
 
