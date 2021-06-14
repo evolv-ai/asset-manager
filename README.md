@@ -115,5 +115,12 @@ evolv.rerun('a1b2c3d4.e5f6g7h8');
 A only popstate events are defined by browsers, not pushstate. This means Evolv cannot detect forward navigation events that do not change the URL. This is common in SPAs and can prevent Evolv from detecting the change and applying changes.
 Setting Evolv data-evolv-pushstate to true will apply a patch to the history.pushState that will dispatch a pushstate event
 
+## Preventing Evolv from Running
+Sometimes you want to see what the page looks like with no Evolv optimizations running. To prevent Evolv running, just add:
+```?evolvBlockExecution=true```
+Or
+```#evolvBlockExecution=true```
+to you URL.
+
 
 For more about Evolv and what we do, please visit [here](https://www.evolv.ai).
