@@ -117,9 +117,13 @@ Setting Evolv data-evolv-pushstate to true will apply a patch to the history.pus
 
 ## Preventing Evolv from Running
 Sometimes you want to see what the page looks like with no Evolv optimizations running. To prevent Evolv running, just add:
+
 ```?evolvBlockExecution=true```
-Or
+
+or
+
 ```#evolvBlockExecution=true```
+
 to you URL.
 
 
