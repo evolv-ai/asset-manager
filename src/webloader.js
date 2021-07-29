@@ -77,11 +77,12 @@ function handlePushState(client) {
 
 		let event;
 		const eventType = 'stateupdate_evolv';
-		if (Event.prototype.constructor) {
+
+		if (typeof CustomEvent === 'function') {
 			event = new CustomEvent(eventType, {});
 		} else { // For IE Compatibility
-			event = document.createEvent('Event');
-			event.initEvent(eventType);
+			event = document.createEvent('CustomEvent');
+			event.initEvent(eventType, false, false, {});
 		}
 
 		window.dispatchEvent(event);
