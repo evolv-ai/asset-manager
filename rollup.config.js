@@ -40,13 +40,13 @@ export default {
 			format: 'iife',
 			name: 'webloader',
 			sourcemap: true,
-            banner
+			banner
 		},
 		{
 			file: './dist/webloader.min.js',
 			format: 'iife',
 			plugins: [terser()],
-            banner
+			banner
 		}
 	],
 	plugins: [
