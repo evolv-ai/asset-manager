@@ -1,6 +1,36 @@
-import resolve from '@rollup/plugin-node-resolve'
 import commonJs from '@rollup/plugin-commonjs';
-import {terser} from 'rollup-plugin-terser';
+import resolve from '@rollup/plugin-node-resolve';
+import { outdent } from 'outdent';
+import { terser } from 'rollup-plugin-terser';
+
+import manifest from './package.json';
+
+
+const banner = () => {
+    const year = new Date().getFullYear();
+    const version = (process?.env?.SEM_VER ?? manifest.version)
+        .replace(/\*\//gm, ''); // Prevents injection
+
+   const comment = outdent`
+      * Evolv Asset Manager v${version} <https://github.com/evolv-ai/asset-manager>
+       *
+       * Copyright 2020–${year} Evolv Technology Solutions
+       *
+       * Licensed under the Apache License, Version 2.0 (the "License");
+       * you may not use this file except in compliance with the License.
+       * You may obtain a copy of the License at
+       *
+       *   http://www.apache.org/licenses/LICENSE-2.0
+       *
+       * Unless required by applicable law or agreed to in writing, software
+       * distributed under the License is distributed on an "AS IS" BASIS,
+       * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       * See the License for the specific language governing permissions and
+       * limitations under the License.
+    `;
+
+    return `/*!\n ${comment}\n */\n`;
+};
 
 export default {
 	input: 'src/webloader.js',
@@ -9,12 +39,14 @@ export default {
 			file: './dist/webloader.js',
 			format: 'iife',
 			name: 'webloader',
-			sourcemap: true
+			sourcemap: true,
+            banner
 		},
 		{
 			file: './dist/webloader.min.js',
 			format: 'iife',
-			plugins: [terser()]
+			plugins: [terser()],
+            banner
 		}
 	],
 	plugins: [

@@ -23,5 +23,5 @@
         "es/no-for-of-loops": [ "error" ],
         "es/no-destructuring": [ "error" ]
     },
-    "ignorePatterns": ["tests/"]
+    "ignorePatterns": ["tests/", "rollup.config.js"]
 }
