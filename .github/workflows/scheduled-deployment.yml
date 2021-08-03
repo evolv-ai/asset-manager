@@ -1,0 +1,109 @@
+name: Scheduled Deployment
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron:  '0 7 * * *'
+
+jobs:
+  initialize:
+    name: Initialize variables
+    runs-on: ubuntu-latest
+    outputs:
+      EVOLV_STAGE: "newdev"
+      environment: "newdev"
+      ref: "${{ steps.most-recent-tag.outputs.mostRecent }}"
+      deploymentId: "${{ steps.create-deployment.outputs.deployment_id }}"
+    steps:
+      - name: Get most recent tag
+        uses: evolv-ai/github-actions/most-recent-tag@v9
+        id: most-recent-tag
+        with:
+          token: "${{ github.token }}"
+
+      - name: Create GitHub Deployment
+        uses: chrnorm/deployment-action@releases/v1
+        id: create-deployment
+        with:
+          token: "${{ github.token }}"
+          environment: newdev
+          ref: "${{ steps.most-recent-tag.outputs.mostRecent }}"
+
+  deploy:
+    name: Deploy to Environment
+    needs:
+      - initialize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Ref
+        uses: actions/checkout@v1
+        with:
+          ref: ${{ needs.initialize.outputs.ref }}
+
+      - name: Set Variables
+        id: set_variables
+        run: |
+          export RELEASE_REF=${{needs.initialize.outputs.ref}}
+          export SEM_VER=${RELEASE_REF/v}
+          echo ::set-output name=SEM_VER::${SEM_VER}
+
+          echo ::set-output name=SLACK_CHANNEL::deploy
+          echo ::set-output name=CREATE_RELEASE::false
+          echo ::set-output name=SLACK_WEBHOOK::${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
+      - name: Deploy Code
+        run: bash -e ./scripts/release.sh
+        env:
+          EVOLV_STAGE: ${{ needs.initialize.outputs.environment }}
+          SEM_VER: ${{ steps.set_variables.outputs.SEM_VER }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-2
+          CF_DISTRIBUTION_ID: ${{ secrets.CF_DISTRIBUTION_ID }}
+
+      - name: Update Deployment Status (success)
+        if: success()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: "${{ github.token }}"
+          state: "success"
+          deployment_id: ${{ needs.initialize.outputs.deploymentId }}
+
+      - name: Slack Notification (success)
+        if: success()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ needs.initialize.outputs.environment }} success :rocket:'
+          SLACK_MESSAGE: 'Deployment of <https://github.com/${{ github.repository }}/tree/${{ needs.initialize.outputs.ref }}|${{ needs.initialize.outputs.ref }}> to ${{ needs.initialize.outputs.environment }} succeeded.'
+          SLACK_COLOR: '#33cc33'
+
+      - name: Update Deployment Status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: "${{ github.token }}"
+          state: "failure"
+          deployment_id: ${{ needs.initialize.outputs.deploymentId }}
+
+      - name: Slack Notification (failure)
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ needs.initialize.outputs.environment }} failure :boom:'
+          SLACK_MESSAGE: 'Deployment of <https://github.com/${{ github.repository }}/tree/${{ needs.initialize.outputs.ref }}|${{ needs.initialize.outputs.ref }}> to ${{ needs.initialize.outputs.environment }} failed.'
+          SLACK_COLOR: '#ff0000'
