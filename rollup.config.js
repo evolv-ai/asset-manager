@@ -14,7 +14,7 @@ const banner = () => {
    const comment = outdent`
       * Evolv Asset Manager v${version} <https://github.com/evolv-ai/asset-manager>
        *
-       * Copyright 2020–${year} Evolv Technology Solutions
+       * Copyright 2020-${year} Evolv Technology Solutions
        *
        * Licensed under the Apache License, Version 2.0 (the "License");
        * you may not use this file except in compliance with the License.
