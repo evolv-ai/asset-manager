@@ -1,7 +1,7 @@
 beforeEach(function() {
-    global.performance = {
-        timing: {
-            domContentLoadedEventStart: (new Date()).getTime()
-        }
-    };
+	global.performance = {
+		timing: {
+			domContentLoadedEventStart: (new Date()).getTime()
+		}
+	};
 });

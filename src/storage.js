@@ -1,4 +1,4 @@
-import {getCookie, setCookie} from "./cookies.js";
+import { getCookie, setCookie } from "./cookies.js";
 
 /**
  * @description Storage manager to ensure no data is persisted if consent is required and has not been given.
@@ -10,67 +10,67 @@ import {getCookie, setCookie} from "./cookies.js";
  * @constructor
  */
 function EvolvStorageManager(useCookies, allowPersistence) {
-  let _allowPersistence = allowPersistence;
+	let _allowPersistence = allowPersistence;
 
-  let localConsentStore = {};
-  let localSessionConsentStore = {};
+	let localConsentStore = {};
+	let localSessionConsentStore = {};
 
-  let getConsentStore = function(session) {
-    return session ? localSessionConsentStore : localConsentStore;
-  };
+	let getConsentStore = function(session) {
+		return session ? localSessionConsentStore : localConsentStore;
+	};
 
-  this.store = function (key, value, session) {
-    if (!_allowPersistence) {
-      getConsentStore(session)[key] = {
-        value: value,
-        session: session
-      };
-      return;
-    }
+	this.store = function(key, value, session) {
+		if (!_allowPersistence) {
+			getConsentStore(session)[key] = {
+				value: value,
+				session: session
+			};
+			return;
+		}
 
-    if (useCookies && !session) {
-      const domain = useCookies === 'true' ? "" : useCookies;
-      return setCookie('evolv:' + key, value, 365, domain);
-    }
-    (session ? window.sessionStorage : window.localStorage).setItem('evolv:' + key, value);
-  };
+		if (useCookies && !session) {
+			const domain = useCookies === 'true' ? "" : useCookies;
+			return setCookie('evolv:' + key, value, 365, domain);
+		}
+		(session ? window.sessionStorage : window.localStorage).setItem('evolv:' + key, value);
+	};
 
-  function retrievePersisted(key, session) {
-    if (useCookies && !session) {
-      return getCookie('evolv:' + key);
-    }
-    return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
-  }
+	function retrievePersisted(key, session) {
+		if (useCookies && !session) {
+			return getCookie('evolv:' + key);
+		}
+		return (session ? window.sessionStorage : window.localStorage).getItem('evolv:' + key);
+	}
 
-  this.retrieve = function (key, session) {
-    let persistedValue = retrievePersisted(key, session);
+	this.retrieve = function(key, session) {
+		let persistedValue = retrievePersisted(key, session);
 
-    if (persistedValue !== undefined) return persistedValue;
+		if (persistedValue !== undefined) return persistedValue;
 
-    if (!_allowPersistence) {
-      let consentStore = getConsentStore(session);
-      return consentStore[key] && consentStore[key].value;
-    }
+		if (!_allowPersistence) {
+			let consentStore = getConsentStore(session);
+			return consentStore[key] && consentStore[key].value;
+		}
 
-    return persistedValue;
-  };
+		return persistedValue;
+	};
 
-  this.allowPersistentStorage = function() {
-    if (_allowPersistence) return;
-    _allowPersistence = true;
-    let store = this.store;
+	this.allowPersistentStorage = function() {
+		if (_allowPersistence) return;
+		_allowPersistence = true;
+		let store = this.store;
 
-    Object.keys(localConsentStore).forEach(function (key) {
-      store(key, localConsentStore[key].value, false);
-    });
+		Object.keys(localConsentStore).forEach(function(key) {
+			store(key, localConsentStore[key].value, false);
+		});
 
-    Object.keys(localSessionConsentStore).forEach(function (key) {
-      store(key, localSessionConsentStore[key].value, true);
-    });
+		Object.keys(localSessionConsentStore).forEach(function(key) {
+			store(key, localSessionConsentStore[key].value, true);
+		});
 
-    localConsentStore = {};
-    localSessionConsentStore = {};
-  };
+		localConsentStore = {};
+		localSessionConsentStore = {};
+	};
 }
 
 export default EvolvStorageManager

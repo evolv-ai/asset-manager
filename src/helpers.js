@@ -1,60 +1,60 @@
 
 const Helpers = /** @class */ (function() {
 
-    function Helpers() {
-        this.disposers = [];
-    }
+	function Helpers() {
+		this.disposers = [];
+	}
 
-    /**
-     * @param {string[]} selectors
-     * @param {function(*?):void} callback
-     */
-    Helpers.prototype.waitFor = function(selectors, callback) {
-        this.dispose();
+	/**
+	 * @param {string[]} selectors
+	 * @param {function(*?):void} callback
+	 */
+	Helpers.prototype.waitFor = function(selectors, callback) {
+		this.dispose();
 
-        const predicate = function() {
-            return selectors.every(function(selector) {
-                return document.querySelector(selector) !== null;
-            });
-        };
+		const predicate = function() {
+			return selectors.every(function(selector) {
+				return document.querySelector(selector) !== null;
+			});
+		};
 
-        let timer;
+		let timer;
 
-        function run() {
-            cancelAnimationFrame(timer);
+		function run() {
+			cancelAnimationFrame(timer);
 
-            try {
-                if (predicate()) {
-                    callback(null);
-                } else {
-                    timer = requestAnimationFrame(run);
-                }
-            } catch (err) {
-                callback(err);
-            }
-        }
+			try {
+				if (predicate()) {
+					callback(null);
+				} else {
+					timer = requestAnimationFrame(run);
+				}
+			} catch (err) {
+				callback(err);
+			}
+		}
 
-        run();
+		run();
 
-        return this.addDisposer(function() {
-            cancelAnimationFrame(timer);
-        });
-    };
+		return this.addDisposer(function() {
+			cancelAnimationFrame(timer);
+		});
+	};
 
-    Helpers.prototype.addDisposer = function(disposer) {
-        this.disposers.push(disposer);
-        return disposer;
-    }
+	Helpers.prototype.addDisposer = function(disposer) {
+		this.disposers.push(disposer);
+		return disposer;
+	}
 
-    Helpers.prototype.dispose = function() {
-        this.disposers.forEach(function(disposer) {
-            typeof disposer === 'function' && disposer();
-        });
+	Helpers.prototype.dispose = function() {
+		this.disposers.forEach(function(disposer) {
+			typeof disposer === 'function' && disposer();
+		});
 
-        this.disposers = [];
-    };
+		this.disposers = [];
+	};
 
-    return Helpers;
+	return Helpers;
 })();
 
 export { Helpers };

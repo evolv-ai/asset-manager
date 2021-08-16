@@ -1,5 +1,5 @@
 class EvolvMock {
-	constructor(keys=[]) {
+	constructor(keys = []) {
 		this.confirmations = 0;
 		this.contaminations = 0;
 		this.initializations = 0;
