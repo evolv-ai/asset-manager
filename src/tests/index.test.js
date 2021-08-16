@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import EvolvAssetManager from '../index.js';
+import { EvolvAssetManager } from '../asset-manager.js';
 import { DocumentMock, StyleSheetMock, ScriptMock } from './mocks/document.mock.js';
 import EvolvMock from './mocks/evolv.mock.js';
 import wait from './wait.js';
