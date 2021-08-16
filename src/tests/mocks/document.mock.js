@@ -3,9 +3,9 @@ import EventEmitter from 'events';
 const MOCK_GA_CLIENT_ID = '1111.2222';
 
 class ClassListMock {
-	constructor(classList=[]) {
-    this.classList = classList
-  }
+	constructor(classList = []) {
+		this.classList = classList
+	}
 
 	remove(item) {
 		const index = this.classList.indexOf(item);
@@ -96,19 +96,19 @@ class DocumentMock {
 			}
 			return undefined;
 		}
-  }
+	}
 
 	getElementsByTagName(tagName) {
 		return this.elements.filter(element => element.tagName === tagName);
 	}
 
 	addEventListener(name, listener) {
-        this.emitter.on(name, listener);
-    }
+		this.emitter.on(name, listener);
+	}
 
-    removeEventListener(name, listener) {
-	    this.emitter.off(name, listener);
-    }
+	removeEventListener(name, listener) {
+		this.emitter.off(name, listener);
+	}
 }
 
 class WindowMock {
@@ -118,13 +118,26 @@ class WindowMock {
 		this.localStorage = options.localStorage || new StorageMock();
 		this.sessionStorage = options.sessionStorage || new StorageMock();
 		this.eventListeners = [];
-		this.navigator = { sendBeacon: () => {} };
+		this.navigator = {
+			sendBeacon: () => {
+			}
+		};
 		this.ga = cb => cb();
 		this.ga.getAll = () => [{ get: () => MOCK_GA_CLIENT_ID }];
 	}
+
 	addEventListener(event, listener) {
 		this.eventListeners.push(event, listener);
 	}
 }
 
-export { WindowMock, DocumentMock, ElementMock, ClassListMock, StyleSheetMock, ScriptMock, StorageMock, MOCK_GA_CLIENT_ID };
+export {
+	WindowMock,
+	DocumentMock,
+	ElementMock,
+	ClassListMock,
+	StyleSheetMock,
+	ScriptMock,
+	StorageMock,
+	MOCK_GA_CLIENT_ID
+};

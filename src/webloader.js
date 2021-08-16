@@ -41,17 +41,17 @@ function currentScript() {
 }
 
 function injectScript(endpoint, env, version, uid) {
-    return MiniPromise.createPromise(function (resolve, reject) {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js';
-        script.defer = true;
+	return MiniPromise.createPromise(function(resolve, reject) {
+		const script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js';
+		script.defer = true;
 
-        script.onload = resolve;
-        script.onerror = reject;
+		script.onload = resolve;
+		script.onerror = reject;
 
-        document.head.appendChild(script);
-    });
+		document.head.appendChild(script);
+	});
 }
 
 function injectStylesheet(endpoint, env, version, uid) {
@@ -105,9 +105,9 @@ function checkInstanceCount(evolv) {
 	// Not works for IE, but it needs only in web-editor (chrome)
 	if (window.CustomEvent) {
 		try {
-			const webloaderLoadEvent = new CustomEvent('webloader-loaded', {'detail': 	evolv.instancesCount });
+			const webloaderLoadEvent = new CustomEvent('webloader-loaded', { 'detail': evolv.instancesCount });
 			document.dispatchEvent(webloaderLoadEvent);
-		} catch(e) {
+		} catch (e) {
 			console.warn('Evolv: Could not fire custom event')
 		}
 	}
@@ -130,23 +130,23 @@ function checkLazyUid(script) {
 }
 
 function requireConsent(script) {
-  return script.dataset.evolvRequireConsent === 'true'
+	return script.dataset.evolvRequireConsent === 'true'
 }
 
 function main() {
-  window.evolv = window.evolv || {};
-  const evolv = window.evolv;
+	window.evolv = window.evolv || {};
+	const evolv = window.evolv;
 
-  const script = currentScript();
+	const script = currentScript();
 
-  evolv.setUid = function setUid(lazyUid) {
-    if (!lazyUid) {
-      return;
-    }
+	evolv.setUid = function setUid(lazyUid) {
+		if (!lazyUid) {
+			return;
+		}
 
-    script.dataset.evolvUid = lazyUid;
-    main();
-  };
+		script.dataset.evolvUid = lazyUid;
+		main();
+	};
 
 	// If evolvLazyUid is true and no uid is set - get GA client Id and set uid
 	if (checkLazyUid(script)) {
@@ -159,31 +159,31 @@ function main() {
 		return;
 	}
 
-	evolv.markConsented = function () {
+	evolv.markConsented = function() {
 		storageManager.allowPersistentStorage();
 		evolv.client.allowEvents();
 	};
 
 	let storageManager = new EvolvStorageManager(script.dataset.evolvUseCookies, !requireConsent(script));
 
-  if (!evolv.store) {
-    evolv.store = storageManager.store.bind(storageManager);
-  }
+	if (!evolv.store) {
+		evolv.store = storageManager.store.bind(storageManager);
+	}
 
-  if (!evolv.retrieve) {
-    evolv.retrieve = storageManager.retrieve.bind(storageManager);
-  }
+	if (!evolv.retrieve) {
+		evolv.retrieve = storageManager.retrieve.bind(storageManager);
+	}
 
 	modes.forEach(function(mode) {
 		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
 	});
 
-  const blockExecution = window.sessionStorage.getItem('evolv:blockExecution');
-  if (blockExecution === 'true') {
-    return;
-  }
+	const blockExecution = window.sessionStorage.getItem('evolv:blockExecution');
+	if (blockExecution === 'true') {
+		return;
+	}
 
-  const candidateToken = window.sessionStorage.getItem('evolv:candidateToken');
+	const candidateToken = window.sessionStorage.getItem('evolv:candidateToken');
 	const env = candidateToken || script.dataset.evolvEnvironment;
 
 	const version = 1;
@@ -201,8 +201,10 @@ function main() {
 	pushstate = pushstate && pushstate === 'true';
 
 	const scriptPromise = (js)
-        ? injectScript(endpoint, env, version, uid)
-        : MiniPromise.createPromise(function (resolve) { resolve(); });
+		? injectScript(endpoint, env, version, uid)
+		: MiniPromise.createPromise(function(resolve) {
+			resolve();
+		});
 
 	if (css) {
 		injectStylesheet(endpoint, env, version, uid);
@@ -217,17 +219,17 @@ function main() {
 			version: version,
 			autoConfirm: false,
 			analytics: true,
-      bufferEvents: requireConsent(script)
+			bufferEvents: requireConsent(script)
 		};
 		client = new EvolvClient(options);
 		client.initialize(uid, sid);
 		Object.defineProperty(window.evolv, 'client', {
-			get: function () {
+			get: function() {
 				return client
 			}
 		});
 		Object.defineProperty(window.evolv, 'context', {
-			get: function () {
+			get: function() {
 				return client.context
 			}
 		});
@@ -243,11 +245,11 @@ function main() {
 
 	const assetManager = new EvolvAssetManager(client, {
 		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined,
-        variantsLoaded: scriptPromise
+		variantsLoaded: scriptPromise
 	});
 
 	Object.defineProperty(window.evolv, 'assetManager', {
-		get: function () {
+		get: function() {
 			return assetManager
 		}
 	});

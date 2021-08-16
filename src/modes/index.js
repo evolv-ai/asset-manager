@@ -3,5 +3,5 @@ import blockMode from './block.mode.js';
 
 export const modes = [
 	qaMode,
-  blockMode
+	blockMode
 ];

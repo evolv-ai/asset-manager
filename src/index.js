@@ -41,23 +41,23 @@ function main(container, _runner) {
 		}
 	}
 
-    const environment = client.environment;
-    const cssAsset = retrieveEvolvCssAsset(environment);
-    const jsAsset = retrieveEvolvJsAsset(environment);
+	const environment = client.environment;
+	const cssAsset = retrieveEvolvCssAsset(environment);
+	const jsAsset = retrieveEvolvJsAsset(environment);
 
-    const runner = _runner || new Runner(container);
+	const runner = _runner || new Runner(container);
 
-    /**
-     * @param {string} [prefixDotSeparated=web]
-     */
-    this.rerun = function(prefixDotSeparated) {
-        prefixDotSeparated = prefixDotSeparated || 'web';
+	/**
+	 * @param {string} [prefixDotSeparated=web]
+	 */
+	this.rerun = function(prefixDotSeparated) {
+		prefixDotSeparated = prefixDotSeparated || 'web';
 
-        runner.unscheduleByPrefix(prefixDotSeparated);
+		runner.unscheduleByPrefix(prefixDotSeparated);
 
-        client.clearActiveKeys(prefixDotSeparated);
-        client.reevaluateContext();
-    };
+		client.clearActiveKeys(prefixDotSeparated);
+		client.reevaluateContext();
+	};
 
 	client.getActiveKeys('web').listen(function (keys) {
 		const liveContexts = keys.current
@@ -78,7 +78,7 @@ function main(container, _runner) {
 		}
 
 		if (jsAsset) {
-      runner.updateFunctionsToRun(liveContexts);
+			runner.updateFunctionsToRun(liveContexts);
 		} else if (cssAsset) {
 			confirm();
 		}

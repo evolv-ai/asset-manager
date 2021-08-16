@@ -7,8 +7,8 @@
  * needed to generate the UUIDs.
  */
 export function generate() {
-  const prefix = Math.round(Math.random() * 100000000);
-  const date = (new Date()).getTime();
+	const prefix = Math.round(Math.random() * 100000000);
+	const date = (new Date()).getTime();
 
-  return prefix + '_' + date;
+	return prefix + '_' + date;
 }
