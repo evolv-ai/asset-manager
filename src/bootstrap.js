@@ -21,25 +21,6 @@ function ensureId(evolv, key, session) {
 	return id;
 }
 
-function isEvolvScript(script) {
-	return script && script.dataset && 'evolvEnvironment' in script.dataset;
-}
-
-function currentScript() {
-	if (document.currentScript && isEvolvScript(document.currentScript)) {
-		return document.currentScript;
-	}
-
-	for (let i = 0; i < document.scripts.length; i++) {
-		const script = document.scripts[i];
-		if (isEvolvScript(script)) {
-			return script;
-		}
-	}
-
-	throw new Error('[Evolv] Environment not specified');
-}
-
 function injectScript(endpoint, env, version, uid) {
 	return MiniPromise.createPromise(function(resolve, reject) {
 		const script = document.createElement('script');
