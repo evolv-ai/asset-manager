@@ -1,10 +1,18 @@
 import { bootstrap } from './bootstrap.js';
+import { buildConfig } from './build-config.js';
 
 
+/**
+ * @param {HTMLScriptElement} script
+ * @return {boolean}
+ */
 function isEvolvScript(script) {
 	return script && script.dataset && 'evolvEnvironment' in script.dataset;
 }
 
+/**
+ * @return {HTMLScriptElement}
+ */
 function currentScript() {
 	if (document.currentScript && isEvolvScript(document.currentScript)) {
 		return document.currentScript;
@@ -25,5 +33,5 @@ if ((!navigator.doNotTrack || navigator.doNotTrack === 'unspecified' || navigato
 	const script = currentScript();
 	const config = buildConfig(script.dataset);
 
-	bootstrap();
+	bootstrap(config);
 }

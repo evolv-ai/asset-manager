@@ -5,6 +5,7 @@ import { EvolvAssetManager } from './asset-manager.js';
 import EvolvStorageManager from './storage.js';
 import { modes } from './modes/index.js';
 import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
+import { objectAssign } from './shims/object-assign.js';
 
 
 function ensureId(evolv, key, session) {
@@ -100,9 +101,13 @@ function checkInstanceCount(evolv) {
 	}
 }
 
-function checkLazyUid(script) {
-	if (script.dataset.evolvLazyUid) {
-		if (!script.dataset.evolvUid || !isValidGaClientId(script.dataset.evolvUid)) {
+/**
+ * @param {Config} config
+ * @return {boolean}
+ */
+function checkLazyUid(config) {
+	if (config.lazyUid) {
+		if (!config.uid || !isValidGaClientId(config.uid)) {
 			return true;
 		}
 	}
@@ -110,27 +115,42 @@ function checkLazyUid(script) {
 	return false;
 }
 
-function requireConsent(script) {
-	return script.dataset.evolvRequireConsent === 'true'
-}
+/** @type {Config} */
+export const defaultConfig = {
+	environment: undefined,
+	endpoint: 'https://participants.evolv.ai/',
+	uid: undefined,
+	sid: undefined,
+	lazyUid: false,
+	requireConsent: false,
+	useCookies: undefined,
+	js: true,
+	css: true,
+	pushstate: false,
+	timeout: undefined
+};
 
-export function bootstrap() {
+/**
+ * @param {Partial<Config>} initialConfig
+ */
+export function bootstrap(initialConfig) {
 	window.evolv = window.evolv || {};
 	const evolv = window.evolv;
 
-	const script = currentScript();
+	/** @type Config */
+	const config = objectAssign({}, defaultConfig, initialConfig);
 
 	evolv.setUid = function setUid(lazyUid) {
 		if (!lazyUid) {
 			return;
 		}
 
-		script.dataset.evolvUid = lazyUid;
-		bootstrap();
+		config.uid = lazyUid;
+		bootstrap(config);
 	};
 
 	// If evolvLazyUid is true and no uid is set - get GA client Id and set uid
-	if (checkLazyUid(script)) {
+	if (checkLazyUid(config)) {
 		// Temporary hotfix for GA Client Id integration
 		gaIntegration();
 		return;
@@ -145,7 +165,7 @@ export function bootstrap() {
 		evolv.client.allowEvents();
 	};
 
-	let storageManager = new EvolvStorageManager(script.dataset.evolvUseCookies, !requireConsent(script));
+	let storageManager = new EvolvStorageManager(config.useCookies, !config.requireConsent);
 
 	if (!evolv.store) {
 		evolv.store = storageManager.store.bind(storageManager);
@@ -156,7 +176,7 @@ export function bootstrap() {
 	}
 
 	modes.forEach(function(mode) {
-		return mode.shouldActivate(script.dataset.evolvEnvironment) && mode.activate();
+		return mode.shouldActivate(config.environment) && mode.activate();
 	});
 
 	const blockExecution = window.sessionStorage.getItem('evolv:blockExecution');
@@ -165,21 +185,17 @@ export function bootstrap() {
 	}
 
 	const candidateToken = window.sessionStorage.getItem('evolv:candidateToken');
-	const env = candidateToken || script.dataset.evolvEnvironment;
+	const env = candidateToken || config.environment;
 
 	const version = 1;
 
-	let js = script.dataset.evolvJs;
-	let css = script.dataset.evolvCss;
-	let pushstate = script.dataset.evolvPushstate;
-	let endpoint = script.dataset.evolvEndpoint || 'https://participants.evolv.ai/';
+	let js = !!candidateToken || config.js;
+	let css = !!candidateToken || config.css;
+	let pushstate = config.pushstate;
+	let endpoint = config.endpoint;
 
-	const uid = script.dataset.evolvUid || ensureId(evolv, 'uid', false);
-	const sid = script.dataset.evolvSid || ensureId(evolv, 'sid', true);
-
-	js = !!candidateToken || !js || js === 'true';
-	css = !!candidateToken || !css || css === 'true';
-	pushstate = pushstate && pushstate === 'true';
+	const uid = config.uid || ensureId(evolv, 'uid', false);
+	const sid = config.sid || ensureId(evolv, 'sid', true);
 
 	const scriptPromise = (js)
 		? injectScript(endpoint, env, version, uid)
@@ -200,7 +216,7 @@ export function bootstrap() {
 			version: version,
 			autoConfirm: false,
 			analytics: true,
-			bufferEvents: requireConsent(script)
+			bufferEvents: config.requireConsent
 		};
 		client = new EvolvClient(options);
 		client.initialize(uid, sid);
@@ -225,7 +241,7 @@ export function bootstrap() {
 	client.context.set('webloader.css', css);
 
 	const assetManager = new EvolvAssetManager(client, {
-		timeoutThreshold: script.dataset.evolvTimeout ? script.dataset.evolvTimeout - 0 : undefined,
+		timeoutThreshold: config.timeout,
 		variantsLoaded: scriptPromise
 	});
 
