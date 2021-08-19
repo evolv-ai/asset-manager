@@ -1,6 +1,37 @@
 import { bootstrap } from './bootstrap.js';
+import { buildConfig } from './build-config.js';
+
+
+/**
+ * @param {HTMLScriptElement} script
+ * @return {boolean}
+ */
+function isEvolvScript(script) {
+	return script && script.dataset && 'evolvEnvironment' in script.dataset;
+}
+
+/**
+ * @return {HTMLScriptElement}
+ */
+function currentScript() {
+	if (document.currentScript && isEvolvScript(document.currentScript)) {
+		return document.currentScript;
+	}
+
+	for (let i = 0; i < document.scripts.length; i++) {
+		const script = document.scripts[i];
+		if (isEvolvScript(script)) {
+			return script;
+		}
+	}
+
+	throw new Error('[Evolv] Environment not specified');
+}
 
 // If the user has requested not to be tracked, or the browser is older than ie11, bail out.
 if ((!navigator.doNotTrack || navigator.doNotTrack === 'unspecified' || navigator.doNotTrack === '0') && typeof Map !== 'undefined') {
-	bootstrap();
+	const script = currentScript();
+	const config = buildConfig(script.dataset);
+
+	bootstrap(config);
 }
