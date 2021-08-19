@@ -63,7 +63,7 @@ export function buildConfig(dataset) {
 				break;
 			}
 			case 'evolvTimeout': {
-				const value = parseInt(dataset[prop], 10);
+				const value = +dataset[prop];
 
 				config[name] = isNaN(value)
 					? undefined
