@@ -50,7 +50,7 @@ export function buildConfig(dataset) {
 	/** @type Partial<Config> */
 	const config = {};
 
-	for (const prop in dataset) {
+	for (let prop in dataset) {
 		const name = stripPrefix(prop);
 
 		switch (prop) {
