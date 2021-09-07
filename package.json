@@ -35,7 +35,7 @@
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
   "dependencies": {
-    "@evolv/javascript-sdk": "v1.11.1-alpha-9a471dc"
+    "@evolv/javascript-sdk": "1.13.1"
   },
   "devDependencies": {
     "@istanbuljs/esm-loader-hook": "^0.1.2",
