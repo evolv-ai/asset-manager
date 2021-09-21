@@ -15,9 +15,9 @@ test(`should apply variants after DOMContentLoaded has fired`, skipIfIE(async t 
 
 	await t
 		.expect(log.length).eql(5)
-		.expect(log[0]).match(/^Context applied/)
-		.expect(log[1]).match(/^Delay/)
-		.expect(log[2]).match(/^DOMContentLoaded/)
-		.expect(log[3]).match(/^Variant applied/)
-		.expect(log[4]).match(/^load/);
+		.expect(log[0]).match(/^Delay/)
+		.expect(log[1]).match(/^DOMContentLoaded/)
+		.expect(log[2]).match(/^load/)
+		.expect(log[3]).match(/^Context applied/)
+		.expect(log[4]).match(/^Variant applied/);
 }));
