@@ -3,6 +3,7 @@ import { WindowMock, DocumentMock, MOCK_GA_CLIENT_ID } from './mocks/document.mo
 import EvolvMock from './mocks/evolv.mock.js';
 import sinon from 'sinon';
 
+let attributeEnvironmentId = 'testing';
 let webloader;
 describe('the web loader', () => {
 	afterEach(() => {
@@ -12,7 +13,7 @@ describe('the web loader', () => {
 
 	function setupGlobal(doNotTrack, useCookiesDomain, datasetMock = {}) {
 		const dataset = {
-			evolvEnvironment: 'testing',
+			evolvEnvironment: attributeEnvironmentId,
 			evolvUseCookies: useCookiesDomain,
 			...datasetMock
 		};
@@ -20,7 +21,8 @@ describe('the web loader', () => {
 		const document = new DocumentMock({
 			cookie: '',
 			currentScript: {
-				dataset
+				dataset,
+				src: ''
 			}
 		});
 		const window = new WindowMock({ document });
@@ -267,5 +269,38 @@ describe('the web loader', () => {
 			assert.equal(window.evolv.context.sid, sid, 'context uid should be the same as the generated sid');
 			assert.equal(window.evolv.context.uid, uid, 'context uid should be the same as the generated uid');
 		});
-	})
+	});
+
+	describe('Passing environment id with a query parameter', () => {
+		const queryEnvironmentId = 'abc';
+		it('should use the environment data parameter if set', async () => {
+			setupGlobal();
+
+			webloader = await import(`../webloader.js?environment=${queryEnvironmentId}&lazy=${Math.random()}`);
+
+			assert.strictEqual(window.evolv.client.environment, attributeEnvironmentId, 'Environment id should not be overridden');
+		});
+
+		it('should use the environment data parameter if set', async () => {
+			setupGlobal(null, undefined, {
+				evolvEnvironment: undefined
+			});
+
+			document.currentScript.src = `../webloader.js?environment=${queryEnvironmentId}&lazy=${Math.random()}`;
+			webloader = await import(document.currentScript.src);
+
+			assert.strictEqual(window.evolv.client.environment, queryEnvironmentId, 'Environment id should be overridden');
+		});
+
+		it('should use the environment data parameter if set and not thefirst  query param', async () => {
+			setupGlobal(null, undefined, {
+				evolvEnvironment: undefined
+			});
+
+			document.currentScript.src = `../webloader.js?other=this&environment=${queryEnvironmentId}&lazy=${Math.random()}`;
+			webloader = await import(document.currentScript.src);
+
+			assert.strictEqual(window.evolv.client.environment, queryEnvironmentId, 'Environment id should be overridden');
+		});
+	});
 });

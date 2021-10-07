@@ -4,7 +4,7 @@ import jsdom from './mocks/jsdom.js';
 import { buildConfig } from '../build-config.js';
 
 
-describe.only('buildConfig()', () => {
+describe('buildConfig()', () => {
 	let cleanup;
 
 	beforeEach(() => {
