@@ -4,7 +4,7 @@ export function getDefaultColors(browser: Browser) {
 	if (browser.name === 'Firefox') {
 		return {
 			button: 'rgb(0, 0, 0)',
-			buttonBackground: 'rgb(240, 240, 240)'
+			buttonBackground: 'rgb(233, 233, 237)'
 		};
 	} else if (browser.name === 'Internet Explorer') {
 		return {
