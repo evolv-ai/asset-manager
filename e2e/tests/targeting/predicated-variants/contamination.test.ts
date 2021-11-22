@@ -29,7 +29,7 @@ test(`should fire contamination event after synchronous variant error`, async t 
 		.expect(logger.count(() => true))
 	    .gte(1)
 		.expect(logger.contains(result => {
-			const data = JSON.parse(String(result.request.body));
+			const data = JSON.parse(<string>result.request.body);
 			return data.type === 'contamination'
 				&& data.contaminationReason.details === 'Don\'t mess with Texas';
 		}))
@@ -47,7 +47,7 @@ test(`should fire contamination event after asynchronous variant rejection`, asy
 		.expect(logger.count(() => true))
 		.gte(1)
 		.expect(logger.contains(result => {
-			const data = JSON.parse(String(result.request.body));
+			const data = JSON.parse(<string>result.request.body);
 			return data.type === 'contamination'
 				&& data.contaminationReason.details === 'Later dude';
 		}))
