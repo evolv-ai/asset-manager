@@ -31,6 +31,7 @@ test(`should fire confirmation event`, async t => {
 		.expect(() => {
 			let result = logger.requests[0];
 			const data = JSON.parse(<string>result.request.body);
+
 			return data.type === 'confirmation';
 		})
 		.ok();
