@@ -18,7 +18,7 @@ fixture `Predicated Variant Targeting > Confirmations`
 	    logger
     ]);
 
-test.only(`should fire confirmation event`, async t => {
+test(`should fire confirmation event`, async t => {
 	// Act
 	await t.eval(function() {
 		evolv.context.set('state', 'TX');
