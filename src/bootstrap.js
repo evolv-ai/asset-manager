@@ -6,6 +6,8 @@ import EvolvStorageManager from './storage.js';
 import { modes } from './modes/index.js';
 import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
 import { objectAssign } from './shims/object-assign.js';
+import { injectScript } from './utils/inject-script.js'
+import { injectStylesheet } from './utils/inject-stylesheet.js'
 
 
 function ensureId(evolv, key, session) {
@@ -20,29 +22,6 @@ function ensureId(evolv, key, session) {
 		}
 	}
 	return id;
-}
-
-function injectScript(endpoint, env, version, uid) {
-	return MiniPromise.createPromise(function(resolve, reject) {
-		const script = document.createElement('script');
-		script.type = 'text/javascript';
-		script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js';
-		script.defer = true;
-
-		script.onload = resolve;
-		script.onerror = reject;
-
-		document.head.appendChild(script);
-	});
-}
-
-function injectStylesheet(endpoint, env, version, uid) {
-	const stylesheet = document.createElement('link');
-	stylesheet.setAttribute('rel', 'stylesheet');
-	stylesheet.setAttribute('type', 'text/css');
-	stylesheet.setAttribute('href', endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.css');
-
-	document.head.appendChild(stylesheet);
 }
 
 function handlePushState(client) {
