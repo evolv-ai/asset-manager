@@ -165,6 +165,9 @@ export function bootstrap(initialConfig) {
 
 	const candidateToken = window.sessionStorage.getItem('evolv:candidateToken');
 	const env = candidateToken || config.environment;
+	const previewCid = candidateToken
+		? undefined
+		: window.sessionStorage.getItem('evolv:previewCid');
 
 	const version = 1;
 
@@ -177,13 +180,13 @@ export function bootstrap(initialConfig) {
 	const sid = config.sid || ensureId(evolv, 'sid', true);
 
 	const scriptPromise = (js)
-		? injectScript(endpoint, env, version, uid)
+		? injectScript(endpoint, env, version, uid, previewCid)
 		: MiniPromise.createPromise(function(resolve) {
 			resolve();
 		});
 
 	if (css) {
-		injectStylesheet(endpoint, env, version, uid);
+		injectStylesheet(endpoint, env, version, uid, previewCid);
 	}
 
 	let client = evolv.client;
@@ -195,7 +198,16 @@ export function bootstrap(initialConfig) {
 			version: version,
 			autoConfirm: false,
 			analytics: true,
-			bufferEvents: config.requireConsent
+			bufferEvents: config.requireConsent,
+			hooks: {
+				beforeOptions: function(opts) {
+					return (previewCid)
+						? objectAssign(opts, {
+							url: opts.url + '?previewcid=' + previewCid
+						})
+						: opts;
+				}
+			}
 		};
 		client = new EvolvClient(options);
 		client.initialize(uid, sid);
