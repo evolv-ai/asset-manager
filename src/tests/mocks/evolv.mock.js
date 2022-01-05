@@ -46,15 +46,20 @@ class EvolvMock {
 		});
 		this.keys = keys;
 	}
+	on(){}
 }
 
 class EvolvContextMock {
-	constructor(values) {
+	constructor(values, local) {
 		this.values = values || {};
+		this.localContext = local || {};
 	}
 
 	set(key, value, local) {
 		this.values[key] = value;
+		if(local) {
+			this.localContext[key] = value
+		}
 		return true;
 	}
 }

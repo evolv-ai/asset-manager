@@ -6,6 +6,7 @@ import EvolvStorageManager from './storage.js';
 import { modes } from './modes/index.js';
 import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
 import { objectAssign } from './shims/object-assign.js';
+import firedEventsInitialization from './fired-events.js';
 import { injectScript } from './utils/inject-script.js'
 import { injectStylesheet } from './utils/inject-stylesheet.js'
 
@@ -227,6 +228,8 @@ export function bootstrap(initialConfig) {
 		// Handling for single-page applications
 		handlePushState(client);
 	}
+
+	firedEventsInitialization(client);
 
 	client.context.set('webloader.js', js);
 	client.context.set('webloader.css', css);
