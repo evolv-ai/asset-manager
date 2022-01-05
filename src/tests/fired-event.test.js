@@ -18,9 +18,6 @@ describe('firedEvents', () => {
         };
         global.sessionStorage = mockStorage();
     })
-    afterEach(() => {
-        global.sessionStorage = null;
-    });
     it('should set context from session', () => {
         global.sessionStorage.setItem('evolv:fe', JSON.stringify({example: true}));
         const client = new EvolvMock()
