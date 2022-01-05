@@ -7,6 +7,8 @@ import { modes } from './modes/index.js';
 import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
 import { objectAssign } from './shims/object-assign.js';
 import firedEventsInitialization from './fired-events.js';
+import { injectScript } from './utils/inject-script.js'
+import { injectStylesheet } from './utils/inject-stylesheet.js'
 
 
 function ensureId(evolv, key, session) {
@@ -21,29 +23,6 @@ function ensureId(evolv, key, session) {
 		}
 	}
 	return id;
-}
-
-function injectScript(endpoint, env, version, uid) {
-	return MiniPromise.createPromise(function(resolve, reject) {
-		const script = document.createElement('script');
-		script.type = 'text/javascript';
-		script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js';
-		script.defer = true;
-
-		script.onload = resolve;
-		script.onerror = reject;
-
-		document.head.appendChild(script);
-	});
-}
-
-function injectStylesheet(endpoint, env, version, uid) {
-	const stylesheet = document.createElement('link');
-	stylesheet.setAttribute('rel', 'stylesheet');
-	stylesheet.setAttribute('type', 'text/css');
-	stylesheet.setAttribute('href', endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.css');
-
-	document.head.appendChild(stylesheet);
 }
 
 function handlePushState(client) {
@@ -187,6 +166,9 @@ export function bootstrap(initialConfig) {
 
 	const candidateToken = window.sessionStorage.getItem('evolv:candidateToken');
 	const env = candidateToken || config.environment;
+	const previewCid = candidateToken
+		? undefined
+		: window.sessionStorage.getItem('evolv:previewCid');
 
 	const version = 1;
 
@@ -199,13 +181,13 @@ export function bootstrap(initialConfig) {
 	const sid = config.sid || ensureId(evolv, 'sid', true);
 
 	const scriptPromise = (js)
-		? injectScript(endpoint, env, version, uid)
+		? injectScript(endpoint, env, version, uid, previewCid)
 		: MiniPromise.createPromise(function(resolve) {
 			resolve();
 		});
 
 	if (css) {
-		injectStylesheet(endpoint, env, version, uid);
+		injectStylesheet(endpoint, env, version, uid, previewCid);
 	}
 
 	let client = evolv.client;
@@ -217,7 +199,16 @@ export function bootstrap(initialConfig) {
 			version: version,
 			autoConfirm: false,
 			analytics: true,
-			bufferEvents: config.requireConsent
+			bufferEvents: config.requireConsent,
+			hooks: {
+				beforeOptions: function(opts) {
+					return (previewCid)
+						? objectAssign(opts, {
+							url: opts.url + '?previewcid=' + previewCid
+						})
+						: opts;
+				}
+			}
 		};
 		client = new EvolvClient(options);
 		client.initialize(uid, sid);
