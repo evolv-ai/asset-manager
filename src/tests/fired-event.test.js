@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 
 import EvolvMock from './mocks/evolv.mock.js';
-import firedEvents, { eventHandler } from '../fired-events.js';
+import firedEvents, { storeEventInSession } from '../fired-events.js';
 
 describe('firedEvents', () => {
     beforeEach(() => {
@@ -19,7 +19,7 @@ describe('firedEvents', () => {
         global.sessionStorage = mockStorage();
     })
     afterEach(() => {
-        global.sessionStorage;
+        global.sessionStorage = null;
     });
     it('should set context from session', () => {
         global.sessionStorage.setItem('evolv:fe', JSON.stringify({example: true}));
@@ -30,7 +30,7 @@ describe('firedEvents', () => {
     it('should set local context and session when an event is emitted', () => {
         const client = new EvolvMock()
 
-        eventHandler(client, 'example')
+        storeEventInSession(client, 'example')
         assert.strictEqual(client.context.localContext['fired_events.example'], true);
         assert.strictEqual(global.sessionStorage.getItem('evolv:fe'), '{"example":true}');
     })
@@ -38,7 +38,7 @@ describe('firedEvents', () => {
         global.sessionStorage.setItem('evolv:fe', JSON.stringify({example: true}));
         const client = new EvolvMock()
 
-        eventHandler(client, 'example2')
+        storeEventInSession(client, 'example2')
         assert.strictEqual(client.context.localContext['fired_events.example2'], true);
         assert.strictEqual(global.sessionStorage.getItem('evolv:fe'), '{"example":true,"example2":true}');
     })

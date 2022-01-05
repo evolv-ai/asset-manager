@@ -6,7 +6,7 @@ import EvolvStorageManager from './storage.js';
 import { modes } from './modes/index.js';
 import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
 import { objectAssign } from './shims/object-assign.js';
-import firedEvents from './fired-events.js';
+import firedEventsInitialization from './fired-events.js';
 
 
 function ensureId(evolv, key, session) {
@@ -238,7 +238,7 @@ export function bootstrap(initialConfig) {
 		handlePushState(client);
 	}
 
-	firedEvents(client)
+	firedEventsInitialization(client);
 
 	client.context.set('webloader.js', js);
 	client.context.set('webloader.css', css);
