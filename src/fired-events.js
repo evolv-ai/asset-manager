@@ -25,7 +25,7 @@ function reHydratingFiredEvents (client) {
  */
 function firedEventsInitialization (client) {
     reHydratingFiredEvents(client)
-    client.on("event.emitted", function(type) {
+    client.on("event.emitted", function(topic, type) {
         storeEventInSession(client, type)
     })
 }
