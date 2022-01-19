@@ -200,6 +200,7 @@ export function bootstrap(initialConfig) {
 			autoConfirm: false,
 			analytics: true,
 			bufferEvents: config.requireConsent,
+			clientName: 'asset-manager',
 			hooks: {
 				beforeOptions: function(opts) {
 					return (previewCid)
