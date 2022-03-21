@@ -17,7 +17,7 @@ test(`should apply variants after the window.load event has fired`, skipIfIE(asy
 		.expect(log.length).eql(5)
 		.expect(log[0]).match(/^Delay/)
 		.expect(log[1]).match(/^DOMContentLoaded/)
-		.expect(log[2]).match(/^load/)
-		.expect(log[3]).match(/^Context applied/)
-		.expect(log[4]).match(/^Variant applied/);
+		.expect(log[2]).match(/^Context applied/)
+		.expect(log[3]).match(/^load/)
+		.expect(log[4]).match(/^Variant applied/)
 }));
