@@ -1,7 +1,5 @@
 import EventEmitter from 'events';
 
-const MOCK_GA_CLIENT_ID = '1111.2222';
-
 class ClassListMock {
 	constructor(classList = []) {
 		this.classList = classList
@@ -123,7 +121,6 @@ class WindowMock {
 			}
 		};
 		this.ga = cb => cb();
-		this.ga.getAll = () => [{ get: () => MOCK_GA_CLIENT_ID }];
 	}
 
 	addEventListener(event, listener) {
@@ -138,6 +135,5 @@ export {
 	ClassListMock,
 	StyleSheetMock,
 	ScriptMock,
-	StorageMock,
-	MOCK_GA_CLIENT_ID
+	StorageMock
 };

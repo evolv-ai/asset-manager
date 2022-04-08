@@ -23,7 +23,6 @@ describe('buildConfig()', () => {
 
 		script.setAttribute('data-evolv-environment', '12345');
 		script.setAttribute('data-evolv-endpoint', 'url');
-		script.setAttribute('data-evolv-lazy-uid', 'true');
 		script.setAttribute('data-evolv-require-consent', 'false');
 		script.setAttribute('data-evolv-js', 'true');
 		script.setAttribute('data-evolv-css', 'false');
@@ -37,7 +36,6 @@ describe('buildConfig()', () => {
 		// Assert
 		assert.strictEqual(config.environment, '12345');
 		assert.strictEqual(config.endpoint, 'url');
-		assert.strictEqual(config.lazyUid, true);
 		assert.strictEqual(config.requireConsent, false);
 		assert.strictEqual(config.js, true);
 		assert.strictEqual(config.css, false);

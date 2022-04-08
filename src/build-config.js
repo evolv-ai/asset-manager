@@ -4,7 +4,6 @@
  * @property {string} [evolvEndpoint]
  * @property {string} [evolvUid]
  * @property {string} [evolvSid]
- * @property {string} [evolvLazyUid]
  * @property {string} [evolvRequireConsent]
  * @property {string} [evolvUseCookies]
  * @property {string} [evolvJs]
@@ -19,7 +18,6 @@
  * @property {string} endpoint
  * @property {string | undefined} uid
  * @property {string | undefined} sid
- * @property {string} lazyUid
  * @property {boolean} requireConsent
  * @property {string|undefined} useCookies
  * @property {boolean} js
@@ -54,7 +52,6 @@ export function buildConfig(dataset) {
 		const name = stripPrefix(prop);
 
 		switch (prop) {
-			case 'evolvLazyUid':
 			case 'evolvRequireConsent':
 			case 'evolvJs':
 			case 'evolvCss':
