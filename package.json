@@ -37,6 +37,11 @@
   ],
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
+	"files": [
+		"dist/**/*",
+		"docs/**/*",
+		"src/**/*"
+	],
   "dependencies": {
     "@evolv/client": "2.0.0-alpha-92f8489"
   },
