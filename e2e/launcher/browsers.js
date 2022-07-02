@@ -16,9 +16,7 @@ export const browsersForBrowserStack = [
 
   // FIXME: Running more than 2 browsers fails
   'browserstack:edge',
-  'browserstack:firefox',
+  // 'browserstack:firefox',
   // 'browserstack:opera',
-  // 'browserstack:safari',
-
-  'browserstack:ie'
+  // 'browserstack:safari'
 ];
