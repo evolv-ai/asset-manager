@@ -1,4 +1,4 @@
-import { MiniPromise } from '@evolv/javascript-sdk';
+import { MiniPromise } from '@evolv/client';
 
 /**
  * @param {string} endpoint

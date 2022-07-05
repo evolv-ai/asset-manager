@@ -1,4 +1,4 @@
-import EvolvClient, { MiniPromise } from '@evolv/javascript-sdk';
+import EvolvClient, { MiniPromise } from '@evolv/client';
 
 import { generate } from './guids.js';
 import { EvolvAssetManager } from './asset-manager.js';

@@ -1,4 +1,4 @@
-import { MiniPromise } from '@evolv/javascript-sdk';
+import { MiniPromise } from '@evolv/client';
 import { Helpers } from './helpers.js';
 import { toContextKey } from './keys.js';
 import { toUnderscoreKey } from './utils.js';
