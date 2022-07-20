@@ -43,7 +43,7 @@ test(`should handle predicated variants`, async t => {
 		    'web.dcvu1glgo.sr5zokh9h.red'
 	    ])
 	    .expect(activeVariants1).eql([
-		    'web.dcvu1glgo.sr5zokh9h:-928793511'
+		    'web.dcvu1glgo.sr5zokh9h:-1276770373'
 	    ]);
 
 	// Act
@@ -65,7 +65,7 @@ test(`should handle predicated variants`, async t => {
 		    'web.dcvu1glgo.sr5zokh9h.blue'
 	    ])
 	    .expect(activeVariants2).eql([
-		    'web.dcvu1glgo.sr5zokh9h:-1426189982'
+		    'web.dcvu1glgo.sr5zokh9h:1609431782'
 	    ]);
 });
 

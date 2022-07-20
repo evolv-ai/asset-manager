@@ -29,8 +29,6 @@
 	  document.addEventListener('readystatechange', () => {
         if (document.readyState === 'interactive') {
           console.log('DOMContentLoaded');
-        } else if (document.readyState === 'complete') {
-          console.log('load');
         }
 	  });
 

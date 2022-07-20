@@ -14,10 +14,9 @@ test(`should apply variants immediately`, skipIfIE(async t => {
 	const { log } = await t.getBrowserConsoleMessages();
 
 	await t
-		.expect(log.length).eql(5)
+		.expect(log.length).eql(4)
 		.expect(log[0]).match(/^Delay/)
 		.expect(log[1]).match(/^DOMContentLoaded/)
-		.expect(log[2]).match(/^load/)
-		.expect(log[3]).match(/^Context applied/)
-		.expect(log[4]).match(/^Variant applied/);
+		.expect(log[2]).match(/^Context applied/)
+		.expect(log[3]).match(/^Variant applied/);
 }));

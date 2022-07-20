@@ -25,6 +25,6 @@ test(`should apply mutations`, async t => {
 		    'web.wki40gf5c.qzhnnwxj2'
 	    ])
 	    .expect(activeVariants1).eql([
-		    'web.wki40gf5c.qzhnnwxj2:-179034463'
+		    'web.wki40gf5c.qzhnnwxj2:43841189'
 	    ]);
 });
