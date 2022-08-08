@@ -3,7 +3,6 @@
  * @property {string} [evolvEnvironment]
  * @property {string} [evolvEndpoint]
  * @property {string} [evolvUid]
- * @property {string} [evolvSid]
  * @property {string} [evolvLazyUid]
  * @property {string} [evolvRequireConsent]
  * @property {string} [evolvUseCookies]
@@ -18,7 +17,6 @@
  * @property {string | undefined} environment
  * @property {string} endpoint
  * @property {string | undefined} uid
- * @property {string | undefined} sid
  * @property {string} lazyUid
  * @property {boolean} requireConsent
  * @property {string|undefined} useCookies

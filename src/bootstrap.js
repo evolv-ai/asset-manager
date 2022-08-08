@@ -100,7 +100,6 @@ export const defaultConfig = {
 	environment: undefined,
 	endpoint: 'https://participants.evolv.ai/',
 	uid: undefined,
-	sid: undefined,
 	lazyUid: false,
 	requireConsent: false,
 	useCookies: undefined,
@@ -178,7 +177,6 @@ export function bootstrap(initialConfig) {
 	let endpoint = config.endpoint;
 
 	const uid = config.uid || ensureId(evolv, 'uid', false);
-	const sid = config.sid || ensureId(evolv, 'sid', true);
 
 	const scriptPromise = (js)
 		? injectScript(endpoint, env, version, uid, previewCid)
@@ -212,7 +210,7 @@ export function bootstrap(initialConfig) {
 			}
 		};
 		client = new EvolvClient(options);
-		client.initialize(uid, sid);
+		client.initialize(uid);
 		Object.defineProperty(window.evolv, 'client', {
 			get: function() {
 				return client
