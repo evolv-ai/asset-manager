@@ -50,16 +50,12 @@ describe('the web loader', () => {
 		assert.equal(scripts.length, 1, 'The script should have been added');
 		assert.equal(links.length, 1, 'The stylesheet should have been added');
 		assert.ok(window.localStorage.values['evolv:uid'], 'The user id should have been generated and stored');
-		assert.ok(window.sessionStorage.values['evolv:sid'], 'The session id should have been generated and stored');
 		assert.ok(window.evolv.context, 'The evolv context should have been exposed');
 		assert.ok(window.evolv.client, 'The evolv client should have been exposed');
 		assert.ok(window.evolv.assetManager, 'The evolv assetManager should have been exposed');
 		assert.equal(
 			window.evolv.context.uid, window.localStorage.values['evolv:uid'],
 			'The evolv context should have been initialized with the same uid as stored');
-		assert.equal(
-			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
-			'The evolv context should have been initialized with the same sid as stored');
 	});
 
 	it('should initialize with firefox DNT setup', async () => {
@@ -106,16 +102,12 @@ describe('the web loader', () => {
 		assert.equal(scripts.length, 1, 'One script should have been added');
 		assert.equal(links.length, 1, 'One stylesheet should have been added');
 		assert.ok(window.localStorage.values['evolv:uid'], 'The user id should have been generated and stored');
-		assert.ok(window.sessionStorage.values['evolv:sid'], 'The session id should have been generated and stored');
 		assert.ok(window.evolv.context, 'The evolv context should have been exposed');
 		assert.ok(window.evolv.client, 'The evolv client should have been exposed');
 		assert.ok(window.evolv.assetManager, 'The evolv assetManager should have been exposed');
 		assert.equal(
 			window.evolv.context.uid, window.localStorage.values['evolv:uid'],
 			'The evolv context should have been initialized with the same uid as stored');
-		assert.equal(
-			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
-			'The evolv context should have been initialized with the same sid as stored');
 	});
 
 	it('should initialize with cookies configured and domain defined', async () => {
@@ -124,15 +116,11 @@ describe('the web loader', () => {
 		webloader = await import(`../webloader.js?foo=${Math.random()}`);
 
 		assert.equal(window.localStorage.values['evolv:uid'], undefined, 'The user id should not be in local storage');
-		assert.ok(window.sessionStorage.values['evolv:sid'], 'The session id should have been generated and stored');
 		assert.match(document.cookie, /(evolv:uid=)([0-9]+_[0-9]+)(; max-age=)(.+)(; path=\/; domain=\*\.example\.com)/, 'The user id should have been generated and stored in cookies');
 
 		assert.equal(
 			window.evolv.context.uid, /(evolv:uid=)([0-9]+_[0-9]+)/.exec(document.cookie)[2],
 			'The evolv context should have been initialized with the same uid as stored');
-		assert.equal(
-			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
-			'The evolv context should have been initialized with the same sid as stored');
 	});
 
 	it('should initialize with cookies configured - no domain', async () => {
@@ -141,16 +129,12 @@ describe('the web loader', () => {
 		webloader = await import(`../webloader.js?foo=${Math.random()}`);
 
 		assert.equal(window.localStorage.values['evolv:uid'], undefined, 'The user id should not be in local storage');
-		assert.ok(window.sessionStorage.values['evolv:sid'], 'The session id should have been generated and stored');
 
 		assert.match(document.cookie, /(evolv:uid=)([0-9]+_[0-9]+)(; max-age=)(.+)(; path=\/)/, 'The user id should have been generated and stored in cookies');
 
 		assert.equal(
 			window.evolv.context.uid, /(evolv:uid=)([0-9]+_[0-9]+)/.exec(document.cookie)[2],
 			'The evolv context should have been initialized with the same uid as stored');
-		assert.equal(
-			window.evolv.context.sid, window.sessionStorage.values['evolv:sid'],
-			'The evolv context should have been initialized with the same sid as stored');
 	});
 
 	it('should lazy set uid from GA client Id', async () => {
@@ -249,24 +233,17 @@ describe('the web loader', () => {
 			assert.equal(scripts.length, 1, 'The script should have been added');
 			assert.equal(links.length, 1, 'The stylesheet should have been added');
 			let uid = window.evolv.retrieve('uid', false);
-			let sid = window.evolv.retrieve('sid', true);
 
 			assert.ok(uid, 'The uid id should have been generated');
 			assert.equal(window.evolv.context.uid, uid, 'context uid should be the same as the generated uid');
 
-			assert.ok(sid, 'The session id should have been generated');
-			assert.equal(window.evolv.context.sid, sid, 'context uid should be the same as the generated sid');
-
 			assert.strictEqual(window.localStorage.values['evolv:uid'], undefined, 'The user id should not be stored in local storage');
 			assert.strictEqual(document.cookie, "", 'The user id should not be stored in cookie storage');
-			assert.strictEqual(window.sessionStorage.values['evolv:sid'], undefined, 'The session id should not be stored in session storage');
 
 			window.evolv.markConsented();
 
 			assert.strictEqual(window.localStorage.values['evolv:uid'], uid, 'The user id should be stored in local storage, and match the generated uid');
 			assert.strictEqual(document.cookie, "", 'The user id should still not be stored in cookie storage');
-			assert.strictEqual(window.sessionStorage.values['evolv:sid'], sid, 'The session id should not be stored in session storage');
-			assert.equal(window.evolv.context.sid, sid, 'context uid should be the same as the generated sid');
 			assert.equal(window.evolv.context.uid, uid, 'context uid should be the same as the generated uid');
 		});
 	});
