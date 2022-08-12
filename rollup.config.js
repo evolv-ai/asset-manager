@@ -32,25 +32,37 @@ const banner = () => {
     return `/*!\n ${comment}\n */\n`;
 };
 
-export default {
-	input: 'src/webloader.js',
-	output: [
-		{
-			file: './dist/webloader.js',
-			format: 'iife',
-			name: 'webloader',
-			sourcemap: true,
-			banner
-		},
-		{
-			file: './dist/webloader.min.js',
-			format: 'iife',
-			plugins: [terser()],
-			banner
-		}
-	],
-	plugins: [
-		resolve({}),
-		commonJs()
-	]
-};
+/**
+ * @param {string} input
+ * @param {string} outputName
+ * @returns {import('rollup').RollupOptions}
+ */
+export function rollupConfig(input, outputName) {
+	return {
+		input,
+		output: [
+			{
+				file: `./dist/${outputName}.js`,
+				format: 'iife',
+				name: 'webloader',
+				sourcemap: true,
+				banner
+			},
+			{
+				file: `./dist/${outputName}.min.js`,
+				format: 'iife',
+				plugins: [terser()],
+				banner
+			}
+		],
+		plugins: [
+			resolve({}),
+			commonJs()
+		]
+	};
+}
+
+export default [
+	rollupConfig('src/webloader-lite.js', 'webloader'),
+	rollupConfig('src/webloader-mutate.js', 'webloader-mutate')
+];

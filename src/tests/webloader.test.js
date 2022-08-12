@@ -44,7 +44,7 @@ describe('the web loader', () => {
 	it('should initialize properly', async () => {
 		setupGlobal(null);
 
-		webloader = await import('../webloader.js');
+		webloader = await import('../webloader-lite.js');
 		const scripts = document.getElementsByTagName('script');
 		const links = document.getElementsByTagName('link');
 		assert.equal(scripts.length, 1, 'The script should have been added');
@@ -61,7 +61,7 @@ describe('the web loader', () => {
 	it('should initialize with firefox DNT setup', async () => {
 		setupGlobal('unspecified');
 
-		webloader = await import(`../webloader.js?foo=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?foo=${Math.random()}`);
 		const scripts = global.document.getElementsByTagName('script');
 		const links = global.document.getElementsByTagName('link');
 		assert.equal(scripts.length, 1, 'The script should have been added');
@@ -72,7 +72,7 @@ describe('the web loader', () => {
 	it('should initialize with \'0\' DNT setup', async () => {
 		setupGlobal('0');
 
-		webloader = await import(`../webloader.js?foo=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?foo=${Math.random()}`);
 
 		const scripts = document.getElementsByTagName('script');
 		const links = document.getElementsByTagName('link');
@@ -83,7 +83,7 @@ describe('the web loader', () => {
 
 	it('should not initialize with DNT true', async () => {
 		setupGlobal('1');
-		webloader = await import(`../webloader.js?foo=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?foo=${Math.random()}`);
 		const scripts = document.getElementsByTagName('script');
 		const links = document.getElementsByTagName('link');
 		assert.equal(scripts.length, 0, 'The script should not have been added');
@@ -94,8 +94,8 @@ describe('the web loader', () => {
 	it('should only initialize one webloader', async () => {
 		setupGlobal(null);
 
-		webloader = await import('../webloader.js')
-		var webloader2 = await import('../webloader.js?cachebust=true');
+		webloader = await import('../webloader-lite.js')
+		var webloader2 = await import('../webloader-lite.js?cachebust=true');
 
 		const scripts = document.getElementsByTagName('script');
 		const links = document.getElementsByTagName('link');
@@ -113,7 +113,7 @@ describe('the web loader', () => {
 	it('should initialize with cookies configured and domain defined', async () => {
 		setupGlobal(null, "*.example.com");
 
-		webloader = await import(`../webloader.js?foo=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?foo=${Math.random()}`);
 
 		assert.equal(window.localStorage.values['evolv:uid'], undefined, 'The user id should not be in local storage');
 		assert.match(document.cookie, /(evolv:uid=)([0-9]+_[0-9]+)(; max-age=)(.+)(; path=\/; domain=\*\.example\.com)/, 'The user id should have been generated and stored in cookies');
@@ -126,7 +126,7 @@ describe('the web loader', () => {
 	it('should initialize with cookies configured - no domain', async () => {
 		setupGlobal(null, "true");
 
-		webloader = await import(`../webloader.js?foo=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?foo=${Math.random()}`);
 
 		assert.equal(window.localStorage.values['evolv:uid'], undefined, 'The user id should not be in local storage');
 
@@ -140,7 +140,7 @@ describe('the web loader', () => {
 	it('should lazy set uid from GA client Id', async () => {
 		setupGlobal(null, undefined, { evolvLazyUid: 'true' });
 
-		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
 
 		let scripts = document.getElementsByTagName('script');
 		let links = document.getElementsByTagName('link');
@@ -154,7 +154,7 @@ describe('the web loader', () => {
 
 		setupGlobal(null, undefined, { evolvLazyUid: 'true' });
 
-		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
 
 		// try to set uid a second time
 		window.evolv.setUid('myUid123');
@@ -166,7 +166,7 @@ describe('the web loader', () => {
 	it('should set uid from GA if the uid is not the correct format and lazy flag is set', async () => {
 		setupGlobal(null, undefined, { evolvLazyUid: 'true', evolvUid: 'GA1_2_4444444_555555' });
 
-		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
 
 		let scripts = document.getElementsByTagName('script');
 		let links = document.getElementsByTagName('link');
@@ -189,7 +189,7 @@ describe('the web loader', () => {
 		let mathRoundStub = sinon.stub(Math, 'round').returns(prefix);
 		let clock = sinon.useFakeTimers();
 
-		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
 
 		// run timers to poll for GA until timing out
 		clock.tick(ticks);
@@ -211,7 +211,7 @@ describe('the web loader', () => {
 
 		let localStub = sinon.stub(global.window.localStorage, 'getItem').returns(MOCK_GENERATE_UID);
 
-		webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
 
 		let scripts = document.getElementsByTagName('script');
 		let links = document.getElementsByTagName('link');
@@ -226,7 +226,7 @@ describe('the web loader', () => {
 		it('should initialize properly', async () => {
 			setupGlobal(null, undefined, { evolvRequireConsent: 'true' });
 
-			webloader = await import(`../webloader.js?lazy=${Math.random()}`);
+			webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
 
 			const scripts = document.getElementsByTagName('script');
 			const links = document.getElementsByTagName('link');
@@ -253,7 +253,7 @@ describe('the web loader', () => {
 		it('should use the environment data parameter if set', async () => {
 			setupGlobal();
 
-			webloader = await import(`../webloader.js?environment=${queryEnvironmentId}&lazy=${Math.random()}`);
+			webloader = await import(`../webloader-lite.js?environment=${queryEnvironmentId}&lazy=${Math.random()}`);
 
 			assert.strictEqual(window.evolv.client.environment, attributeEnvironmentId, 'Environment id should not be overridden');
 		});
@@ -263,7 +263,7 @@ describe('the web loader', () => {
 				evolvEnvironment: undefined
 			});
 
-			document.currentScript.src = `../webloader.js?environment=${queryEnvironmentId}&lazy=${Math.random()}`;
+			document.currentScript.src = `../webloader-lite.js?environment=${queryEnvironmentId}&lazy=${Math.random()}`;
 			webloader = await import(document.currentScript.src);
 
 			assert.strictEqual(window.evolv.client.environment, queryEnvironmentId, 'Environment id should be overridden');
@@ -274,7 +274,7 @@ describe('the web loader', () => {
 				evolvEnvironment: undefined
 			});
 
-			document.currentScript.src = `../webloader.js?other=this&environment=${queryEnvironmentId}&lazy=${Math.random()}`;
+			document.currentScript.src = `../webloader-lite.js?other=this&environment=${queryEnvironmentId}&lazy=${Math.random()}`;
 			webloader = await import(document.currentScript.src);
 
 			assert.strictEqual(window.evolv.client.environment, queryEnvironmentId, 'Environment id should be overridden');

@@ -42,11 +42,17 @@ function currentScript() {
 	throw new Error('[Evolv] Environment not specified');
 }
 
-// If the user has requested not to be tracked, or the browser is older than ie11, bail out.
-if ((!navigator.doNotTrack || navigator.doNotTrack === 'unspecified' || navigator.doNotTrack === '0') && typeof Map !== 'undefined') {
-	const script = currentScript();
-	const dataset =  ensureEnvironmentOnDataset(script);
-	const config = buildConfig(dataset);
+export function initialize(callback) {
+	// If the user has requested not to be tracked, or the browser is older than ie11, bail out.
+	if ((!navigator.doNotTrack || navigator.doNotTrack === 'unspecified' || navigator.doNotTrack === '0') && typeof Map !== 'undefined') {
+		const script = currentScript();
+		const dataset =  ensureEnvironmentOnDataset(script);
+		const config = buildConfig(dataset);
 
-	bootstrap(config);
+		bootstrap(config);
+
+		if (callback) {
+			callback(config);
+		}
+	}
 }
