@@ -63,6 +63,6 @@ export function rollupConfig(input, outputName) {
 }
 
 export default [
-	rollupConfig('src/webloader-lite.js', 'webloader'),
-	rollupConfig('src/webloader-mutate.js', 'webloader-mutate')
+	rollupConfig('src/webloader-mutate.js', 'webloader'),
+	rollupConfig('src/webloader-lite.js', 'webloader-lite')
 ];
