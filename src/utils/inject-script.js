@@ -15,7 +15,7 @@ export function injectScript(endpoint, env, version, uid, cid) {
 
 		const script = document.createElement('script');
 		script.type = 'text/javascript';
-		script.src = endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.js' + queryParams;
+		script.src = endpoint.replace(/\/$/, '') + '/v' + version + '/' + env + '/' + uid + '/assets.js' + queryParams;
 		script.defer = true;
 
 		script.onload = resolve;
