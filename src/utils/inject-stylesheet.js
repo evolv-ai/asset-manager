@@ -13,7 +13,7 @@ export function injectStylesheet(endpoint, env, version, uid, cid) {
 	const stylesheet = document.createElement('link');
 	stylesheet.setAttribute('rel', 'stylesheet');
 	stylesheet.setAttribute('type', 'text/css');
-	stylesheet.setAttribute('href', endpoint + 'v' + version + '/' + env + '/' + uid + '/assets.css' + queryParams);
+	stylesheet.setAttribute('href', endpoint.replace(/\/$/, '') + '/v' + version + '/' + env + '/' + uid + '/assets.css' + queryParams);
 
 	document.head.appendChild(stylesheet);
 }
