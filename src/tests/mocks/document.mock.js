@@ -122,8 +122,6 @@ class WindowMock {
 			sendBeacon: () => {
 			}
 		};
-		this.ga = cb => cb();
-		this.ga.getAll = () => [{ get: () => MOCK_GA_CLIENT_ID }];
 	}
 
 	addEventListener(event, listener) {
