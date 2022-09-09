@@ -137,18 +137,6 @@ describe('the web loader', () => {
 			'The evolv context should have been initialized with the same uid as stored');
 	});
 
-	it('should lazy set uid from GA client Id', async () => {
-		setupGlobal(null, undefined, { evolvLazyUid: 'true' });
-
-		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
-
-		let scripts = document.getElementsByTagName('script');
-		let links = document.getElementsByTagName('link');
-		assert.equal(scripts.length, 1, 'The script should have been added');
-		assert.equal(links.length, 1, 'The stylesheet should have been added');
-		assert.ok(scripts[0].src.indexOf(MOCK_GA_CLIENT_ID) !== 0, 'The uid should have been set.');
-	});
-
 	it('should only set lazy uid once', async () => {
 		let spy = sinon.spy(console, 'warn');
 
@@ -158,68 +146,10 @@ describe('the web loader', () => {
 
 		// try to set uid a second time
 		window.evolv.setUid('myUid123');
+		window.evolv.setUid('myUid123');
 
 		// assert that it was called with the correct value
 		assert.ok(spy.calledWith('Multiple Evolv instances - please verify you have only loaded Evolv once'), 'should display a warning if uid is already set');
-	});
-
-	it('should set uid from GA if the uid is not the correct format and lazy flag is set', async () => {
-		setupGlobal(null, undefined, { evolvLazyUid: 'true', evolvUid: 'GA1_2_4444444_555555' });
-
-		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
-
-		let scripts = document.getElementsByTagName('script');
-		let links = document.getElementsByTagName('link');
-		assert.equal(scripts.length, 1, 'The script should have been added');
-		assert.equal(links.length, 1, 'The stylesheet should have been added');
-		assert.ok(scripts[0].src.indexOf(MOCK_GA_CLIENT_ID) !== 0, 'The uid should have been set.');
-	});
-
-	it('should use generated uid if GA integration times out', async () => {
-		setupGlobal(null, undefined, { evolvLazyUid: 'true' });
-
-		// overwrite ga.getAll to force integration polling method to time out
-		window.ga.getAll = () => [];
-
-		const prefix = '11';
-		const ticks = 60;
-		const MOCK_GENERATE_UID = `${prefix}_${ticks}`;
-
-		// used to mock the prefix of the generated uid
-		let mathRoundStub = sinon.stub(Math, 'round').returns(prefix);
-		let clock = sinon.useFakeTimers();
-
-		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
-
-		// run timers to poll for GA until timing out
-		clock.tick(ticks);
-
-		let scripts = document.getElementsByTagName('script');
-		let links = document.getElementsByTagName('link');
-		assert.equal(scripts.length, 1, 'The script should have been added');
-		assert.equal(links.length, 1, 'The stylesheet should have been added');
-		assert.ok(scripts[0].src.indexOf(MOCK_GENERATE_UID) > -1, 'The uid should have been set to generated uid.');
-
-		clock.restore();
-		mathRoundStub.restore();
-	});
-
-	it('should use UID from local storage instead if one exists and ignore lazy-uid', async () => {
-		setupGlobal(null, undefined, { evolvLazyUid: 'true' });
-
-		const MOCK_GENERATE_UID = `123_456`;
-
-		let localStub = sinon.stub(global.window.localStorage, 'getItem').returns(MOCK_GENERATE_UID);
-
-		webloader = await import(`../webloader-lite.js?lazy=${Math.random()}`);
-
-		let scripts = document.getElementsByTagName('script');
-		let links = document.getElementsByTagName('link');
-		assert.equal(scripts.length, 1, 'The script should have been added');
-		assert.equal(links.length, 1, 'The stylesheet should have been added');
-		assert.ok(scripts[0].src.indexOf(MOCK_GENERATE_UID) > -1, 'The uid should match the uid from localStorage.');
-
-		localStub.restore();
 	});
 
 	describe('consent checks', () => {

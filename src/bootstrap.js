@@ -4,7 +4,6 @@ import { generate } from './guids.js';
 import { EvolvAssetManager } from './asset-manager.js';
 import EvolvStorageManager from './storage.js';
 import { modes } from './modes/index.js';
-import { gaIntegration, isValidGaClientId } from './integrations/ga.js';
 import { objectAssign } from './shims/object-assign.js';
 import firedEventsInitialization from './fired-events.js';
 import { injectScript } from './utils/inject-script.js'
@@ -87,7 +86,7 @@ function checkInstanceCount(evolv) {
  */
 function checkLazyUid(config) {
 	if (config.lazyUid) {
-		if (!config.uid || !isValidGaClientId(config.uid)) {
+		if (!config.uid) {
 			return true;
 		}
 	}
@@ -128,10 +127,8 @@ export function bootstrap(initialConfig) {
 		bootstrap(config);
 	};
 
-	// If evolvLazyUid is true and no uid is set - get GA client Id and set uid
+	// If evolvLazyUid is true and no uid is set
 	if (checkLazyUid(config)) {
-		// Temporary hotfix for GA Client Id integration
-		gaIntegration();
 		return;
 	}
 
