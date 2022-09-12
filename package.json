@@ -23,7 +23,7 @@
     "deploy:next:s3": "sh scripts/upload-scripts.sh -c next -d $CF_DISTRIBUTION_ID",
     "deploy:version:s3": "sh scripts/upload-scripts.sh -c $SEM_VER -d $CF_DISTRIBUTION_ID",
     "deploy:latest:s3": "sh scripts/upload-scripts.sh -c latest -d $CF_DISTRIBUTION_ID",
-	  "deploy:next:npm": "npm version $SEM_VER --no-git-tag-version && npm publish --tag next --access public",
+    "deploy:next:npm": "npm version $SEM_VER --no-git-tag-version && npm publish --tag next --access public",
     "deploy:latest:npm": "npm version $SEM_VER --no-git-tag-version && npm publish --access public",
     "e2e": "node e2e/launcher/start.js",
     "e2e:debug": "node e2e/launcher/start.js --debug=true",
@@ -37,19 +37,19 @@
   ],
   "author": "Frazer Bayley",
   "license": "Apache-2.0",
-	"files": [
-		"dist/**/*",
-		"docs/**/*",
-		"src/**/*"
-	],
+  "files": [
+    "dist/**/*",
+    "docs/**/*",
+    "src/**/*"
+  ],
   "dependencies": {
     "@evolv/client": "2.1.10-alpha-3ad8ab6"
   },
   "optionalDependencies": {
-    "@evolv/mutate": "^1.5.4"
+    "@evolv/mutate": "^1.5.5"
   },
   "devDependencies": {
-    "@evolv/mutate": "^1.5.4",
+    "@evolv/mutate": "^1.5.5",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
