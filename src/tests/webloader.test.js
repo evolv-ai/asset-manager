@@ -149,7 +149,7 @@ describe('the web loader', () => {
 		window.evolv.setUid('myUid123');
 
 		// assert that it was called with the correct value
-		assert.ok(spy.calledWith('Multiple Evolv instances - please verify you have only loaded Evolv once'), 'should display a warning if uid is already set');
+		assert.ok(spy.calledWith('Evolv: Cannot set UID because another client instance already exists'), 'should display a warning if uid is already set');
 	});
 
 	describe('consent checks', () => {
