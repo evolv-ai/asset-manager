@@ -10,6 +10,7 @@
  * @property {string} [evolvCss]
  * @property {string} [evolvPushstate]
  * @property {string} [evolvTimeout]
+ * @property {string} [evolvDntSupport]
  */
 
 /**
@@ -24,6 +25,7 @@
  * @property {boolean} css
  * @property {boolean} pushstate
  * @property {number|undefined} timeout
+ * @property {boolean} dntSupport
  */
 
 /**
@@ -56,6 +58,7 @@ export function buildConfig(dataset) {
 			case 'evolvRequireConsent':
 			case 'evolvJs':
 			case 'evolvCss':
+			case 'evolvDntSupport':
 			case 'evolvPushstate': {
 				config[name] = dataset[prop] === 'true';
 				break;

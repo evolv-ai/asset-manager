@@ -105,7 +105,8 @@ export const defaultConfig = {
 	js: true,
 	css: true,
 	pushstate: false,
-	timeout: undefined
+	timeout: undefined,
+	dntSupport: true
 };
 
 /**
