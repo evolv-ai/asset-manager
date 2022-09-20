@@ -43,16 +43,18 @@ function currentScript() {
 }
 
 export function initialize(callback) {
-	// If the user has requested not to be tracked, or the browser is older than ie11, bail out.
-	if ((!navigator.doNotTrack || navigator.doNotTrack === 'unspecified' || navigator.doNotTrack === '0') && typeof Map !== 'undefined') {
-		const script = currentScript();
-		const dataset =  ensureEnvironmentOnDataset(script);
-		const config = buildConfig(dataset);
+	// If the browser is older than ie11, bail out.
+	if (typeof Map === 'undefined') {
+		return;
+	}
 
-		bootstrap(config);
+	const script = currentScript();
+	const dataset =  ensureEnvironmentOnDataset(script);
+	const config = buildConfig(dataset);
 
-		if (callback) {
-			callback(config);
-		}
+	bootstrap(config);
+
+	if (callback) {
+		callback(config);
 	}
 }
