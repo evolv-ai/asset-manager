@@ -123,6 +123,11 @@ export function bootstrap(initialConfig) {
 			return;
 		}
 
+		if (evolv.context) {
+			console.warn('Evolv: Cannot set UID because another client instance already exists');
+			return;
+		}
+
 		config.uid = lazyUid;
 		bootstrap(config);
 	};
@@ -173,7 +178,9 @@ export function bootstrap(initialConfig) {
 	let pushstate = config.pushstate;
 	let endpoint = config.endpoint;
 
-	const uid = config.uid || ensureId(evolv, 'uid', false);
+	const uid = evolv.context
+		? evolv.context.uid
+		: config.uid || ensureId(evolv, 'uid', false);
 
 	const scriptPromise = (js)
 		? injectScript(endpoint, env, version, uid, previewCid)
