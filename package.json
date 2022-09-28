@@ -46,10 +46,10 @@
     "@evolv/client": "2.1.10-alpha-3ad8ab6"
   },
   "optionalDependencies": {
-    "@evolv/mutate": "^1.5.5"
+    "@evolv/mutate": "^1.5.7"
   },
   "devDependencies": {
-    "@evolv/mutate": "^1.5.5",
+    "@evolv/mutate": "^1.5.7",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
