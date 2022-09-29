@@ -25,5 +25,9 @@ if [ -z "$channel" ] || [ -z "$distributionID" ]; then
 	exit 1
 fi
 
-aws s3 cp ./dist "s3://evolv-execution-plan-binaries/asset-manager/releases/${channel}" --recursive --acl public-read
+aws s3 cp ./dist "s3://evolv-execution-plan-binaries/asset-manager/releases/${channel}" \
+	--recursive \
+	--acl=public-read \
+	--cache-control="max-age=3600"
+
 aws cloudfront create-invalidation --distribution-id "${distributionID}" --paths "/asset-manager/releases/${channel}/*"
