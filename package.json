@@ -43,7 +43,7 @@
     "src/**/*"
   ],
   "dependencies": {
-    "@evolv/client": "2.1.10-alpha-3ad8ab6"
+    "@evolv/client": "2.1.12-alpha-4191abd"
   },
   "optionalDependencies": {
     "@evolv/mutate": "^1.5.8"
