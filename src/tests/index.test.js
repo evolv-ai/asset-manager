@@ -819,7 +819,7 @@ describe('asset manager handles correctly', () => {
 		afterEach(function() {
 			global.window = origWindow;
 		});
-
+		// For the keys info, please refer to keysDict in evolv.mock.js
 		let keys = ['web.page1.redirectToGoogle'];
 		it('should redirect to google.com',async () => {
 			global.window = { location: { href: 'https://test-site.com' }, evolv: {}, confirm: () => true};
