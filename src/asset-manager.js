@@ -59,6 +59,8 @@ function main(container, _runner) {
 		client.reevaluateContext();
 	};
 
+	let hasRunRedirect = false
+
 	client.getActiveKeys('web').listen(function (keys) {
 		const liveContexts = keys.current
 			.map(toUnderscoreKey)
@@ -81,6 +83,32 @@ function main(container, _runner) {
 			runner.updateFunctionsToRun(liveContexts);
 		} else if (cssAsset) {
 			confirm();
+		}
+
+		let redirectionInProgress = false;
+
+		if(!hasRunRedirect){
+			hasRunRedirect = true
+			keys.current.forEach(function(key) {
+				client.get(key).then(function(v) {
+					if (redirectionInProgress || v.type !== 'redirect' || !v.target_url) {
+						return;
+					}
+					// Target url can be a partial path, like '/products'. We should process it by adding it to the location.origin
+					const isPartialPath = v.target_url.startsWith('/');
+					if((isPartialPath && window.location.pathname !== v.target_url) || (!isPartialPath && window.location.origin + window.location.pathname !== v.target_url)){
+						const params = v.include_query_parameters ? window.location.search : '';
+						let path = (v.target_url.startsWith('http') ? '' : 'https://') + v.target_url + params;
+						if(isPartialPath){
+							path = window.location.origin + v.target_url + params;
+						}
+						if(window.confirm("Are you sure you want to process redirect to " + path + "?")){
+							window.location = path
+							redirectionInProgress = true;
+						}
+					}
+				});
+			});
 		}
 	});
 }
