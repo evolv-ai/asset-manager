@@ -48,8 +48,43 @@ class EvolvMock {
 	}
 	on(){}
 
-	get(){
-		return new Promise(() =>null);
+	get(key){
+		if(key === 'web.page1.redirectToGoogle'){
+			return new Promise((resolve) => (resolve({
+				type: 'redirect',
+				target_url: 'https://google.com',
+				include_query_parameters: false
+			})));
+		}
+		if(key === 'web.page1.redirectToEvolv'){
+			return new Promise((resolve) => (resolve({
+				type: 'redirect',
+				target_url: 'https://evolv.ai',
+				include_query_parameters: false
+			})));
+		}
+		if(key === 'web.page1.redirectPartialPath'){
+			return new Promise((resolve) => (resolve({
+				type: 'redirect',
+				target_url: '/goods',
+				include_query_parameters: false
+			})));
+		}
+		if(key === 'web.page1.redirectPartialPathWithParams'){
+			return new Promise((resolve) => (resolve({
+				type: 'redirect',
+				target_url: '/goods',
+				include_query_parameters: true
+			})));
+		}
+		if(key === 'web.page1.redirectWithParams'){
+			return new Promise((resolve) => (resolve({
+				type: 'redirect',
+				target_url: 'https://evolv.ai/',
+				include_query_parameters: true
+			})));
+		}
+		return new Promise((_, reject) => reject(null));
 	}
 }
 

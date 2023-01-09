@@ -808,4 +808,76 @@ describe('asset manager handles correctly', () => {
 			});
 		});
 	});
+
+	describe('Handle redirect variants', () => {
+		let origWindow;
+
+		beforeEach(function() {
+			origWindow = global.window;
+		});
+
+		afterEach(function() {
+			global.window = origWindow;
+		});
+
+		let keys = ['web.page1.redirectToGoogle'];
+		it('should redirect to google.com',async () => {
+			global.window = { location: { href: 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location, 'https://google.com')
+		});
+
+		it('should handle 2 redirects and transfer user to the first url',async () => {
+			keys = ['web.page1.redirectToGoogle', 'web.page1.redirectToEvolv'];
+			global.window = { location: { href: 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location, 'https://google.com')
+		});
+
+		it('shouldn\'t redirect if no redirect variants ',async () => {
+			keys = ['web.page1', 'web.page1.variable1'];
+			global.window = { location: { href: 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location.href, 'https://test-site.com')
+		});
+
+		it('should handle partial path and  redirect to /goods',async () => {
+			keys = ['web.page1.redirectPartialPath'];
+			global.window = { location: { href: 'https://test-site.com', origin : 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location, 'https://test-site.com/goods')
+		});
+
+		it('should handle partial path with params and redirect to /goods?qwerty=123',async () => {
+			keys = ['web.page1.redirectPartialPathWithParams'];
+			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com', search: '?qwerty=123' }, evolv: {}, confirm: () => true};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location, 'https://test-site.com/goods?qwerty=123')
+		});
+
+		it('should handle redirect with params and redirect to /evolv.ai/?qwerty=123',async () => {
+			keys = ['web.page1.redirectWithParams'];
+			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com/', search: '?qwerty=123' }, evolv: {}, confirm: () => true};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location, 'https://evolv.ai/?qwerty=123')
+		});
+	});
 });
