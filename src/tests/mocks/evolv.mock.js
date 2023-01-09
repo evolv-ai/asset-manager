@@ -47,6 +47,10 @@ class EvolvMock {
 		this.keys = keys;
 	}
 	on(){}
+
+	get(){
+		return new Promise(() =>null);
+	}
 }
 
 class EvolvContextMock {
