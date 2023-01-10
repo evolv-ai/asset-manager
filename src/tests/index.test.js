@@ -879,5 +879,25 @@ describe('asset manager handles correctly', () => {
 			await wait(0);
 			assert.equal(window.location, 'https://evolv.ai/?qwerty=123')
 		});
+
+		it('should handle redirect to http website',async () => {
+			keys = ['web.page1.redirectToHttp'];
+			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com/', search: '?qwerty=123' }, evolv: {}};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location, 'http://info.cern.ch/')
+		});
+
+		it.only('should handle redirect to \'google.com\'',async () => {
+			keys = ['web.page1.redirectGoogleWithoutHttp'];
+			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com/', search: '?qwerty=123' }, evolv: {}};
+			global.document = new DocumentMock();
+			const client = new EvolvMock(keys);
+			new EvolvAssetManager(client, undefined, mockTiming());
+			await wait(0);
+			assert.equal(window.location, 'https://google.com')
+		});
 	});
 });

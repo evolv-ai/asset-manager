@@ -18,6 +18,14 @@ const keysDict = {
 	'web.page1.redirectWithParams': {
 		target_url: 'https://evolv.ai/',
 		include_query_parameters: true
+	},
+	'web.page1.redirectToHttp': {
+		target_url: 'http://info.cern.ch/',
+		include_query_parameters: false
+	},
+	'web.page1.redirectGoogleWithoutHttp': {
+		target_url: 'google.com',
+		include_query_parameters: false
 	}
 }
 
