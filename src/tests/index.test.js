@@ -822,7 +822,7 @@ describe('asset manager handles correctly', () => {
 		// For the keys info, please refer to keysDict in evolv.mock.js
 		let keys = ['web.page1.redirectToGoogle'];
 		it('should redirect to google.com',async () => {
-			global.window = { location: { href: 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.window = { location: { href: 'https://test-site.com' }, evolv: {}};
 			global.document = new DocumentMock();
 			const client = new EvolvMock(keys);
 			new EvolvAssetManager(client, undefined, mockTiming());
@@ -832,7 +832,7 @@ describe('asset manager handles correctly', () => {
 
 		it('should handle 2 redirects and transfer user to the first url',async () => {
 			keys = ['web.page1.redirectToGoogle', 'web.page1.redirectToEvolv'];
-			global.window = { location: { href: 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.window = { location: { href: 'https://test-site.com' }, evolv: {}};
 			global.document = new DocumentMock();
 			const client = new EvolvMock(keys);
 			new EvolvAssetManager(client, undefined, mockTiming());
@@ -842,7 +842,7 @@ describe('asset manager handles correctly', () => {
 
 		it('shouldn\'t redirect if no redirect variants ',async () => {
 			keys = ['web.page1', 'web.page1.variable1'];
-			global.window = { location: { href: 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.window = { location: { href: 'https://test-site.com' }, evolv: {}};
 			global.document = new DocumentMock();
 			const client = new EvolvMock(keys);
 			new EvolvAssetManager(client, undefined, mockTiming());
@@ -852,7 +852,7 @@ describe('asset manager handles correctly', () => {
 
 		it('should handle partial path and  redirect to /goods',async () => {
 			keys = ['web.page1.redirectPartialPath'];
-			global.window = { location: { href: 'https://test-site.com', origin : 'https://test-site.com' }, evolv: {}, confirm: () => true};
+			global.window = { location: { href: 'https://test-site.com', origin : 'https://test-site.com' }};
 			global.document = new DocumentMock();
 			const client = new EvolvMock(keys);
 			new EvolvAssetManager(client, undefined, mockTiming());
@@ -862,7 +862,7 @@ describe('asset manager handles correctly', () => {
 
 		it('should handle partial path with params and redirect to /goods?qwerty=123',async () => {
 			keys = ['web.page1.redirectPartialPathWithParams'];
-			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com', search: '?qwerty=123' }, evolv: {}, confirm: () => true};
+			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com', search: '?qwerty=123' }, evolv: {}};
 			global.document = new DocumentMock();
 			const client = new EvolvMock(keys);
 			new EvolvAssetManager(client, undefined, mockTiming());
@@ -872,7 +872,7 @@ describe('asset manager handles correctly', () => {
 
 		it('should handle redirect with params and redirect to /evolv.ai/?qwerty=123',async () => {
 			keys = ['web.page1.redirectWithParams'];
-			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com/', search: '?qwerty=123' }, evolv: {}, confirm: () => true};
+			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com/', search: '?qwerty=123' }, evolv: {}};
 			global.document = new DocumentMock();
 			const client = new EvolvMock(keys);
 			new EvolvAssetManager(client, undefined, mockTiming());

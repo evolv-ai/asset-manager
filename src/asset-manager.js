@@ -103,10 +103,8 @@ function main(container, _runner) {
 						if(isPartialPath){
 							path = window.location.origin + v.target_url + params;
 						}
-						if(window.confirm("Are you sure you want to process redirect to " + path + "?")){
-							window.location = path
-							redirectionInProgress = true;
-						}
+						window.location = path
+						redirectionInProgress = true;
 					}
 				});
 			});
