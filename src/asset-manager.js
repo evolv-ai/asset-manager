@@ -59,8 +59,6 @@ function main(container, _runner) {
 		client.reevaluateContext();
 	};
 
-	let hasRunRedirect = false
-
 	client.getActiveKeys('web').listen(function (keys) {
 		const liveContexts = keys.current
 			.map(toUnderscoreKey)
@@ -84,9 +82,12 @@ function main(container, _runner) {
 		} else if (cssAsset) {
 			confirm();
 		}
+	});
 
+	let hasRunRedirect = false
+
+	client.getActiveKeys().listen(function (keys) {
 		let redirectionInProgress = false;
-
 		if(!hasRunRedirect){
 			hasRunRedirect = true
 			keys.current.forEach(function(key) {
@@ -94,6 +95,7 @@ function main(container, _runner) {
 					if (redirectionInProgress || v.type !== 'redirect' || !v.target_url) {
 						return;
 					}
+					confirm();
 					// Target url can be a partial path, like '/products'. We should process it by adding it to the location.origin
 					const isPartialPath = v.target_url.startsWith('/');
 					// Checking that url where we want to redirect the user is not the same as current url
