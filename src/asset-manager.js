@@ -59,8 +59,11 @@ function main(container, _runner) {
 		client.reevaluateContext();
 	};
 
-	client.getActiveKeys('web').listen(function (keys) {
+	let hasRunRedirect = false
+
+	client.getActiveKeys('').listen(function (keys) {
 		const liveContexts = keys.current
+			.filter(function(key) { return key.startsWith('web') })
 			.map(toUnderscoreKey)
 			.sort(function (a, b) {
 				return a.length - b.length;
@@ -82,11 +85,7 @@ function main(container, _runner) {
 		} else if (cssAsset) {
 			confirm();
 		}
-	});
 
-	let hasRunRedirect = false
-
-	client.getActiveKeys().listen(function (keys) {
 		let redirectionInProgress = false;
 		if(!hasRunRedirect){
 			hasRunRedirect = true

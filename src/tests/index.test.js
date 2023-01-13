@@ -890,7 +890,7 @@ describe('asset manager handles correctly', () => {
 			assert.equal(window.location, 'http://info.cern.ch/')
 		});
 
-		it.only('should handle redirect to \'google.com\'',async () => {
+		it('should handle redirect to \'google.com\'',async () => {
 			keys = ['web.page1.redirectGoogleWithoutHttp'];
 			global.window = { location: { href: 'https://test-site.com/?qwerty=123', origin : 'https://test-site.com/', search: '?qwerty=123' }, evolv: {}};
 			global.document = new DocumentMock();
