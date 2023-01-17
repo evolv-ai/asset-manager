@@ -60,6 +60,7 @@ function main(container, _runner) {
 	};
 
 	let hasRunRedirect = false
+	let redirectionInProgress = false
 
 	client.getActiveKeys('').listen(function (keys) {
 		const liveContexts = keys.current
@@ -86,7 +87,10 @@ function main(container, _runner) {
 			confirm();
 		}
 
-		let redirectionInProgress = false;
+		runRedirectVariants(keys)
+	});
+
+	function runRedirectVariants(keys){
 		if(!hasRunRedirect){
 			hasRunRedirect = true
 			keys.current.forEach(function(key) {
@@ -110,7 +114,7 @@ function main(container, _runner) {
 				});
 			});
 		}
-	});
+	}
 }
 
 /**
