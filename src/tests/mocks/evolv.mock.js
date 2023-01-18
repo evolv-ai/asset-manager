@@ -47,6 +47,9 @@ class EvolvMock {
 
 	confirm() {
 		this.confirmations++;
+		return new Promise(function(resolve){
+			resolve();
+		})
 	}
 
 	contaminate() {

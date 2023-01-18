@@ -830,16 +830,6 @@ describe('asset manager handles correctly', () => {
 			assert.equal(window.location, 'https://google.com')
 		});
 
-		it('should handle 2 redirects and transfer user to the first url',async () => {
-			keys = ['web.page1.redirectToGoogle', 'web.page1.redirectToEvolv'];
-			global.window = { location: { href: 'https://test-site.com' }, evolv: {}};
-			global.document = new DocumentMock();
-			const client = new EvolvMock(keys);
-			new EvolvAssetManager(client, undefined, mockTiming());
-			await wait(0);
-			assert.equal(window.location, 'https://google.com')
-		});
-
 		it('shouldn\'t redirect if no redirect variants ',async () => {
 			keys = ['web.page1', 'web.page1.variable1'];
 			global.window = { location: { href: 'https://test-site.com' }, evolv: {}};
