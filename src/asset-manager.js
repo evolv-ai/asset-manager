@@ -62,9 +62,8 @@ function main(container, _runner) {
 	let hasRunRedirect = false
 	let redirectionInProgress = false
 
-	client.getActiveKeys('').listen(function (keys) {
+	client.getActiveKeys('web').listen(function (keys) {
 		const liveContexts = keys.current
-			.filter(function(key) { return key.startsWith('web') })
 			.map(toUnderscoreKey)
 			.sort(function (a, b) {
 				return a.length - b.length;
@@ -86,8 +85,7 @@ function main(container, _runner) {
 		} else if (cssAsset) {
 			confirm();
 		}
-
-		runRedirectVariants(keys)
+		runRedirectVariants(keys);
 	});
 
 	function runRedirectVariants(keys){
