@@ -98,11 +98,12 @@ function main(container, _runner) {
 					}
 					client.confirm().then(function() {
 						// Target url can be a partial path, like '/products'. We should process it by adding it to the location.origin
-						const isPartialPath = v.target_url.startsWith('/');
+						const params = v.include_query_parameters ? window.location.search : '';
+						const path = v.target_url + params;
+						const newUrl = new URL(path, window.location.href);
 						// Checking that url where we want to redirect the user is not the same as current url
-						if((isPartialPath && window.location.pathname !== v.target_url) || (!isPartialPath && window.location.origin + window.location.pathname !== v.target_url)){
-							const params = v.include_query_parameters ? window.location.search : '';
-							window.location = v.target_url + params;
+						if(newUrl.href !== window.location.href){
+							window.location = path;
 							redirectionInProgress = true;
 						}
 					})
