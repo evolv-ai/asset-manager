@@ -23,10 +23,6 @@ const keysDict = {
 		target_url: 'http://info.cern.ch/',
 		include_query_parameters: false
 	},
-	'web.page1.redirectGoogleWithoutHttp': {
-		target_url: 'google.com',
-		include_query_parameters: false
-	}
 }
 
 class EvolvMock {

@@ -102,7 +102,7 @@ function main(container, _runner) {
 						// Checking that url where we want to redirect the user is not the same as current url
 						if((isPartialPath && window.location.pathname !== v.target_url) || (!isPartialPath && window.location.origin + window.location.pathname !== v.target_url)){
 							const params = v.include_query_parameters ? window.location.search : '';
-							window.location = v.target_url + params
+							window.location = v.target_url + params;
 							redirectionInProgress = true;
 						}
 					})
