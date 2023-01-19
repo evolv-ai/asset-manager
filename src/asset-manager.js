@@ -104,7 +104,7 @@ function main(container, _runner) {
 							const params = v.include_query_parameters ? window.location.search : '';
 							let path = (v.target_url.startsWith('http') ? '' : 'https://') + v.target_url + params;
 							if(isPartialPath){
-								path = window.location.origin + v.target_url + params;
+								path = v.target_url + params;
 							}
 							window.location = path
 							redirectionInProgress = true;
