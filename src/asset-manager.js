@@ -102,11 +102,7 @@ function main(container, _runner) {
 						// Checking that url where we want to redirect the user is not the same as current url
 						if((isPartialPath && window.location.pathname !== v.target_url) || (!isPartialPath && window.location.origin + window.location.pathname !== v.target_url)){
 							const params = v.include_query_parameters ? window.location.search : '';
-							let path = (v.target_url.startsWith('http') ? '' : 'https://') + v.target_url + params;
-							if(isPartialPath){
-								path = v.target_url + params;
-							}
-							window.location = path
+							window.location = v.target_url + params
 							redirectionInProgress = true;
 						}
 					})
