@@ -5,6 +5,7 @@ import { DocumentMock, StyleSheetMock, ScriptMock } from './mocks/document.mock.
 import EvolvMock from './mocks/evolv.mock.js';
 import wait from './wait.js';
 import sinon from 'sinon';
+import { URL } from 'url';
 
 function mockTiming(offset) {
 	return { timing: { domContentLoadedEventStart: (new Date()).getTime() - offset } };
@@ -824,12 +825,12 @@ describe('asset manager handles correctly', () => {
 		it('should redirect to google.com',async () => {
 			global.window = { location: { href: 'https://test-site.com' }, evolv: {}};
 			global.document = new DocumentMock();
+			global.URL = URL
 			const client = new EvolvMock(keys);
 			new EvolvAssetManager(client, undefined, mockTiming());
 			await wait(0);
 			assert.equal(window.location, 'https://google.com')
 		});
-
 		it('shouldn\'t redirect if no redirect variants ',async () => {
 			keys = ['web.page1', 'web.page1.variable1'];
 			global.window = { location: { href: 'https://test-site.com' }, evolv: {}};
