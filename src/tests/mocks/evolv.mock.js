@@ -1,3 +1,30 @@
+const keysDict = {
+	'web.page1.redirectToGoogle': {
+		target_url: 'https://google.com',
+		include_query_parameters: false
+	},
+	'web.page1.redirectToEvolv': {
+		target_url: 'https://evolv.ai',
+		include_query_parameters: false
+	},
+	'web.page1.redirectPartialPath': {
+		target_url: '/goods',
+		include_query_parameters: false
+	},
+	'web.page1.redirectPartialPathWithParams': {
+		target_url: '/goods',
+		include_query_parameters: true
+	},
+	'web.page1.redirectWithParams': {
+		target_url: 'https://evolv.ai/',
+		include_query_parameters: true
+	},
+	'web.page1.redirectToHttp': {
+		target_url: 'http://info.cern.ch/',
+		include_query_parameters: false
+	},
+}
+
 class EvolvMock {
 	constructor(keys = []) {
 		this.confirmations = 0;
@@ -16,6 +43,9 @@ class EvolvMock {
 
 	confirm() {
 		this.confirmations++;
+		return new Promise(function(resolve){
+			resolve();
+		})
 	}
 
 	contaminate() {
@@ -47,6 +77,16 @@ class EvolvMock {
 		this.keys = keys;
 	}
 	on(){}
+
+	get(key){
+		if(keysDict[key]){
+			return new Promise((resolve) => (resolve({
+				type: 'redirect',
+				...keysDict[key]
+			})));
+		}
+		return new Promise((_, reject) => reject(null));
+	}
 }
 
 class EvolvContextMock {
