@@ -59,7 +59,6 @@ function main(container, _runner) {
 		client.reevaluateContext();
 	};
 
-	let hasRunRedirect = false
 	let redirectionInProgress = false
 
 	client.getActiveKeys('web').listen(function (keys) {
@@ -89,27 +88,27 @@ function main(container, _runner) {
 	});
 
 	function runRedirectVariants(keys){
-		if(!hasRunRedirect){
-			hasRunRedirect = true
-			keys.current.forEach(function(key) {
-				client.get(key).then(function(v) {
-					if (redirectionInProgress || v.type !== 'redirect' || !v.target_url) {
-						return;
+		keys.current.forEach(function(key) {
+			client.get(key).then(function(v) {
+				if (redirectionInProgress || v.type !== 'redirect' || !v.target_url) {
+					return;
+				}
+				redirectionInProgress = true;
+				client.confirm()
+				.then(function() {
+					const params = v.include_query_parameters ? window.location.search : '';
+					const path = v.target_url + params;
+					const newUrl = new URL(path, window.location.href);
+					// Checking that url where we want to redirect the user is not the same as current url
+					if(newUrl.href !== window.location.href){
+						window.location = path;
 					}
-					client.confirm().then(function() {
-						// Target url can be a partial path, like '/products'. We should process it by adding it to the location.origin
-						const params = v.include_query_parameters ? window.location.search : '';
-						const path = v.target_url + params;
-						const newUrl = new URL(path, window.location.href);
-						// Checking that url where we want to redirect the user is not the same as current url
-						if(newUrl.href !== window.location.href){
-							window.location = path;
-							redirectionInProgress = true;
-						}
-					})
-				});
+				})
+				.catch(function() {
+					redirectionInProgress = false;
+				})
 			});
-		}
+		});
 	}
 }
 
