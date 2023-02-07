@@ -90,7 +90,7 @@ function main(container, _runner) {
 	function runRedirectVariants(keys){
 		keys.current.forEach(function(key) {
 			client.get(key).then(function(v) {
-				if (redirectionInProgress || v.type !== 'redirect' || !v.target_url) {
+				if (redirectionInProgress || !v || v.type !== 'redirect' || !v.target_url) {
 					return;
 				}
 				redirectionInProgress = true;
