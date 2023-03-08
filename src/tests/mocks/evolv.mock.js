@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events';
+
 const keysDict = {
 	'web.page1.redirectToGoogle': {
 		target_url: 'https://google.com',
@@ -26,12 +28,13 @@ const keysDict = {
 }
 
 class EvolvMock {
+	clientEmitter = new EventEmitter();
 	constructor(keys = []) {
 		this.confirmations = 0;
 		this.contaminations = 0;
 		this.initializations = 0;
 		this.keys = keys;
-		this.context = new EvolvContextMock();
+		this.context = new EvolvContextMock(undefined, undefined, this.clientEmitter);
 
 		this._listener;
 		this._prefix = '';
@@ -76,7 +79,14 @@ class EvolvMock {
 		});
 		this.keys = keys;
 	}
-	on(){}
+
+	on(eventType, handler) {
+		this.clientEmitter.on(eventType, handler)
+	}
+
+	emit(eventName, metadata) {
+		this.clientEmitter.emit('event.emitted', ...['event.emitted', eventName, metadata])
+	}
 
 	get(key){
 		if(keysDict[key]){
@@ -90,16 +100,25 @@ class EvolvMock {
 }
 
 class EvolvContextMock {
-	constructor(values, local) {
+	constructor(values, local, emitter) {
 		this.values = values || {};
 		this.localContext = local || {};
+		this.emitter = emitter;
 	}
 
 	set(key, value, local) {
+		let before = this.values[key];
 		this.values[key] = value;
 		if(local) {
 			this.localContext[key] = value
 		}
+
+		if (before !== undefined) {
+			this.emitter.emit('context.value.changed', ...['context.value.changed', key, value, before])
+		} else {
+			this.emitter.emit('context.value.added', ...['context.value.added', key, value])
+		}
+
 		return true;
 	}
 }
