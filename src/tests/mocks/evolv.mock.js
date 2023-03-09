@@ -121,6 +121,14 @@ class EvolvContextMock {
 
 		return true;
 	}
+
+	get(key, local) {
+		if(local) {
+			return this.localContext[key]
+		}
+
+		return this.values[key];
+	}
 }
 
 export default EvolvMock;
