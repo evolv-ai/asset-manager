@@ -8,6 +8,7 @@ import { objectAssign } from './shims/object-assign.js';
 import firedEventsInitialization from './fired-events.js';
 import { injectScript } from './utils/inject-script.js'
 import { injectStylesheet } from './utils/inject-stylesheet.js'
+import { addEngagementEmitter } from './engagement.js'
 
 
 function ensureId(evolv, key, session) {
@@ -249,4 +250,6 @@ export function bootstrap(initialConfig) {
 	});
 
 	window.evolv.rerun = assetManager.rerun.bind(assetManager);
+
+	addEngagementEmitter(client);
 }
