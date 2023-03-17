@@ -97,6 +97,10 @@ class EvolvMock {
 		}
 		return new Promise((_, reject) => reject(null));
 	}
+
+	getEnvConfig(key) {
+		return Promise.resolve(key + ' value');
+	}
 }
 
 class EvolvContextMock {
