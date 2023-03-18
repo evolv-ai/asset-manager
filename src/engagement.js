@@ -35,12 +35,12 @@ export function _addEngagedUserEventEmitter(client) {
 }
 
 export function _addTimerEmitter(client, performance, engagementThreshold) {
-    client.getEnvConfig('engagementThreshold')
+    client.getEnvConfig('_all.engagement_threshold')
         .then(function (value) {
             setTimerEmitter(client, performance, value || engagementThreshold);
         })
         .catch(function(err) {
-            console.warn('Unable to fetch engagementThreshold, using default', err);
+            console.warn('Unable to fetch engagement_threshold, using default', err);
             setTimerEmitter(client, performance, engagementThreshold);
         });
 }
