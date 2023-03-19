@@ -4,7 +4,7 @@ const ENGAGEMENT_THRESHOLD = 10000;
 
 export function addEngagementEmitter(client) {
     _addEngagedUserEventEmitter(client);
-    _addTimerEmitter(client, ENGAGEMENT_THRESHOLD);
+    _addTimerEmitter(client, window.performance, ENGAGEMENT_THRESHOLD);
     _addWebUrlChangeEmitter(client);
     _addNewPageLoadEmitter(client, sessionStorage)
 }
@@ -34,10 +34,28 @@ export function _addEngagedUserEventEmitter(client) {
     });
 }
 
-export function _addTimerEmitter(client, engagementThreshold) {
+export function _addTimerEmitter(client, performance, engagementThreshold) {
+    client.getEnvConfig('_all.engagement_threshold')
+        .then(function (value) {
+            setTimerEmitter(client, performance, value || engagementThreshold);
+        })
+        .catch(function(err) {
+            console.warn('Unable to fetch engagement_threshold, using default', err);
+            setTimerEmitter(client, performance, engagementThreshold);
+        });
+}
+
+function setTimerEmitter(client, performance, engagementThreshold) {
+    let timeOnPage;
+    if (performance && performance.now) {
+        timeOnPage = performance.now();
+    } else {
+        timeOnPage = 0;
+    }
+
     setTimeout(function() {
         setEngagedContext(client)
-    }, engagementThreshold);
+    }, engagementThreshold - timeOnPage);
 }
 
 export function _addWebUrlChangeEmitter(client) {

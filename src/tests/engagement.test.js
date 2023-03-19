@@ -1,3 +1,4 @@
+import sinon from 'sinon';
 import * as assert from 'assert';
 import { StorageMock } from "./mocks/document.mock.js";
 import EvolvMock from './mocks/evolv.mock.js';
@@ -6,7 +7,7 @@ import { _addNewPageLoadEmitter, _addTimerEmitter, _addWebUrlChangeEmitter, _add
 describe('engagement event firing', () => {
     let client;
     beforeEach(() => {
-        client = new EvolvMock();
+		client = new EvolvMock();
     });
 
     describe('checks event is fired if new page is loaded in session', () => {
@@ -38,19 +39,75 @@ describe('engagement event firing', () => {
     });
 
     describe('checks event is fired after timer elapses', () => {
+        const performance = {
+            now: function() {
+                return 0
+            }
+        }
         it('should not fire before timer elapses', () => {
-            _addTimerEmitter(client, 10);
+            _addTimerEmitter(client, performance, 10);
 
             assert.strictEqual(client.context.get('engaged'), undefined, 'Event should not have been set');
         });
 
-        it('should fire after timer elapses', (done) => {
-            _addTimerEmitter(client, 10);
+        it('should fire after timer elapses - no overrides from config', (done) => {
+            sinon.stub(client, 'getEnvConfig').callsFake(() => {
+                return Promise.resolve(undefined);
+            });
+
+            _addTimerEmitter(client, performance, 10);
 
             setTimeout(() => {
                 assert.strictEqual(client.context.get('engaged'), true, 'Event should have been set');
                 done();
             }, 20);
+        });
+
+        it('should fire after timer elapses - no overrides from config, no performance api', (done) => {
+            sinon.stub(client, 'getEnvConfig').callsFake(() => {
+                return Promise.resolve(undefined);
+            });
+
+            _addTimerEmitter(client, {}, 10);
+
+            setTimeout(() => {
+                assert.strictEqual(client.context.get('engaged'), true, 'Event should have been set');
+                done();
+            }, 20);
+        });
+
+        it('should fire after timer elapses - offsetting for when page loads', (done) => {
+            performance.now = function() {
+                return 10
+            };
+
+            sinon.stub(client, 'getEnvConfig').callsFake(() => {
+                return Promise.resolve(undefined);
+            });
+
+            _addTimerEmitter(client, performance, 20);
+
+            setTimeout(() => {
+                assert.strictEqual(client.context.get('engaged'), true, 'Event should have been set');
+                done();
+            }, 15);
+        });
+
+        it('should not fire after timer elapses - offsetting for when page loads', (done) => {
+            performance.now = function() {
+                return 10
+            };
+
+            sinon.stub(client, 'getEnvConfig').callsFake(() => {
+                return Promise.resolve(undefined);
+            });
+
+            _addTimerEmitter(client, performance, 20);
+
+            setTimeout(() => {
+                assert.strictEqual(client.context.get('engaged'), undefined, 'Event should have been set');
+                done();
+            }, 5);
         });
     });
 
@@ -90,7 +147,5 @@ describe('engagement event firing', () => {
 
             assert.strictEqual(client.context.get('engaged'), true, 'Event should have been set');
         });
-
-
     });
 });
