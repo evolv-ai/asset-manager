@@ -110,7 +110,7 @@ describe('engagement event firing', () => {
             }, 5);
         });
 
-        it('should fire immediately if the user has already been on the page the required time', (done) => {
+        it('should fire immediately if the user has already been on the page the required time', async () => {
             performance.now = function() {
                 return 10
             };
@@ -121,10 +121,14 @@ describe('engagement event firing', () => {
 
             _addTimerEmitter(client, performance, 5);
 
-            setTimeout(() => {
-                assert.strictEqual(client.context.get('engaged'), undefined, 'Event should have been set');
-                done();
-            }, 0);
+            await Promise.resolve();
+
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    assert.strictEqual(client.context.get('engaged'), true, 'Event should have been set');
+                    resolve();
+                }, 0);
+            });
         });
     });
 
