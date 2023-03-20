@@ -55,7 +55,7 @@ function setTimerEmitter(client, performance, engagementThreshold) {
 
     setTimeout(function() {
         setEngagedContext(client)
-    }, engagementThreshold - timeOnPage);
+    }, Math.max(engagementThreshold - timeOnPage, 0));
 }
 
 export function _addWebUrlChangeEmitter(client) {

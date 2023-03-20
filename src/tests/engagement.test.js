@@ -109,6 +109,27 @@ describe('engagement event firing', () => {
                 done();
             }, 5);
         });
+
+        it('should fire immediately if the user has already been on the page the required time', async () => {
+            performance.now = function() {
+                return 10
+            };
+
+            sinon.stub(client, 'getEnvConfig').callsFake(() => {
+                return Promise.resolve(undefined);
+            });
+
+            _addTimerEmitter(client, performance, 5);
+
+            await Promise.resolve();
+
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    assert.strictEqual(client.context.get('engaged'), true, 'Event should have been set');
+                    resolve();
+                }, 0);
+            });
+        });
     });
 
     describe('checks event is fired if web.url is changed', () => {
