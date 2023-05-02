@@ -46,7 +46,7 @@
     "@evolv/client": "2.4.9-alpha-1d367c2"
   },
   "optionalDependencies": {
-    "@evolv/mutate": "^1.9.6"
+    "@evolv/mutate": "^1.9.7"
   },
   "devDependencies": {
     "@evolv/hashing": "^1.1.0",
