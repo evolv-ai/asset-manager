@@ -6,7 +6,7 @@ initialize(function(config) {
 	bootstrapMutate({ source: 'asset-manager' });
 
 	bootstrapCapture({
-		samplingRate: config.capture,
+		capture: config.capture,
 		endpoint: config.captureEndpoint,
 		blockSelector: config.captureBlockSelector,
 		captureUserInteractions: config.captureUserInterations
