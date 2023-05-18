@@ -43,7 +43,8 @@
     "src/**/*"
   ],
   "dependencies": {
-    "@evolv/client": "2.4.9-alpha-1d367c2"
+    "@evolv/client": "2.4.9-alpha-1d367c2",
+    "@sentienttechnologies/dom-capture": "^1.0.2"
   },
   "optionalDependencies": {
     "@evolv/mutate": "^1.9.14"

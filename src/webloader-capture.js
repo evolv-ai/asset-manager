@@ -1,5 +1,5 @@
 import { bootstrap as bootstrapMutate } from '@evolv/mutate';
-import { bootstrap as bootstrapCapture } from '../dom-capture';
+import { bootstrap as bootstrapCapture } from '@sentienttechnologies/dom-capture';
 import { initialize } from './webloader.js';
 
 initialize(function(config) {
