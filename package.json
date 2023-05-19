@@ -43,13 +43,14 @@
     "src/**/*"
   ],
   "dependencies": {
-    "@evolv/client": "2.4.9-alpha-1d367c2",
-    "@sentienttechnologies/dom-capture": "^1.0.2"
+    "@evolv/client": "2.4.9-alpha-1d367c2"
   },
   "optionalDependencies": {
+    "@evolv/dom-capture": "^1.0.0",
     "@evolv/mutate": "^1.9.14"
   },
   "devDependencies": {
+    "@evolv/dom-capture": "^1.0.0",
     "@evolv/hashing": "^1.1.0",
     "@evolv/mutate": "^1.9.14",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
