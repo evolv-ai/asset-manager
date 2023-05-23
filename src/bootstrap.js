@@ -133,6 +133,16 @@ export function bootstrap(initialConfig) {
 		bootstrap(config);
 	};
 
+	evolv.onSsrClientInitialized = function onSsrClientInitialized() {
+		console.info('Evolv: Client from SSR has initialized. Proceeding with bootstrapping');
+		bootstrap(config);
+	}
+
+	if (window.evolv.ssr && !window.evolv.client) {
+		console.info('Evolv: Deferring client initialization to SSR client');
+		return;
+	}
+
 	// If evolvLazyUid is true and no uid is set
 	if (checkLazyUid(config)) {
 		return;
