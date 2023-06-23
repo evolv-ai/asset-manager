@@ -138,10 +138,10 @@ export function bootstrap(initialConfig) {
 		bootstrap(config);
 	}
 
-	/*if (window.evolv.ssr && !window.evolv.client) {
+	if (window.evolv.ssr && !window.evolv.client) {
 		console.info('Evolv: Deferring client initialization to SSR client');
 		return;
-	}*/
+	}
 
 	// If evolvLazyUid is true and no uid is set
 	if (checkLazyUid(config)) {
