@@ -134,6 +134,13 @@ export function bootstrap(initialConfig) {
 	};
 
 	evolv.onSsrClientInitialized = function onSsrClientInitialized() {
+		if (evolv.ssrInititialized) {
+			console.warn('Evolv: Client from SSR has already been initialized. Ignoring this call');
+
+			return;
+		}
+
+		evolv.ssrInititialized = true;
 		console.info('Evolv: Client from SSR has initialized. Proceeding with bootstrapping');
 		bootstrap(config);
 	}
