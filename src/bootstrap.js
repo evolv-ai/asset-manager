@@ -7,7 +7,7 @@ import { modes } from './modes/index.js';
 import { objectAssign } from './shims/object-assign.js';
 import firedEventsInitialization from './fired-events.js';
 import { injectScript } from './utils/inject-script.js'
-import { injectStylesheet } from './utils/inject-stylesheet.js'
+import { injectStylesheetWithAutoReplace } from './utils/inject-stylesheet.js'
 import { addEngagementEmitter } from './engagement.js'
 
 
@@ -207,7 +207,7 @@ export function bootstrap(initialConfig) {
 		});
 
 	if (css) {
-		injectStylesheet(endpoint, env, version, uid, previewCid);
+		injectStylesheetWithAutoReplace(endpoint, env, version, uid, previewCid);
 	}
 
 	let client = evolv.client;
