@@ -42,9 +42,9 @@ describe('injectStylesheet()', () => {
 	});
 
 	afterEach(() => {
+		window.MutationObserver = originalMutationObserver;
 		cleanup();
 		callbacks = {};
-		window.MutationObserver = originalMutationObserver;
 	});
 
 	let assetsCSSUrl = 'https://participants.evolv.ai/v1/66c5421c67/97039403_1640028197170/assets.css';
