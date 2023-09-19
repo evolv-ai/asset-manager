@@ -28,7 +28,7 @@ export function injectStylesheetWithAutoReplace(endpoint, env, version, uid, cid
 						injectStylesheetWithAutoReplace(endpoint, env, version, uid, cid, attempt + 1);
 					}
 
-					if (attempt === MAX_RETRIES) {
+					if (node.nodeName === 'LINK' && node.href === url && attempt === MAX_RETRIES) {
 						console.warn('Evolv AI: re-added CSS the maximum number of times');
 					}
 				});
