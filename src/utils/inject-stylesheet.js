@@ -18,12 +18,18 @@ export function injectStylesheetWithAutoReplace(endpoint, env, version, uid, cid
 
 	if (cssFile && window.MutationObserver) {
 		const observer = new window.MutationObserver(function (mutationList) {
+			let replaced = false;
 			mutationList.forEach(function (mutation) {
 				mutation.removedNodes.forEach(function (node) {
-					if (node.nodeName === 'LINK' && node.href === url && attempt < MAX_RETRIES) {
+					if (node.nodeName === 'LINK' && node.href === url && attempt < MAX_RETRIES && !replaced) {
 						console.warn('Evolv AI: CSS removed, re-adding');
 						observer.disconnect();
+						replaced = true;
 						injectStylesheetWithAutoReplace(endpoint, env, version, uid, cid, attempt + 1);
+					}
+
+					if (attempt === MAX_RETRIES) {
+						console.warn('Evolv AI: re-adding CSS the maximum number of times');
 					}
 				});
 			});
