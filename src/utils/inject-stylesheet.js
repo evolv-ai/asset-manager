@@ -29,7 +29,7 @@ export function injectStylesheetWithAutoReplace(endpoint, env, version, uid, cid
 					}
 
 					if (attempt === MAX_RETRIES) {
-						console.warn('Evolv AI: re-adding CSS the maximum number of times');
+						console.warn('Evolv AI: re-added CSS the maximum number of times');
 					}
 				});
 			});
