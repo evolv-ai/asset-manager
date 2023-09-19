@@ -19,10 +19,12 @@ describe('injectStylesheet()', () => {
 	};
 
 	let callbacks = {}
+	let originalMutationObserver;
 
 	beforeEach(() => {
 		cleanup = jsdom();
 
+		originalMutationObserver = window.MutationObserver;
 		const mutationObserverMock = class MU {
 			_id = Math.random();
 			callback = null;
@@ -42,6 +44,7 @@ describe('injectStylesheet()', () => {
 	afterEach(() => {
 		cleanup();
 		callbacks = {};
+		window.MutationObserver = originalMutationObserver;
 	});
 
 	let assetsCSSUrl = 'https://participants.evolv.ai/v1/66c5421c67/97039403_1640028197170/assets.css';
