@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { WindowMock, DocumentMock, MOCK_GA_CLIENT_ID } from './mocks/document.mock.js';
+import { WindowMock, DocumentMock } from './mocks/document.mock.js';
 import EvolvMock from './mocks/evolv.mock.js';
 import sinon from 'sinon';
 
@@ -166,7 +166,7 @@ describe('the web loader', () => {
 			assert.strictEqual(window.evolv.client.environment, queryEnvironmentId, 'Environment id should be overridden');
 		});
 
-		it('should use the environment data parameter if set and not thefirst  query param', async () => {
+		it('should use the environment data parameter if set and not the first  query param', async () => {
 			setupGlobal(null, undefined, {
 				evolvEnvironment: undefined
 			});

@@ -77,7 +77,8 @@ class DocumentMock {
 		this.scripts = options.scripts || [];
 		this.currentScript = options.currentScript;
 		this.documentElement = {
-			classList: this.classList
+			classList: this.classList,
+			dataset: {}
 		}
 		this.children = [];
 		this.head = {};

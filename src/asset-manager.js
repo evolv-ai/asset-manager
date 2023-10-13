@@ -45,6 +45,11 @@ function main(container, _runner) {
 	const cssAsset = retrieveEvolvCssAsset(environment);
 	const jsAsset = retrieveEvolvJsAsset(environment);
 
+	const markDOMJSState = function (state) {
+		document.documentElement.dataset.evolvJs = state;
+	}
+	markDOMJSState(jsAsset ? 'loaded' : 'not-requested');
+
 	const runner = _runner || new Runner(container);
 
 	/**
