@@ -206,6 +206,12 @@ export function bootstrap(initialConfig) {
 			resolve();
 		});
 
+	scriptPromise.then(function() {
+		document.documentElement.dataset.evolvJs = 'ready';
+	}).catch(function() {
+		document.documentElement.dataset.evolvJs = 'errored';
+	});
+
 	if (css) {
 		injectStylesheetWithAutoReplace(endpoint, env, version, uid, previewCid);
 	}
