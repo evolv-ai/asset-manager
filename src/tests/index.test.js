@@ -183,7 +183,7 @@ describe('asset manager handles correctly', () => {
 				global.document = new DocumentMock({ elements: styleSheets, styleSheets });
 				const client = new EvolvMock();
 				new EvolvAssetManager(client, undefined, mockTiming());
-				assert.equal(document.classList.classList.length, 0)
+				assert.equal(document.classList.classList.length, 0);
 			});
 
 			it('for just stylesheets - will still confirm - but there is nothing to confirm into', () => {
@@ -192,6 +192,9 @@ describe('asset manager handles correctly', () => {
 				new EvolvAssetManager(client, undefined, mockTiming());
 				assert.equal(client.confirmations, 1);
 				assert.equal(client.contaminations, 0);
+
+				// verify we mark the status of the assets js load
+				assert.strictEqual(document.documentElement.dataset.evolvJs, 'not-requested');
 			});
 
 			it('for just javascript - will still confirm - but there is nothing to confirm into', () => {
@@ -203,6 +206,9 @@ describe('asset manager handles correctly', () => {
 				assert.equal(true, _mockRunner.updateFunctionsToRun.calledOnce);
 				assert.deepStrictEqual([], _mockRunner.updateFunctionsToRun.getCall(0).args[0]);
 				assert.equal(client.contaminations, 0);
+
+				// verify we mark the status of the assets js load
+				assert.strictEqual(document.documentElement.dataset.evolvJs, 'loaded');
 			});
 		});
 
