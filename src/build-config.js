@@ -68,6 +68,27 @@ export function buildConfig(dataset) {
 					: value;
 				break;
 			}
+			case 'evolvCapture': {
+				const stringValue = dataset[prop];
+				if (!stringValue) {
+					config[name] = undefined;
+					break;
+				}
+
+				const booleanString = stringValue.toLowerCase();
+				if (booleanString === 'true') {
+					config[name] = 1;
+					break;
+				} else if (booleanString === 'false') {
+					config[name] = 0;
+				}
+
+				const numberValue = +stringValue;
+				config[name] = isNaN(numberValue)
+					? undefined
+					: numberValue;
+				break;
+			}
 			case 'evolvUseCookies':
 			default: {
 				config[name] = dataset[prop];
