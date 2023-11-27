@@ -51,6 +51,7 @@ export function buildConfig(dataset) {
 	for (let prop in dataset) {
 		const name = stripPrefix(prop);
 
+
 		switch (prop) {
 			case 'evolvLazyUid':
 			case 'evolvRequireConsent':
@@ -66,6 +67,18 @@ export function buildConfig(dataset) {
 				config[name] = isNaN(value)
 					? undefined
 					: value;
+				break;
+			}
+			case 'evolvCapture': {
+				const stringValue = (dataset[prop] || '').toLowerCase();
+				const numberValue = +stringValue;
+				if (stringValue === 'true') {
+					config[name] = 1;
+				} else if (!isNaN(numberValue)) {
+					config[name] = numberValue;
+				} else {
+					config[name] = undefined;
+				}
 				break;
 			}
 			case 'evolvUseCookies':
