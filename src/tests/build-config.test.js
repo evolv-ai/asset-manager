@@ -91,7 +91,7 @@ describe('buildConfig()', () => {
 	});
 
 	describe('data-evolv-capture', () => {
-		it('capture value should be undefined when not set', () => {
+		it('should be undefined when not set', () => {
 			// Arrange
 			const script = document.createElement('script');
 			document.body.appendChild(script);
@@ -103,7 +103,7 @@ describe('buildConfig()', () => {
 			assert.strictEqual(config.capture, undefined);
 		});
 
-		it('capture value should be 1 when true', () => {
+		it('should be 1 when true', () => {
 			// Arrange
 			const script = document.createElement('script');
 			document.body.appendChild(script);
@@ -116,7 +116,7 @@ describe('buildConfig()', () => {
 			assert.strictEqual(config.capture, 1);
 		});
 
-		it('capture value should be undefined when false', () => {
+		it('should be undefined when false', () => {
 			// Arrange
 			const script = document.createElement('script');
 			document.body.appendChild(script);
@@ -129,7 +129,7 @@ describe('buildConfig()', () => {
 			assert.strictEqual(config.capture, undefined);
 		});
 
-		it('capture value should be a number when set to a number', () => {
+		it('should be a number when set to a number', () => {
 			// Arrange
 			const script = document.createElement('script');
 			document.body.appendChild(script);
@@ -142,7 +142,7 @@ describe('buildConfig()', () => {
 			assert.strictEqual(config.capture, 17.8);
 		});
 
-		it('capture value should be undefined when set to a garbage string', () => {
+		it('should be undefined when set to a garbage string', () => {
 			// Arrange
 			const script = document.createElement('script');
 			document.body.appendChild(script);
