@@ -80,7 +80,7 @@ export function buildConfig(dataset) {
 					config[name] = 1;
 					break;
 				} else if (booleanString === 'false') {
-					config[name] = 0;
+					config[name] = undefined;
 					break;
 				}
 

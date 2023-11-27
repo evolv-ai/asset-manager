@@ -116,7 +116,7 @@ describe('buildConfig()', () => {
 			assert.strictEqual(config.capture, 1);
 		});
 
-		it('capture value should be 0 when false', () => {
+		it('capture value should be undefined when false', () => {
 			// Arrange
 			const script = document.createElement('script');
 			document.body.appendChild(script);
@@ -126,7 +126,7 @@ describe('buildConfig()', () => {
 			const config = buildConfig(script.dataset);
 
 			// Assert
-			assert.strictEqual(config.capture, 0);
+			assert.strictEqual(config.capture, undefined);
 		});
 
 		it('capture value should be a number when set to a number', () => {
