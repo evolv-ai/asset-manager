@@ -81,6 +81,7 @@ export function buildConfig(dataset) {
 					break;
 				} else if (booleanString === 'false') {
 					config[name] = 0;
+					break;
 				}
 
 				const numberValue = +stringValue;
