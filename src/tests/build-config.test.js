@@ -89,4 +89,70 @@ describe('buildConfig()', () => {
 			assert.strictEqual(config.timeout, undefined);
 		});
 	});
+
+	describe('data-evolv-capture', () => {
+		it('capture value should be undefined when not set', () => {
+			// Arrange
+			const script = document.createElement('script');
+			document.body.appendChild(script);
+
+			// Act
+			const config = buildConfig(script.dataset);
+
+			// Assert
+			assert.strictEqual(config.capture, undefined);
+		});
+
+		it('capture value should be 1 when true', () => {
+			// Arrange
+			const script = document.createElement('script');
+			document.body.appendChild(script);
+			script.setAttribute('data-evolv-capture', 'true');
+
+			// Act
+			const config = buildConfig(script.dataset);
+
+			// Assert
+			assert.strictEqual(config.capture, 1);
+		});
+
+		it('capture value should be undefined when false', () => {
+			// Arrange
+			const script = document.createElement('script');
+			document.body.appendChild(script);
+			script.setAttribute('data-evolv-capture', 'false');
+
+			// Act
+			const config = buildConfig(script.dataset);
+
+			// Assert
+			assert.strictEqual(config.capture, undefined);
+		});
+
+		it('capture value should be a number when set to a number', () => {
+			// Arrange
+			const script = document.createElement('script');
+			document.body.appendChild(script);
+			script.setAttribute('data-evolv-capture', '17.8');
+
+			// Act
+			const config = buildConfig(script.dataset);
+
+			// Assert
+			assert.strictEqual(config.capture, 17.8);
+		});
+
+		it('capture value should be undefined when set to a garbage string', () => {
+			// Arrange
+			const script = document.createElement('script');
+			document.body.appendChild(script);
+			script.setAttribute('data-evolv-capture', 'garbageString#$%^&*');
+
+			// Act
+			const config = buildConfig(script.dataset);
+
+			// Assert
+			assert.strictEqual(config.capture, undefined);
+		});
+	});
 });
