@@ -38,6 +38,18 @@ export function buildRequestHooks(fixtures: RequestFixtures) {
 			.respond(fixtures.allocations, 200, {
 				...headers,
 				'content-type': 'application/json'
+			}),
+		RequestMock()
+			.onRequestTo(/participants\.evolv\.ai\/v1\/.*\/data/)
+			.respond('', 200, {
+				...headers,
+				'content-type': 'text/plain;charset=UTF-8'
+			}),
+		RequestMock()
+			.onRequestTo(/participants\.evolv\.ai\/v1\/.*\/events/)
+			.respond('', 200, {
+				...headers,
+				'content-type': 'text/plain;charset=UTF-8'
 			})
 	]
 }
