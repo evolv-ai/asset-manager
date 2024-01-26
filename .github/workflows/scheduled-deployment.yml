@@ -15,11 +15,10 @@ jobs:
       ref: "${{ steps.most-recent-tag.outputs.mostRecent }}"
       deploymentId: "${{ steps.create-deployment.outputs.deployment_id }}"
     steps:
-      - name: Get most recent tag
-        uses: evolv-ai/github-actions/most-recent-tag@v9
-        id: most-recent-tag
+      - name: Checkout Repo
+        uses: actions/checkout@v2
         with:
-          token: "${{ github.token }}"
+          ref: master
 
       - name: Create GitHub Deployment
         uses: chrnorm/deployment-action@releases/v1
@@ -48,6 +47,7 @@ jobs:
           echo ::set-output name=SEM_VER::${SEM_VER}
 
           echo ::set-output name=SLACK_CHANNEL::deploy
+          echo ::set-output name=SLACK_FAILURE_CHANNEL::automated-failures
           echo ::set-output name=CREATE_RELEASE::false
           echo ::set-output name=SLACK_WEBHOOK::${{ secrets.SLACK_WEBHOOK }}
 
@@ -104,6 +104,16 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} deployment to ${{ needs.initialize.outputs.environment }} failure :boom:'
+          SLACK_MESSAGE: 'Deployment of <https://github.com/${{ github.repository }}/tree/${{ needs.initialize.outputs.ref }}|${{ needs.initialize.outputs.ref }}> to ${{ needs.initialize.outputs.environment }} failed.'
+          SLACK_COLOR: '#ff0000'
+
+      - name: Slack Notification (general failures)
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_FAILURE_CHANNEL }}
           SLACK_TITLE: '${{ github.repository }} deployment to ${{ needs.initialize.outputs.environment }} failure :boom:'
           SLACK_MESSAGE: 'Deployment of <https://github.com/${{ github.repository }}/tree/${{ needs.initialize.outputs.ref }}|${{ needs.initialize.outputs.ref }}> to ${{ needs.initialize.outputs.environment }} failed.'
           SLACK_COLOR: '#ff0000'
