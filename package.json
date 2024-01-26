@@ -46,11 +46,11 @@
     "@evolv/client": "2.7.3-alpha-c4ad63a"
   },
   "optionalDependencies": {
-    "@evolv/dom-capture": "^1.0.0",
+    "@evolv/dom-capture": "^1.5.0",
     "@evolv/mutate": "^1.11.5"
   },
   "devDependencies": {
-    "@evolv/dom-capture": "^1.0.0",
+    "@evolv/dom-capture": "^1.5.0",
     "@evolv/hashing": "^1.1.0",
     "@evolv/mutate": "^1.11.5",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
