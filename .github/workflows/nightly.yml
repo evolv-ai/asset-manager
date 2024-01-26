@@ -14,6 +14,7 @@ jobs:
         id: set_variables
         run: |
           echo ::set-output name=SLACK_CHANNEL::nightly-runs
+          echo ::set-output name=SLACK_FAILURE_CHANNEL::automated-failures
           echo ::set-output name=SLACK_WEBHOOK::${{ secrets.NIGHTLY_RUNS_SLACK_WEBHOOK }}
       - name: Set up Node
         uses: actions/setup-node@v1
@@ -38,6 +39,17 @@ jobs:
           SLACK_TITLE: '${{ github.repository }} e2e tests failed :boom:'
           SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }}> failed.'
           SLACK_COLOR: '#ff0000'
+
+      - name: Slack Notification (general failures)
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2.0.2
+        env:
+          SLACK_WEBHOOK: ${{ steps.set_variables.outputs.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ steps.set_variables.outputs.SLACK_FAILURE_CHANNEL }}
+          SLACK_TITLE: '${{ github.repository }} e2e tests failed :boom:'
+          SLACK_MESSAGE: 'e2e tests on <https://github.com/${{ github.repository }}> failed.'
+          SLACK_COLOR: '#ff0000'
+
       - name: Slack Notification (success)
         if: success()
         uses: rtCamp/action-slack-notify@v2.0.2
