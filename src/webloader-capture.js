@@ -9,6 +9,6 @@ initialize(function(config) {
 		capture: config.capture,
 		endpoint: config.captureEndpoint,
 		blockSelector: config.captureBlockSelector,
-		captureUserInteractions: config.captureUserInterations
+		captureUserInteractions: config.captureUserInteractions
 	});
 });
