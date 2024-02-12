@@ -50,7 +50,7 @@
     "@evolv/mutate": "^1.11.9"
   },
   "devDependencies": {
-    "@evolv/dom-capture": "^1.5.0",
+    "@evolv/dom-capture": "^1.7.0",
     "@evolv/hashing": "^1.1.0",
     "@evolv/mutate": "^1.11.9",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
