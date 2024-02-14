@@ -43,7 +43,7 @@
     "src/**/*"
   ],
   "dependencies": {
-    "@evolv/client": "2.9.2-alpha-b5ef92f"
+    "@evolv/client": "2.9.3-alpha-dff5f07"
   },
   "optionalDependencies": {
     "@evolv/dom-capture": "^1.7.0",
