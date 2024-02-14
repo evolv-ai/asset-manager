@@ -52,7 +52,7 @@
   "devDependencies": {
     "@evolv/dom-capture": "^1.7.0",
     "@evolv/hashing": "^1.1.0",
-    "@evolv/mutate": "^1.11.9",
+    "@evolv/mutate": "^1.11.12",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
