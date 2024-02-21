@@ -49,7 +49,7 @@ const hasNotCompleted = function(def) {
 /**
  * @returns {boolean}
  */
-const checkPreviewCid = function() {
+export const checkPreviewCid = function() {
 	return window.sessionStorage && window.sessionStorage.getItem('evolv:previewCid') ? true : false;
 };
 
@@ -386,7 +386,7 @@ const Runner = /** @class */ (function () {
 	 * @private
 	 */
 	Runner.prototype.confirm = function () {
-			this.container.client.confirm();
+		this.container.client.confirm();
 	};
 
 	/**

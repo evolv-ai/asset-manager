@@ -1,4 +1,4 @@
-import { Runner } from './runner.js';
+import { checkPreviewCid, Runner } from './runner.js';
 import { toUnderscoreKey } from './utils.js';
 
 /**
@@ -82,7 +82,11 @@ function main(container, _runner) {
 		if (jsAsset) {
 			runner.updateFunctionsToRun(liveContexts);
 		} else if (cssAsset) {
-			confirm();
+			const hasPreviewCid = checkPreviewCid();
+
+			if (!hasPreviewCid) {
+				confirm();
+			}
 		}
 		runRedirectVariants(keys);
 	});
