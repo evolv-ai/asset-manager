@@ -18,7 +18,9 @@ describe('Runner', () => {
 	let container;
 
 	beforeEach(() => {
-		cleanup = jsdom();
+		cleanup = jsdom(undefined, {
+			url: 'http://localhost/'
+		});
 
 		const client = new EvolvMock();
 		sandbox.spy(client);

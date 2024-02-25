@@ -47,6 +47,13 @@ const hasNotCompleted = function(def) {
 };
 
 /**
+ * @returns {boolean}
+ */
+export const checkPreviewCid = function() {
+	return window.sessionStorage && window.sessionStorage.getItem('evolv:previewCid') ? true : false;
+};
+
+/**
  * @enum {number}
  */
 const RunLevel = {
@@ -367,7 +374,9 @@ const Runner = /** @class */ (function () {
 				return ['resolved', 'not-runnable'].indexOf(def.status) !== -1;
 			});
 
-		if (allResolvedOrNotRunnable) {
+		const hasPreviewCid = checkPreviewCid();
+
+		if (allResolvedOrNotRunnable && !hasPreviewCid) {
 			this.confirm();
 		}
 	};
