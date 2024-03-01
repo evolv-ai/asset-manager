@@ -33,7 +33,7 @@ jobs:
           external-options: '{:skip-header true}'
           fail: 'StrongCopyleft,NetworkCopyleft,Other,Error'
           fails-only: true
-          exclude: 'evolv/dom-capture:1.7.0,sentienttechnologies*'
+          exclude: 'evolv/dom-capture:1.7.0, sentienttechnologies*'
           exclude-license: '(?i)copyright'
           totals: true
           verbose: 1
