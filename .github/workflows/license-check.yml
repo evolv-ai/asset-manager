@@ -43,4 +43,8 @@ jobs:
         if: failure()
         run: license-checker --start --production --exclude 'BSD, MIT, Apache-2.0'
 
+      - name: Print report
+        if: ${{ always() }}
+        run: echo "${{ steps.license_check_report.outputs.report }}
+
 
