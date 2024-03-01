@@ -6,7 +6,7 @@ Tool used for managing Evolv created variants.
 
 ### Web
 
-Drop the following snippet in the head of your webpage(s). Preferrably as high as possible. 
+Drop the following snippet in the head of your webpage(s). Preferably as high as possible. 
 
 *Note: You can find your "environment_id" in the Evolv manager or by contacting support.*
 
