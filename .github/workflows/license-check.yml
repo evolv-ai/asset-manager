@@ -28,7 +28,7 @@ jobs:
           external-options: '{:skip-header true}'
           fail: 'StrongCopyleft,NetworkCopyleft,Other,Error'
           fails-only: true
-          exclude: 'evolv-ai*,SentientTechnologies*'
+          exclude: 'evolv*,SentientTechnologies*'
           exclude-license: '(?i)copyright'
           totals: true
           verbose: 1
