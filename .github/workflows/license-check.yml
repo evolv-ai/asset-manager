@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.14.2'
+          node-version-file: '.nvmrc'
       - name: Checkout Ref
         uses: actions/checkout@v1
       - name: Install dependencies
@@ -28,7 +28,7 @@ jobs:
           external-options: '{:skip-header true}'
           fail: 'StrongCopyleft,NetworkCopyleft,Other,Error'
           fails-only: true
-          exclude: 'evolv*,SentientTechnologies*'
+          exclude: '@evolv,@sentienttechnologies'
           exclude-license: '(?i)copyright'
           totals: true
           verbose: 1
