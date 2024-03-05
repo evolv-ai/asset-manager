@@ -33,6 +33,7 @@ jobs:
           external-options: '{:skip-header true}'
           fail: 'StrongCopyleft,NetworkCopyleft,Other,Error'
           fails-only: true
+          exclude: '(?i)^(evolv\/.+|sentienttechnologies\/.+)*'
           exclude-license: '(?i)copyright'
           totals: true
           verbose: 1
