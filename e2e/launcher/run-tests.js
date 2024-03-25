@@ -1,4 +1,4 @@
-import {browsersForCI, browsersForLocal} from './browsers.js';
+import { browsersForCI, browsersForLocal } from './browsers.js';
 import testcafe from "testcafe";
 
 
