@@ -2,4 +2,4 @@
 
 npm ci
 npm run build
-npm run e2e:browserstack
+npm run e2e

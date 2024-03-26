@@ -1,9 +1,8 @@
-import { browsersForBrowserStack, browsersForLocal } from './browsers.js';
+import { browsersForCI, browsersForLocal } from './browsers.js';
 import testcafe from "testcafe";
 
 
 export const Mode = {
-	BrowserStack: 'browserstack',
 	Local: 'local',
 	GithubActions: 'githubactions'
 };
@@ -15,8 +14,8 @@ export async function runTests(mode, debug) {
 		throw new Error('Testcafe failed to start');
 	}
 
-	let browsers = (mode === Mode.BrowserStack)
-		? browsersForBrowserStack
+	let browsers = (mode === Mode.GithubActions)
+		? browsersForCI
 		: browsersForLocal;
 
 
@@ -30,7 +29,7 @@ export async function runTests(mode, debug) {
 		});
 
 	return {
-		instance,
-		results
+		instance: instance,
+		results: results
 	};
 }
