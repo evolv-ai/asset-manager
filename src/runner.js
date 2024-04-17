@@ -264,6 +264,7 @@ const Runner = /** @class */ (function () {
 	 */
 	Runner.prototype.execute = function () {
 		const client = this.container.client;
+		const options = this.container.options;
 
 		const runnableAtCurrentLevel = function (def) {
 			return levelMap[def.timing] <= this.runLevel;
@@ -305,10 +306,19 @@ const Runner = /** @class */ (function () {
 					const message = (err && err.message) ? err.message : '';
 
 					def.status = 'rejected';
-					client.contaminate({
-						reason: 'error-thrown',
-						details: message
-					});
+
+					if (options.debug) {
+						client.contaminate({
+							reason: 'error-thrown',
+							details: message,
+							stack: err.stack
+						});
+					} else {
+						client.contaminate({
+							reason: 'error-thrown',
+							details: message
+						});
+					}
 
 					console.warn('[Evolv]: An error occurred while applying a javascript mutation. ' + err);
 				})

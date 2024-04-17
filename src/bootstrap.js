@@ -106,7 +106,8 @@ export const defaultConfig = {
 	js: true,
 	css: true,
 	pushstate: false,
-	timeout: undefined
+	timeout: undefined,
+	debug: false
 };
 
 /**
@@ -195,6 +196,7 @@ export function bootstrap(initialConfig) {
 	let css = !!candidateToken || config.css;
 	let pushstate = config.pushstate;
 	let endpoint = config.endpoint;
+	const debug = config.debug;
 
 	const uid = evolv.context
 		? evolv.context.uid
@@ -220,6 +222,7 @@ export function bootstrap(initialConfig) {
 
 	if (!client) {
 		let options = {
+			debug: debug,
 			environment: env,
 			endpoint: endpoint,
 			version: version,
@@ -263,7 +266,8 @@ export function bootstrap(initialConfig) {
 
 	const assetManager = new EvolvAssetManager(client, {
 		timeoutThreshold: config.timeout,
-		variantsLoaded: scriptPromise
+		variantsLoaded: scriptPromise,
+		debug: config.debug
 	});
 
 	Object.defineProperty(window.evolv, 'assetManager', {

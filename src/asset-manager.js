@@ -6,6 +6,7 @@ import { toUnderscoreKey } from './utils.js';
  * @property {number} timeoutThreshold
  * @property {number} legacyPollingInterval
  * @property {Promise} scriptPromise
+ * @property {boolean} debug
  */
 
 /**
