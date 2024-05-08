@@ -10,6 +10,7 @@
  * @property {string} [evolvCss]
  * @property {string} [evolvPushstate]
  * @property {string} [evolvTimeout]
+ * @property {string} [evolvDebug]
  */
 
 /**
@@ -24,6 +25,7 @@
  * @property {boolean} css
  * @property {boolean} pushstate
  * @property {number|undefined} timeout
+ * @property {boolean} debug
  */
 
 /**
@@ -53,6 +55,7 @@ export function buildConfig(dataset) {
 
 
 		switch (prop) {
+			case 'evolvDebug':
 			case 'evolvLazyUid':
 			case 'evolvRequireConsent':
 			case 'evolvJs':
