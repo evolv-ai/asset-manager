@@ -264,6 +264,23 @@ export function bootstrap(initialConfig) {
 	client.context.set('webloader.js', js);
 	client.context.set('webloader.css', css);
 
+	let eq = window.evolvQueue;
+	if (eq) {
+	  if (eq.events) {
+		eq.events.forEach((item) => {
+		  window.evolv.client.emit(item);
+		});
+	  }
+	
+	  if (eq.contexts) {
+		evolvQueue.contexts.forEach(state => {
+			Object.keys(state).forEach((key) => {
+			    window.evolv.context.set(key, state[key]);
+			});
+		});
+	  }
+	}
+
 	const assetManager = new EvolvAssetManager(client, {
 		timeoutThreshold: config.timeout,
 		variantsLoaded: scriptPromise,
