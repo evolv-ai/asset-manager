@@ -42,16 +42,16 @@
     "src/**/*"
   ],
   "dependencies": {
-    "@evolv/client": "2.9.3-alpha-dff5f07"
+    "@evolv/client": "v2.12.2-alpha-1f2a982"
   },
   "optionalDependencies": {
     "@evolv/dom-capture": "^1.8.0",
-    "@evolv/mutate": "^2.0.4"
+    "@evolv/mutate": "^2.0.5"
   },
   "devDependencies": {
     "@evolv/dom-capture": "^1.8.0",
     "@evolv/hashing": "^1.1.0",
-    "@evolv/mutate": "^2.0.4",
+    "@evolv/mutate": "^2.0.5",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
