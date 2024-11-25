@@ -46,12 +46,12 @@
   },
   "optionalDependencies": {
     "@evolv/dom-capture": "^1.8.0",
-    "@evolv/mutate": "^2.0.5"
+    "@evolv/mutate": "file:../mutate"
   },
   "devDependencies": {
     "@evolv/dom-capture": "^1.8.0",
     "@evolv/hashing": "^1.1.0",
-    "@evolv/mutate": "^2.0.5",
+    "@evolv/mutate": "file:../mutate",
     "@istanbuljs/esm-loader-hook": "^0.1.2",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
