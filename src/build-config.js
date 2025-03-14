@@ -26,6 +26,7 @@
  * @property {boolean} pushstate
  * @property {number|undefined} timeout
  * @property {boolean} debug
+ * @property {string|undefined} profileId
  */
 
 /**

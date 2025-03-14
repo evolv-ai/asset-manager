@@ -230,6 +230,7 @@ export function bootstrap(initialConfig) {
 			analytics: true,
 			bufferEvents: config.requireConsent,
 			clientName: 'asset-manager',
+			profileId: config.profileId,
 			hooks: {
 				beforeOptions: function(opts) {
 					return (previewCid)

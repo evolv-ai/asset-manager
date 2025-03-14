@@ -30,6 +30,7 @@ describe('buildConfig()', () => {
 		script.setAttribute('data-evolv-pushstate', 'false');
 		script.setAttribute('data-evolv-timeout', '100');
 		script.setAttribute('data-evolv-use-cookies', 'evolv.ai');
+		script.setAttribute('data-evolv-profile-id', 'rob');
 
 		// Act
 		const config = buildConfig(script.dataset);
@@ -44,6 +45,7 @@ describe('buildConfig()', () => {
 		assert.strictEqual(config.pushstate, false);
 		assert.strictEqual(config.timeout, 100);
 		assert.strictEqual(config.useCookies, 'evolv.ai');
+		assert.strictEqual(config.profileId, 'rob');
 	});
 
 	describe('when data-evolv-timeout is omitted', () => {
