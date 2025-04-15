@@ -24,7 +24,7 @@ If you would like to only render css assets place `data-evolv-js="false"` into t
 
 This snippet handles the bulk of the work needed to run an experiment. It confirms or contaminates users and activates dormant variants when the current context matches the parameters of the experiment. The context is evaluated on things like page, demographics and more.
 
-Once the snippet has loaded, firing an event can be done through the globally accessible client with:
+Once the snippet has loaded, firing an event can be done through the globally accessible client:
 
 ```javascript
 evolv.client.emit('my-event');
