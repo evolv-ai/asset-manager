@@ -30,7 +30,8 @@ Once the snippet has loaded, firing an event can be done through the globally ac
 evolv.client.emit('my-event');
 ```
 
-The global object `evolv` has other methods and properties that are now accessible within the context of your webpage. For a manually activated experiment you can access `evolv.context` and change the current context to match the requirements of your experiment. For more info on the accessible client methods and their uses see: [javascript-sdk](https://github.com/evolv-ai/javascript-sdk)
+The global object `evolv` has other methods and properties that are now accessible within the context of your webpage. 
+For a manually activated experiment you can access `evolv.context` and change the current context to match the requirements of your experiment. For more info on the accessible client methods and their uses see: [javascript-sdk](https://github.com/evolv-ai/javascript-sdk)
 
 There are 3 patterns of use that we foresee. 
 
