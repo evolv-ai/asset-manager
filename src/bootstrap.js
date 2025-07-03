@@ -227,7 +227,6 @@ export function bootstrap(initialConfig) {
 			endpoint: endpoint,
 			version: version,
 			autoConfirm: false,
-			analytics: true,
 			bufferEvents: config.requireConsent,
 			clientName: 'asset-manager',
 			profileId: config.profileId,
