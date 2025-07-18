@@ -44,12 +44,6 @@ export function buildRequestHooks(fixtures: RequestFixtures) {
 			.respond('', 200, {
 				...headers,
 				'content-type': 'text/plain;charset=UTF-8'
-			}),
-		RequestMock()
-			.onRequestTo(/participants\.evolv\.ai\/v1\/.*\/events/)
-			.respond('', 200, {
-				...headers,
-				'content-type': 'text/plain;charset=UTF-8'
 			})
 	]
 }

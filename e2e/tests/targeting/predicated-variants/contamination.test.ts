@@ -6,7 +6,7 @@ import { buildRequestHooks } from '../../../helpers';
 import hooks from './contamination.hooks';
 
 
-const logger = RequestLogger(/\/v1\/.+\/events/, {
+const logger = RequestLogger(/\/v1\/.+\/data/, {
 	logRequestBody: true,
 	stringifyRequestBody: true
 });
