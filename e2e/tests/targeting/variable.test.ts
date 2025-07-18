@@ -7,7 +7,7 @@ import hooks from './variable.hooks';
 import { Page } from './page.po';
 
 
-const logger = RequestLogger(/\/v1\/.+\/events/);
+const logger = RequestLogger(/\/v1\/.+\/data/);
 
 fixture `Variable Targeting`
     .page `http://localhost:9090/tests/targeting/index.html`
