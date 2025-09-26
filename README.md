@@ -130,4 +130,4 @@ to your URL.
 To allow Evolv to run again just reload the page with this value set to false. Alternatively, this block will clear when the session storage for the site is cleared.
 
 
-For more about Evolv and what we do, please visit [here](https://www.evolv.ai).
+For more information about Evolv and what we do, please visit [here](https://www.evolv.ai).
