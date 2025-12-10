@@ -3,6 +3,10 @@ name: Deploy to Environment
 on:
   deployment
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
     name: Deploy to Environment
