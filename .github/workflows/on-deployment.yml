@@ -4,8 +4,9 @@ on:
   deployment
 
 permissions:
-  id-token: write
+  id-token: write # NPM Trusted Publisher (eliminates need for NPM_TOKEN)
   contents: read
+  deployments: write
 
 jobs:
   deploy:
@@ -67,7 +68,6 @@ jobs:
         env:
           EVOLV_STAGE: ${{ github.event.deployment.environment }}
           SEM_VER: ${{ steps.set_variables.outputs.SEM_VER }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-west-2
