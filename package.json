@@ -41,6 +41,9 @@
     "docs/**/*",
     "src/**/*"
   ],
+	"repository": {
+		"url": "https://github.com/evolv-ai/asset-manager"
+	},
   "dependencies": {
     "@evolv/client": "v2.12.9-alpha-147d1b4"
   },
