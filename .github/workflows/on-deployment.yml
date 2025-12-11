@@ -47,9 +47,9 @@ jobs:
             echo ::set-output name=SLACK_WEBHOOK::${{ secrets.SLACK_WEBHOOK }}
           fi
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '16.14.2'
+          node-version-file: '.nvmrc'
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
