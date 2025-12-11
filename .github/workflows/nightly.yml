@@ -10,19 +10,19 @@ jobs:
     name: Run e2e tests
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Ref
+        uses: actions/checkout@v1
+        with:
+          ref: ${{ github.event.push.after }}
       - name: Set Variables
         id: set_variables
         run: |
           echo ::set-output name=SLACK_CHANNEL::nightly-runs
           echo ::set-output name=SLACK_WEBHOOK::${{ secrets.NIGHTLY_RUNS_SLACK_WEBHOOK }}
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '16.14.2'
-      - name: Checkout Ref
-        uses: actions/checkout@v1
-        with:
-          ref: ${{ github.event.push.after }}
+          node-version-file: '.nvmrc'
       - name: Run e2e Tests
         run: bash -e ./scripts/e2e-test.sh
         env:
