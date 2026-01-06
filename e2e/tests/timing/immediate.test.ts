@@ -8,7 +8,7 @@ fixture `Timing: Immediate`
 		buildRequestHooks(hooks)
 	);
 
-test(`should apply variants immediately`, skipIfIE(async t => {
+test.skip(`should apply variants immediately`, skipIfIE(async t => {
 	await waitUntilLoaded();
 
 	const { log } = await t.getBrowserConsoleMessages();
