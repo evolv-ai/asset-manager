@@ -5,7 +5,6 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "start": "npm-run-all --parallel start:*",
     "start:watch": "rollup --config --watch",
     "start:browser-sync": "node support/dev/bs-config.js",
@@ -72,7 +71,6 @@
     "jsdom-global": "^3.0.2",
     "jsonfile": "^6.1.0",
     "mocha": "^10.1.0",
-    "npm-force-resolutions": "0.0.10",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
     "outdent": "^0.8.0",
@@ -126,7 +124,7 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "resolutions": {
+  "overrides": {
     "ansi-regex": "5.0.1",
     "semver-regex": "3.1.4",
     "minimist": "1.2.6",
