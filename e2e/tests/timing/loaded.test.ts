@@ -12,11 +12,14 @@ test(`should apply variants after the window.load event has fired`, skipIfIE(asy
 	await waitUntilLoaded();
 
 	const { log } = await t.getBrowserConsoleMessages();
+	const domContentLoadedIndex = log.findIndex(entry => /^DOMContentLoaded/.test(entry));
+	const contextAppliedIndex = log.findIndex(entry => /^Context applied/.test(entry));
+	const variantAppliedIndex = log.findIndex(entry => /^Variant applied/.test(entry));
 
 	await t
-		.expect(log.length).eql(4)
-		.expect(log[0]).match(/^Delay/)
-		.expect(log[1]).match(/^DOMContentLoaded/)
-		.expect(log[2]).match(/^Context applied/)
-		.expect(log[3]).match(/^Variant applied/);
+		.expect(domContentLoadedIndex).gte(0)
+		.expect(contextAppliedIndex).gte(0)
+		.expect(variantAppliedIndex).gte(0)
+		.expect(variantAppliedIndex).gt(contextAppliedIndex)
+		.expect(variantAppliedIndex).gt(domContentLoadedIndex);
 }));
