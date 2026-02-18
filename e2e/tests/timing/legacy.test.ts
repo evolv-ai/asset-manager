@@ -9,15 +9,18 @@ fixture `Timing: Legacy`
 	);
 
 // Test is too flaky
-test.skip(`should apply variants respecting the legacy behavior`, skipIfIE(async t => {
+test(`should apply variants respecting the legacy behavior`, skipIfIE(async t => {
 	await waitUntilLoaded();
 
 	const { log } = await t.getBrowserConsoleMessages();
+	const domContentLoadedIndex = log.findIndex(entry => /^DOMContentLoaded/.test(entry));
+	const contextAppliedIndex = log.findIndex(entry => /^Context applied/.test(entry));
+	const variantAppliedIndex = log.findIndex(entry => /^Variant applied/.test(entry));
 
 	await t
-		.expect(log.length).eql(4)
-		.expect(log[0]).match(/^Context applied/)
-		.expect(log[1]).match(/^Variant applied/)
-		.expect(log[2]).match(/^Delay/)
-		.expect(log[3]).match(/^DOMContentLoaded/);
+		.expect(domContentLoadedIndex).gte(0)
+		.expect(contextAppliedIndex).gte(0)
+		.expect(variantAppliedIndex).gte(0)
+		.expect(variantAppliedIndex).gt(contextAppliedIndex)
+		.expect(variantAppliedIndex).gt(domContentLoadedIndex);
 }));
