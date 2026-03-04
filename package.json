@@ -44,7 +44,7 @@
 		"url": "https://github.com/evolv-ai/asset-manager"
 	},
   "dependencies": {
-    "@evolv/client": "v2.12.9-alpha-147d1b4"
+    "@evolv/client": "2.12.14-alpha-c62fd33"
   },
   "optionalDependencies": {
     "@evolv/dom-capture": "^1.8.0",
