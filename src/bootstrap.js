@@ -99,6 +99,7 @@ function checkLazyUid(config) {
 export const defaultConfig = {
 	environment: undefined,
 	endpoint: 'https://participants.evolv.ai/',
+	ingestionEndpoint: 'https://analytics-data.evolv.ai/v1',
 	uid: undefined,
 	lazyUid: false,
 	requireConsent: false,
@@ -225,6 +226,7 @@ export function bootstrap(initialConfig) {
 			debug: debug,
 			environment: env,
 			endpoint: endpoint,
+			ingestionEndpoint: config.ingestionEndpoint,
 			version: version,
 			autoConfirm: false,
 			bufferEvents: config.requireConsent,

@@ -2,6 +2,7 @@
  * @typedef DatasetConfig
  * @property {string} [evolvEnvironment]
  * @property {string} [evolvEndpoint]
+ * @property {string} [evolvIngestionEndpoint]
  * @property {string} [evolvUid]
  * @property {string} [evolvLazyUid]
  * @property {string} [evolvRequireConsent]
@@ -17,6 +18,7 @@
  * @typedef Config
  * @property {string | undefined} environment
  * @property {string} endpoint
+ * @property {string | undefined} ingestionEndpoint
  * @property {string | undefined} uid
  * @property {string} lazyUid
  * @property {boolean} requireConsent
